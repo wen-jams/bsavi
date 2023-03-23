@@ -12,7 +12,9 @@ setuptools.setup(
     license = "MIT",
     keywords = "interactive visualizer cosmology",
     url = "http://packages.python.org/inviz",
-    packages=['inviz'],
+    py_modules=["inviz"],
+    package_dir={'': 'inviz'},
+#    packages=['inviz'],
     #package_dir={'': 'inviz'},
     #long_description=long_description,
     classifiers=[
