@@ -1,0 +1,10 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+inviz/inviz.py
+inviz/inviz.egg-info/PKG-INFO
+inviz/inviz.egg-info/SOURCES.txt
+inviz/inviz.egg-info/dependency_links.txt
+inviz/inviz.egg-info/requires.txt
+inviz/inviz.egg-info/top_level.txt
