@@ -24,7 +24,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',              
     install_requires=["holoviews==1.15.4",
-                      "torch==1.12.1",
+                      "torch==1.13.1",
                       "spatialpandas==0.4.7",
                       "hvplot==0.8.3",
                       "numpy==1.23.5"]                    
