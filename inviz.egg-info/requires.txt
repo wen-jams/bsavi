@@ -1,0 +1,5 @@
+holoviews==1.15.4
+hvplot==0.8.3
+numpy==1.23.5
+spatialpandas==0.4.7
+torch==1.12.1
