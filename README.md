@@ -19,3 +19,4 @@ to create a new environment, or
 to update your existing one.
 
 You will also need CLASS installed (either from class_public or your own modified version). Follow the instructions [here](https://cobaya.readthedocs.io/en/latest/theory_class.html) to install classy, the Python wrapper for Class.
+
