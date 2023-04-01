@@ -13,15 +13,15 @@ Currently, only Python versions $\geq$ 3.7 and $<$ 3.11 are supported. You will 
 ## Test Installation
 To verify that inviz and all the dependencies have been installed correctly, open a Jupyter Notebook and run:
 ```python
-    from inviz import *
-    hv.extension('bokeh')
-    hv.Store.set_current_backend('bokeh')
-    pn.extension('tabulator')
-    pn.extension()
+from inviz import *
+hv.extension('bokeh')
+hv.Store.set_current_backend('bokeh')
+pn.extension('tabulator')
+pn.extension()
 ```
 If no errors appear, we're ready to start visualizing!
 
-For now, a lot of features are hard-coded to use the testing dataset located in the [data/test_IDM_n_0](data/test_IDM_n_0) folder. These were created using a custom version of CLASS, which we are not yet ready to release to the public. However, this is theoretically what the code would look like if you want to make your own visualization of the matter power spectrum residuals:
+For now, a lot of features are hard-coded to use the testing dataset located in the [data/test_IDM_n_0](data/test_IDM_n_0) folder. These were created using a custom version of CLASS, which we aren't yet ready to release to the public. However, this is theoretically what the code would look like if you want to make your own visualization of the matter power spectrum residuals:
 ```python
 param_names = load_params('dev/inviz/data/test_IDM_n_0/2022-05-04_75000_.paramnames')
 df = pd.DataFrame(columns=param_names)
