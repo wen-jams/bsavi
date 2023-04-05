@@ -26,5 +26,7 @@ setuptools.setup(
     install_requires=["holoviews==1.15.4",
                       "spatialpandas==0.4.7",
                       "hvplot==0.8.3",
-                      "numpy==1.23.5"]                    
+                      "numpy==1.23.5",
+                      "matplotlib==3.7.1",
+                      "bokeh==3.1.0"]                    
     )
