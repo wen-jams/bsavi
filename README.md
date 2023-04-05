@@ -6,18 +6,17 @@ This tool helps you explore the results of running MCMC posterior sampling on yo
 Installation is straightforward with pip:
 
     pip install inviz
-
+Or, if you want to test the latest changes, you can clone the repository with
+    
+    git clone https://github.com/wen-jams/inviz
 ## Dependencies
-Currently, only Python versions $\geq$ 3.7 and $<$ 3.11 are supported. You will also need CLASS installed (either from class_public or a modified version) in your working directory. Follow the instructions [here](https://cobaya.readthedocs.io/en/latest/theory_class.html) to install classy, the Python wrapper for Class.
+Currently, only Python versions $\geq$ 3.7 and $<$ 3.11 are supported. You will need to manually install `matplotlib` and `bokeh` if installing from pip (this will be fixed very soon). You will also need the Cosmology Boltzmann code CLASS (either the default or your own modified version). Follow the instructions [here](https://cobaya.readthedocs.io/en/latest/theory_class.html) to install classy, the Python wrapper for CLASS.
 
 ## Test Installation
 To verify that inviz and all the dependencies have been installed correctly, open a Jupyter Notebook and run:
 ```python
 from inviz import *
 hv.extension('bokeh')
-hv.Store.set_current_backend('bokeh')
-pn.extension('tabulator')
-pn.extension()
 ```
 If no errors appear, we're ready to start visualizing!
 
