@@ -5,9 +5,9 @@ import setuptools
 
 setuptools.setup(
     name = "inviz",
-    version = "0.0.1",
+    version = "0.0.2",
     author = "James Wen",
-    author_email = "maamari@usc.edu",
+    author_email = "jswen@usc.edu",
     description = ("An interactive visualizer to help explore the results of running MCMC posterior sampling on a cosmological model."),
     license = "MIT",
     keywords = "interactive visualizer cosmology",
