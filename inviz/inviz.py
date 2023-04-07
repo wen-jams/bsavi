@@ -39,24 +39,61 @@ def load_data(filename, column_names):
 
 
 # generate a scatter plot using the key dimensions from a holoviews.Dataset object, with the CLASS output displayed alongside it
-def plot_points(ds, df):
-    hover = HoverTool(tooltips=None)
-    # generate the scatter plot and define it as the source for the "Selection1D" stream
-    points = hv.Points(ds).opts(
-        color='black',
-        alpha=0.5,
-        selection_alpha=1,
-        nonselection_alpha=0.1,
-        tools=[hover,'box_select','lasso_select','tap'],
-        size=5,
-        width=400,
-        height=400)
-
-    selection = streams.Selection1D(source=points)
+def viz(dataset, dataframe):
+    # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
+    # to the points on the plot. Also has an option to show or hide the colormap
+    def plot_data(kdim1, kdim2, colordim, showcmap):
+        if showcmap == True:
+            cmapping = opts.Points(color=dim(colordim),
+                colorbar=True,
+                cmap='Viridis')
+        else:
+            cmapping = opts.Points(color='grey', colorbar=True)
+        hover = HoverTool(tooltips=None)
+        popts = opts.Points(
+            toolbar='above',
+            #line_color='black',
+            #alpha=0.75, selection_alpha=1, nonselection_alpha=0.1,
+            tools=[hover, 'box_select','lasso_select','tap'],
+            size=7)
+        points = hv.Points(dataframe, kdims=[kdim1, kdim2]).opts(popts, cmapping)
+        return points
+    
+    
+    # setting Panel widgets for user interaction
+    variables = dataframe.columns.values.tolist()
+    var1 = pn.widgets.Select(value=variables[0], name='Horizontal Axis', options=variables)
+    var2 = pn.widgets.Select(value=variables[1], name='Vertical Axis', options=variables)
+    cmap_var = pn.widgets.Select(value=variables[2], name='Colormapped Parameter', options=variables)
+    cmap_option = pn.widgets.Checkbox(value=True, name='Show Colormap', align='end')
+    
+    # bind the widget values to the plotting function so it gets called every time the user interacts with the widget
+    # call the bound plotting function inside a holoview DynamicMap object for interaction
+    interactive_points = pn.bind(plot_data, kdim1=var1, kdim2=var2, colordim=cmap_var, showcmap=cmap_option)
+    points_dmap = hv.DynamicMap(interactive_points, kdims=[]).opts(width=500, height=400, framewise=True)
+    
+    # define a stream to get a list of all the points the user has selected on the plot
+    selection = streams.Selection1D(source=points_dmap)
+    
+    # function to generate a table of all the selected points
+    def make_table(kdim1, kdim2, colordim):
+        table = hv.DynamicMap(lambda index: hv.Table(dataframe.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
+        # formatting the table using plot hooks and a holoviews Options object
+        def hook(plot, element):
+            plot.handles['table'].autosize_mode = "none"
+            for column in plot.handles['table'].columns:
+                column.width = 100
+            
+        table_options = opts.Table(height=300, width=1000, hooks=[hook])
+        return table.opts(table_options).relabel('Selected Points')
+    
+    
+    # generate the table
+    selected_table = pn.bind(make_table, kdim1=var1, kdim2=var2, colordim=cmap_var)
+    
+    # function to run CLASS on data from the selection. 
+    # first create an empty plot to handle the null selection case
     empty_plot = hv.Curve(np.random.rand(0, 2))
-
-
-    # run CLASS on data from the selection
     def run_class_on_selection(index):
         if not index:
             empty_pk = empty_plot.relabel('P(k) Residuals - no selection').opts(
@@ -71,11 +108,12 @@ def plot_points(ds, df):
             empty_layout = empty_pk + empty_cl_tt + empty_cl_ee            
             return empty_layout
 
+        # the Selection1D stream returns a dict. turn it into a list
         sel = df.iloc[index]
         sel_dict_list = sel.to_dict('records')
         CDM_dict_list = []
-
-        # remove nuisance parameters and add new ones. in the future this stage will be specified by the user instead of hard-coded
+        
+        # remove nuisance parameters and add some project-specific ones. in the future these will be defined by the user
         for i in range(len(sel_dict_list)):
             entries_to_remove1 = ('z_reio', 'A_s', 'sigma8', '100theta_s', 'A_cib_217', 'xi_sz_cib', 'A_sz', 'ps_A_100_100', 'ps_A_143_143', 'ps_A_143_217', 'ps_A_217_217', 'ksz_norm', 
                                  'gal545_A_100', 'gal545_A_143', 'gal545_A_143_217', 'gal545_A_217', 'galf_TE_A_100', 'galf_TE_A_100_143', 'galf_TE_A_100_217', 'galf_TE_A_143', 'galf_TE_A_143_217', 
@@ -96,13 +134,13 @@ def plot_points(ds, df):
             params_CDM['omega_cdm'] = params_CDM.pop('omega_dmeff')
             CDM_dict_list.append(params_CDM)
 
-        # run class on the user's data
+        # run class on the user's selection
         cosmo = Class()
         cosmo.set(sel_dict_list[0])
         cosmo.set({'output':'mPk, tCl, pCl, lCl','P_k_max_1/Mpc':3.0, 'lensing':'yes'})
         cosmo.compute()
 
-        # get class compute products
+        # set variables for matter power spectrum and lensed CMB angular power spectra
         kk = np.logspace(-4,np.log10(3),1000)
         Pk1 = []
         h = cosmo.h()
@@ -112,13 +150,14 @@ def plot_points(ds, df):
         l = np.array(range(2,2501))
         factor = l*(l+1)/(2*np.pi)
         lensed_cl = cosmo.lensed_cl(2500)
-
-        # run class on LambdaCDM model
+        
+        # run CLASS on the user's selection using the CDM model
         cosmo_CDM = Class()
         cosmo_CDM.set(CDM_dict_list[0])
         cosmo_CDM.set({'output':'mPk, tCl, pCl, lCl','P_k_max_1/Mpc':3.0, 'lensing':'yes'})
         cosmo_CDM.compute()
 
+        # set variables for CDM observables
         Pk_CDM = []
         h = cosmo_CDM.h()
         for k in kk:
@@ -134,39 +173,24 @@ def plot_points(ds, df):
         plot_pk_residuals = hv.Curve((kk, pk_residuals)).relabel('P(k) Residuals').opts(
             xlabel=r'$$k~[h/\mathrm{Mpc}]$$', 
             ylabel=r'$$(P(k)-P_{CDM}(k))/P_{CDM}(k)*100~[\%]$$')
-        plot_cl_tt_residuals = hv.Curve((l,factor*cl_tt_residuals)).relabel('Cl_TT Residuals').opts(
+
+        plot_cl_tt_residuals = hv.Curve((l,cl_tt_residuals)).relabel('Cl_TT Residuals').opts(
             xlabel=r"$$\ell$$", 
             ylabel=r"$$(C_{\ell}^{TT}-C_{\ell, CDM}^{TT})/C_{\ell, CDM}^{TT}*100~[\%]$$")
-        plot_cl_ee_residuals = hv.Curve((l,factor*cl_ee_residuals)).relabel('Cl_EE Residuals').opts(
+
+        plot_cl_ee_residuals = hv.Curve((l,cl_ee_residuals)).relabel('Cl_EE Residuals').opts(
             xlabel=r"$$\ell$$", 
             ylabel=r"$$(C_{\ell}^{EE}-C_{\ell, CDM}^{EE})/C_{\ell, CDM}^{EE}*100~[\%]$$")
+        
         layout = (plot_pk_residuals + plot_cl_tt_residuals + plot_cl_ee_residuals)
         return layout
-
+    
 
     classy_output = hv.DynamicMap(run_class_on_selection, streams=[selection]).opts(
-        opts.Curve(logx=True, width=500, height=400, padding=0.1, framewise=True),
+        opts.Curve(color='black', logx=True, width=500, height=400, padding=0.1, framewise=True),
         opts.Layout(shared_axes=False))
 
-
-    # generate a table of all the selected points on the point plot
-    def make_table(dataset, stream):
-        table = hv.DynamicMap(lambda index: hv.Table(dataset.iloc[index]), streams=[stream])
-        return table
-
-    # formatting the table with plot hooks
-    def hook(plot, element):
-        plot.handles['table'].autosize_mode = "none"
-        for column in plot.handles['table'].columns:
-            column.width = 100
-
-
-    table_options = opts.Table(height=200, width=1050, hooks=[hook])
-    selected_table = make_table(ds, selection).opts(table_options)
-
-    # put it all together
-    points_and_table = points + selected_table
-    points_and_table = points_and_table.opts(shared_axes=False)
-    dashboard = pn.Column(points_and_table, classy_output)
+    # put it all together using Panel
+    points_display = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
+    dashboard = pn.Column(points_display, classy_output)
     return dashboard
-    
