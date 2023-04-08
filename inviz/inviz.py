@@ -18,6 +18,7 @@ import copy
 hv.extension('bokeh')
 hv.Store.set_current_backend('bokeh')
 pn.extension('tabulator')
+pn.extension(loading_spinner='dots', loading_color='#00aa41', sizing_mode="stretch_width")
 pn.extension()
 
 # read in the .paramnames file and put it into list format
@@ -39,7 +40,7 @@ def load_data(filename, column_names):
 
 
 # generate a scatter plot using the key dimensions from a holoviews.Dataset object, with the CLASS output displayed alongside it
-def viz(dataset, dataframe):
+def viz(data, data_classy_input, data_classy_CDM):
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
     # to the points on the plot. Also has an option to show or hide the colormap
     def plot_data(kdim1, kdim2, colordim, showcmap):
@@ -56,12 +57,12 @@ def viz(dataset, dataframe):
             #alpha=0.75, selection_alpha=1, nonselection_alpha=0.1,
             tools=[hover, 'box_select','lasso_select','tap'],
             size=7)
-        points = hv.Points(dataframe, kdims=[kdim1, kdim2]).opts(popts, cmapping)
+        points = hv.Points(data, kdims=[kdim1, kdim2]).opts(popts, cmapping)
         return points
     
     
     # setting Panel widgets for user interaction
-    variables = dataframe.columns.values.tolist()
+    variables = data.columns.values.tolist()
     var1 = pn.widgets.Select(value=variables[0], name='Horizontal Axis', options=variables)
     var2 = pn.widgets.Select(value=variables[1], name='Vertical Axis', options=variables)
     cmap_var = pn.widgets.Select(value=variables[2], name='Colormapped Parameter', options=variables)
@@ -77,7 +78,7 @@ def viz(dataset, dataframe):
     
     # function to generate a table of all the selected points
     def make_table(kdim1, kdim2, colordim):
-        table = hv.DynamicMap(lambda index: hv.Table(dataframe.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
+        table = hv.DynamicMap(lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
         # formatting the table using plot hooks and a holoviews Options object
         def hook(plot, element):
             plot.handles['table'].autosize_mode = "none"
@@ -90,6 +91,8 @@ def viz(dataset, dataframe):
     
     # generate the table
     selected_table = pn.bind(make_table, kdim1=var1, kdim2=var2, colordim=cmap_var)
+    
+    #table_stream = streams.Selection1D(source=selected_table)
     
     # function to run CLASS on data from the selection. 
     # first create an empty plot to handle the null selection case
@@ -108,31 +111,32 @@ def viz(dataset, dataframe):
             empty_layout = empty_pk + empty_cl_tt + empty_cl_ee            
             return empty_layout
 
-        # the Selection1D stream returns a dict. turn it into a list
-        sel = df.iloc[index]
-        sel_dict_list = sel.to_dict('records')
-        CDM_dict_list = []
+        # the Selection1D stream returns an index number. index into the approprate dataframe and turn it into a dictionary for CLASS to read
+        selection = data_classy_input.iloc[index]
+        selection_CDM = data_classy_CDM.iloc[index]
+        sel_dict_list = selection.to_dict('records')
+        CDM_dict_list = selection_CDM.to_dict('records')
         
         # remove nuisance parameters and add some project-specific ones. in the future these will be defined by the user
-        for i in range(len(sel_dict_list)):
-            entries_to_remove1 = ('z_reio', 'A_s', 'sigma8', '100theta_s', 'A_cib_217', 'xi_sz_cib', 'A_sz', 'ps_A_100_100', 'ps_A_143_143', 'ps_A_143_217', 'ps_A_217_217', 'ksz_norm', 
-                                 'gal545_A_100', 'gal545_A_143', 'gal545_A_143_217', 'gal545_A_217', 'galf_TE_A_100', 'galf_TE_A_100_143', 'galf_TE_A_100_217', 'galf_TE_A_143', 'galf_TE_A_143_217', 
-                                 'galf_TE_A_217', 'calib_100T', 'calib_217T', 'A_planck' )
-            for j in entries_to_remove1:
-                sel_dict_list[i].pop(j, None)
+#         for i in range(len(sel_dict_list)):
+#             entries_to_remove1 = ('z_reio', 'A_s', 'sigma8', '100theta_s', 'A_cib_217', 'xi_sz_cib', 'A_sz', 'ps_A_100_100', 'ps_A_143_143', 'ps_A_143_217', 'ps_A_217_217', 'ksz_norm', 
+#                                  'gal545_A_100', 'gal545_A_143', 'gal545_A_143_217', 'gal545_A_217', 'galf_TE_A_100', 'galf_TE_A_100_143', 'galf_TE_A_100_217', 'galf_TE_A_143', 'galf_TE_A_143_217', 
+#                                  'galf_TE_A_217', 'calib_100T', 'calib_217T', 'A_planck' )
+#             for j in entries_to_remove1:
+#                 sel_dict_list[i].pop(j, None)
 
-            sel_dict_list[i]['omega_b'] = sel_dict_list[i]['omega_b']*1e-2
-            sel_dict_list[i]['sigma_dmeff'] = sel_dict_list[i]['sigma_dmeff']*1e-25
-            sel_dict_list[i]['h'] = (sel_dict_list[i].pop('H0'))*1e-2
-            sel_dict_list[i].update({"omega_cdm":1e-15, "npow_dmeff": 0, "Vrel_dmeff": 0, "dmeff_target": "baryons", "m_dmeff": 1e-3})
+#             sel_dict_list[i]['omega_b'] = sel_dict_list[i]['omega_b']*1e-2
+#             sel_dict_list[i]['sigma_dmeff'] = sel_dict_list[i]['sigma_dmeff']*1e-25
+#             sel_dict_list[i]['h'] = (sel_dict_list[i].pop('H0'))*1e-2
+#             sel_dict_list[i].update({"omega_cdm":1e-15, "npow_dmeff": 0, "Vrel_dmeff": 0, "dmeff_target": "baryons", "m_dmeff": 1e-3})
 
-        for k in range(len(sel_dict_list)):
-            params_CDM = copy.deepcopy(sel_dict_list[k])
-            entries_to_remove2 = ('sigma_dmeff', 'npow_dmeff', 'Vrel_dmeff', 'dmeff_target', 'm_dmeff')
-            for l in entries_to_remove2:
-                params_CDM.pop(l, None)
-            params_CDM['omega_cdm'] = params_CDM.pop('omega_dmeff')
-            CDM_dict_list.append(params_CDM)
+#         for k in range(len(sel_dict_list)):
+#             params_CDM = copy.deepcopy(sel_dict_list[k])
+#             entries_to_remove2 = ('sigma_dmeff', 'npow_dmeff', 'Vrel_dmeff', 'dmeff_target', 'm_dmeff')
+#             for l in entries_to_remove2:
+#                 params_CDM.pop(l, None)
+#             params_CDM['omega_cdm'] = params_CDM.pop('omega_dmeff')
+#             CDM_dict_list.append(params_CDM)
 
         # run class on the user's selection
         cosmo = Class()
@@ -165,7 +169,7 @@ def viz(dataset, dataframe):
 
         lensed_cl_CDM = cosmo_CDM.lensed_cl(2500)
 
-        # compute residuals and plot them
+        # compute residuals
         pk_residuals = (np.array(Pk1) - np.array(Pk_CDM))/np.array(Pk_CDM)*100
         cl_tt_residuals = (lensed_cl['tt'][2:] - lensed_cl_CDM['tt'][2:])/(lensed_cl_CDM['tt'][2:])*100
         cl_ee_residuals = (lensed_cl['ee'][2:] - lensed_cl_CDM['ee'][2:])/(lensed_cl_CDM['ee'][2:])*100
@@ -185,12 +189,15 @@ def viz(dataset, dataframe):
         layout = (plot_pk_residuals + plot_cl_tt_residuals + plot_cl_ee_residuals)
         return layout
     
-
+    
     classy_output = hv.DynamicMap(run_class_on_selection, streams=[selection]).opts(
         opts.Curve(color='black', logx=True, width=500, height=400, padding=0.1, framewise=True),
         opts.Layout(shared_axes=False))
-
+    
+    classy_output_pane = pn.panel(classy_output)
+    # pn.param.set_values(classy_output_pane, loading=True)
+    
     # put it all together using Panel
     points_display = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
-    dashboard = pn.Column(points_display, classy_output)
+    dashboard = pn.Column(points_display, classy_output_pane)
     return dashboard
