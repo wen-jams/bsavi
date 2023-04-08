@@ -40,7 +40,7 @@ def load_data(filename, column_names):
 
 
 # generate a scatter plot using the key dimensions from a holoviews.Dataset object, with the CLASS output displayed alongside it
-def viz(data, data_classy_input, data_classy_CDM):
+def viz(data, data_classy_input, data_classy_CDM, class_enabled):
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
     # to the points on the plot. Also has an option to show or hide the colormap
     def plot_data(kdim1, kdim2, colordim, showcmap):
@@ -189,15 +189,14 @@ def viz(data, data_classy_input, data_classy_CDM):
         layout = (plot_pk_residuals + plot_cl_tt_residuals + plot_cl_ee_residuals)
         return layout
     
-    
-    classy_output = hv.DynamicMap(run_class_on_selection, streams=[selection]).opts(
-        opts.Curve(color='black', logx=True, width=500, height=400, padding=0.1, framewise=True),
-        opts.Layout(shared_axes=False))
-    
-    classy_output_pane = pn.panel(classy_output)
-    # pn.param.set_values(classy_output_pane, loading=True)
-    
     # put it all together using Panel
-    points_display = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
-    dashboard = pn.Column(points_display, classy_output_pane)
+    dashboard = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
+
+    if class_enabled == True:
+        classy_output = hv.DynamicMap(run_class_on_selection, streams=[selection]).opts(
+            opts.Curve(color='black', logx=True, width=500, height=400, padding=0.1, framewise=True),
+            opts.Layout(shared_axes=False))
+        classy_output_pane = pn.panel(classy_output)
+        # pn.param.set_values(classy_output_pane, loading=True)
+        dashboard = pn.Column(dashboard, classy_output_pane)
     return dashboard
