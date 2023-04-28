@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import copy
 from multiprocessing import Pool
 
+# pn.extension(loading_spinner='dots', loading_color='#00aa41', sizing_mode="stretch_width")
 hv.extension('bokeh')
 # hv.Store.set_current_backend('bokeh')
 # pn.extension('tabulator')
@@ -157,9 +158,9 @@ def viz(data, data_classy_input, data_classy_CDM, class_enabled=True, latex_dict
         CDM_dict_list = selection_CDM.to_dict('records')
         
         # compute stats for user's cosmology and LambdaCDM in parallel
-        if __name__ == '__main__':
-            with Pool() as p:
-                [mycosmo, LambdaCDM] = p.map(run_class, [sel_dict_list[0], CDM_dict_list[0]])
+        # if __name__ == '__main__':
+        with Pool() as p:
+            [mycosmo, LambdaCDM] = p.map(run_class, [sel_dict_list[0], CDM_dict_list[0]])
 
         # compute residuals
         pk_residuals = (mycosmo['Pk'] - LambdaCDM['Pk'])/LambdaCDM['Pk']*100

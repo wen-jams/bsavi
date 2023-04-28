@@ -26,9 +26,8 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=["holoviews==1.15.4",
-                    #   "bokeh==2.4.3",
-                      "spatialpandas==0.4.7"]
-                    #   "numpy<=1.24",
-                    #   "matplotlib==3.7.1"]
+                      "spatialpandas==0.4.7",
+                      "numpy<=1.24",
+                      "matplotlib==3.7.1"]
     )
 
