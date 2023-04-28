@@ -24,7 +24,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     install_requires=["holoviews==1.15.4",
                       "spatialpandas==0.4.7",
                       "numpy>=1.20, <1.24",
