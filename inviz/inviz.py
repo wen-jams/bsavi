@@ -1,7 +1,7 @@
 import holoviews as hv
 from holoviews import dim, opts, streams
-from holoviews.selection import link_selections
-import hvplot.pandas
+# from holoviews.selection import link_selections
+# import hvplot.pandas
 import pandas as pd
 from itertools import combinations
 import numpy as np
@@ -13,7 +13,7 @@ import os
 from bokeh.models import HoverTool
 from classy import Class
 import matplotlib.pyplot as plt
-import copy
+# import copy
 from multiprocessing import Pool
 
 # pn.extension(loading_spinner='dots', loading_color='#00aa41', sizing_mode="stretch_width")
@@ -157,10 +157,14 @@ def viz(data, data_classy_input, data_classy_CDM, class_enabled=True, latex_dict
         sel_dict_list = selection.to_dict('records')
         CDM_dict_list = selection_CDM.to_dict('records')
         
-        # compute stats for user's cosmology and LambdaCDM in parallel
+        # compute stats for user's cosmology and LambdaCDM
+        # in parallel:
         # if __name__ == '__main__':
-        with Pool() as p:
-            [mycosmo, LambdaCDM] = p.map(run_class, [sel_dict_list[0], CDM_dict_list[0]])
+        #     with Pool() as p:
+        #         [mycosmo, LambdaCDM] = p.map(run_class, [sel_dict_list[0], CDM_dict_list[0]])
+        # in serial:
+        mycosmo = run_class(sel_dict_list[0])
+        LambdaCDM = run_class(CDM_dict_list[0])
 
         # compute residuals
         pk_residuals = (mycosmo['Pk'] - LambdaCDM['Pk'])/LambdaCDM['Pk']*100
