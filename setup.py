@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "inviz",
-    version = "0.0.6",
+    version = "0.0.7",
     author = "James Wen",
     author_email = "jswen@usc.edu",
     description = ("An interactive visualizer to help explore the results of running MCMC posterior sampling on a cosmological model."),
@@ -27,7 +27,7 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=["holoviews==1.15.4",
                       "spatialpandas==0.4.7",
-                      "numpy<=1.24",
+                      "numpy>=1.20, <1.24",
                       "matplotlib==3.7.1"]
     )
 
