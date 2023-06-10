@@ -78,7 +78,7 @@ def compute_residuals(index, sample, sample_CDM):
 
 
 # generate a scatter plot using the key dimensions from a holoviews.Dataset object, with the CLASS output displayed alongside it
-def viz(data, myfunction, myfunction_args, show_observables=True, latex_dict=None):
+def viz(data, data_observable=None, myfunction=None, myfunction_args=None, show_observables=True, latex_dict=None, curve_opts=None):
     # handle default case of no latex paramname dictionary
     if latex_dict is None:
         latex_dict = dict()
@@ -154,16 +154,20 @@ def viz(data, myfunction, myfunction_args, show_observables=True, latex_dict=Non
     # handles the null selection case and multiple selections
     curves = {}
     empty_plot = hv.Curve(np.random.rand(0, 2)).opts(framewise=True)
+    if data_observable is not None:
+        data_observable = data_observable.to_dict('index')
     def plot_observables(index):
         if not index:
-            curves_list = [[empty_plot.relabel('P(k) Residuals - No Selection')], 
-                           [empty_plot.relabel('Cl_TT Residuals - No Selection')], 
-                           [empty_plot.relabel('Cl_EE Residuals - No Selection')]]
+            curves_list = [[empty_plot.relabel('Plot 1 - No Selection')], 
+                           [empty_plot.relabel('Plot 2 - No Selection')], 
+                           [empty_plot.relabel('Plot 3 - No Selection')]]
         else:
             new_index = [x for x in index if x not in list(curves.keys())]
             for element in new_index:
-                # Need to actually unpack tuple here
-                observables = myfunction(element, myfunction_args[0], myfunction_args[1])
+                if data_observable is not None:
+                    observables = data_observable[element]
+                elif myfunction is not None:
+                    observables = myfunction(element, *myfunction_args)
                 observables_keys = list(observables.keys())
 
                 new_plots = []
@@ -174,7 +178,7 @@ def viz(data, myfunction, myfunction_args, show_observables=True, latex_dict=Non
                     plot_observable = hv.Curve(dataset, kdim, vdim, label=key).opts(framewise=True)
                     new_plots.append(plot_observable)
                 curves[element] = {plot.label: plot for plot in new_plots}
-            
+
             curves_list = []
             for index_item in index:
                 curve_types = list(curves[index_item].keys())
@@ -182,11 +186,11 @@ def viz(data, myfunction, myfunction_args, show_observables=True, latex_dict=Non
             for curve_item in curve_types:
                 same_type = [curves[key][curve_item] for key in index]
                 curves_list.append(same_type)
-
+            
         layout = hv.Layout()
         for list_of_curves in curves_list:
             overlay = hv.Overlay(list_of_curves)
-            layout = layout + overlay
+            layout = layout + overlay    
         return layout
     
     
@@ -195,7 +199,7 @@ def viz(data, myfunction, myfunction_args, show_observables=True, latex_dict=Non
     
     if show_observables == True:
         observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(
-            opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('GnBu'), bgcolor='#22262F', framewise=True), 
+            curve_opts, 
             opts.Layout(shared_axes=False),
             opts.Overlay(show_legend=False)
         )
@@ -203,7 +207,11 @@ def viz(data, myfunction, myfunction_args, show_observables=True, latex_dict=Non
         dashboard = pn.Column(dashboard, observables_pane)
     
     return dashboard
-# Read in data
+
+# Read in data. This app showcases the dual functions of inviz with two example datasets.
+# Uncomment the line with the viz function corresponding to whichever dataset you want to visualize.
+
+# This dataset will be used to compute observables in real time.
 loglkl = ['loglkl']
 param_names, latex_params = load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
 params_latex_form = dict(zip(param_names, latex_params))
@@ -226,15 +234,28 @@ classy_input['Vrel_dmeff'] = 0.0
 classy_input['dmeff_target'] = 'baryons'
 classy_input['m_dmeff'] = 1e-3
 
-# format for CDM version
-#classy_CDM = classy_input.drop(columns=['sigma_dmeff', 'omega_cdm', 'npow_dmeff', 'Vrel_dmeff', 'dmeff_target', 'm_dmeff'])
-# classy_CDM = classy_CDM.rename(columns={'omega_dmeff':'omega_cdm'})
 classy_CDM = classy_input.drop(columns=['sigma_dmeff', 'npow_dmeff', 'Vrel_dmeff', 'dmeff_target', 'm_dmeff'])
-
-
 # slice for fast computation
 classy_input_slice = classy_input[::500].reset_index(drop=True)
 classy_CDM_slice = classy_CDM[::500].reset_index(drop=True)
 df_slice = df[::500].reset_index(drop=True)
 
-viz(data=df_slice, myfunction=compute_residuals, myfunction_args=(classy_input_slice, classy_CDM_slice), show_observables=True, latex_dict=params_latex_form).servable()
+copts = opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('GnBu'), bgcolor='#22262F', framewise=True)
+# viz(data=df_slice, myfunction=compute_residuals, myfunction_args=(classy_input_slice, classy_CDM_slice), show_observables=True, latex_dict=params_latex_form, curve_opts=copts).servable()
+
+# this data is a simple collection of points that will be plotted as observables
+interp_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data.pkl')
+binned_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data_binned.pkl')
+params_df = interp_df[['alphaOutflow', 'alphaStar', 'like', 'timescale', 'velocityOutflow']]
+lumfunc_df = interp_df[['uvlf_Muv', 'uvlf_z10.5', 'uvlf_z12.6', 'uvlf_z8.7']]
+uvlf = {}
+for row in lumfunc_df.index:
+    uvlf[row] = {
+        'z = 10.5': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z10.5': lumfunc_df['uvlf_z10.5'][row]}, 
+        'z = 12.6': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z12.6': lumfunc_df['uvlf_z12.6'][row]}, 
+        'z = 8.7': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z8.7': lumfunc_df['uvlf_z8.7'][row]}, 
+    }
+reshaped_uvlf = pd.DataFrame.from_dict(uvlf, orient='index')
+
+uvlf_opts = opts.Curve(ylim=(1e-11, None), logy=True, invert_xaxis=True, color=hv.Cycle('GnBu'), bgcolor='#22262F', height=400, width=500)
+viz(data=params_df, data_observable=reshaped_uvlf, curve_opts=uvlf_opts).servable()
