@@ -22,14 +22,13 @@ Or, if you want to test the latest changes, you can clone the repository with
 ### Test Installation
 To verify that inviz and all the dependencies have been installed correctly, open a Jupyter Notebook and run:
 ```python
-from inviz import *
-hv.extension('bokeh')
-pn.extension()
+import inviz as nv
 ```
 If no errors appear, all the dependencies were installed correctly and we're ready to start visualizing!
 
 ### Example
-Download and run the tutorial notebook in the [tutorials](tutorials) folder to see an example of how inviz can be used.
+Download and run the `live_data_example` notebook in the [tutorials](tutorials) folder to see an example of how inviz can be used.
 
 Here's an example of InViz in an astrophysics context! The parameters come from a specific dark matter model, and the observables are the matter power spectrum and CMB anisotropy power spectra.
+
 ![example output](images/example2.png)
