@@ -30,4 +30,5 @@ If no errors appear, all the dependencies were installed correctly and we're rea
 Download and run the `live_data_example` notebook in the [tutorials](tutorials) folder to see an example of how inviz can be used.
 
 Here's an example of InViz in an astrophysics context! The parameters come from a specific dark matter model, and the observables are the matter power spectrum and CMB anisotropy power spectra.
+
 ![example output](images/example2.png)
