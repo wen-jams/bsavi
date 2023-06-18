@@ -212,50 +212,50 @@ def viz(data, data_observable=None, myfunction=None, myfunction_args=None, show_
 # Uncomment the line with the viz function corresponding to whichever dataset you want to visualize.
 
 # This dataset will be used to compute observables in real time.
-# loglkl = ['loglkl']
-# param_names, latex_params = load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
-# params_latex_form = dict(zip(param_names, latex_params))
-# column_names = loglkl + param_names
-# df = pd.DataFrame(columns=column_names)
-# for i in trange(1,5):
-#     temp = load_data('../data/chains_planckbossdes_1MeV/2022-11-16_3200000__{}.txt'.format(i), column_names=column_names)
-#     df = pd.concat([df,temp]).reset_index(drop=True)
+loglkl = ['loglkl']
+param_names, latex_params = load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
+params_latex_form = dict(zip(param_names, latex_params))
+column_names = loglkl + param_names
+df = pd.DataFrame(columns=column_names)
+for i in trange(1,5):
+    temp = load_data('../data/chains_planckbossdes_1MeV/2022-11-16_3200000__{}.txt'.format(i), column_names=column_names)
+    df = pd.concat([df,temp]).reset_index(drop=True)
 
-# # prepare data for CLASS computation
-# # remove nuisance parameters
-# classy_input = df.drop(columns=['loglkl', 'z_reio', 'A_s', 'sigma8', '100theta_s', 'A_cib_217', 'xi_sz_cib', 'A_sz', 'ps_A_100_100', 'ps_A_143_143', 'ps_A_143_217', 'ps_A_217_217', 'ksz_norm', 'gal545_A_100', 'gal545_A_143', 'gal545_A_143_217', 'gal545_A_217', 'galf_TE_A_100', 'galf_TE_A_100_143', 'galf_TE_A_100_217', 'galf_TE_A_143', 'galf_TE_A_143_217', 'galf_TE_A_217', 'calib_100T', 'calib_217T', 'A_planck', 'b^{(1)}_1', 'b^{(1)}_2', 'b^{(1)}_{G_2}', 'b^{(2)}_1', 'b^{(2)}_2', 'b^{(2)}_{G_2}', 'b^{(3)}_1', 'b^{(3)}_2', 'b^{(3)}_{G_2}', 'b^{(4)}_1', 'b^{(4)}_2', 'b^{(4)}_{G_2}'])
-# classy_input['omega_b'] = df['omega_b'] * 1e-2
-# classy_input['sigma_dmeff'] = df['sigma_dmeff'] * 1e-25
-# classy_input = classy_input.rename(columns={'H0':'h'})
-# classy_input['h'] = classy_input['h'] * 1e-2
-# classy_input['f_dmeff'] = 0.1
-# classy_input['npow_dmeff'] = 0.0
-# classy_input['Vrel_dmeff'] = 0.0
-# classy_input['dmeff_target'] = 'baryons'
-# classy_input['m_dmeff'] = 1e-3
+# prepare data for CLASS computation
+# remove nuisance parameters
+classy_input = df.drop(columns=['loglkl', 'z_reio', 'A_s', 'sigma8', '100theta_s', 'A_cib_217', 'xi_sz_cib', 'A_sz', 'ps_A_100_100', 'ps_A_143_143', 'ps_A_143_217', 'ps_A_217_217', 'ksz_norm', 'gal545_A_100', 'gal545_A_143', 'gal545_A_143_217', 'gal545_A_217', 'galf_TE_A_100', 'galf_TE_A_100_143', 'galf_TE_A_100_217', 'galf_TE_A_143', 'galf_TE_A_143_217', 'galf_TE_A_217', 'calib_100T', 'calib_217T', 'A_planck', 'b^{(1)}_1', 'b^{(1)}_2', 'b^{(1)}_{G_2}', 'b^{(2)}_1', 'b^{(2)}_2', 'b^{(2)}_{G_2}', 'b^{(3)}_1', 'b^{(3)}_2', 'b^{(3)}_{G_2}', 'b^{(4)}_1', 'b^{(4)}_2', 'b^{(4)}_{G_2}'])
+classy_input['omega_b'] = df['omega_b'] * 1e-2
+classy_input['sigma_dmeff'] = df['sigma_dmeff'] * 1e-25
+classy_input = classy_input.rename(columns={'H0':'h'})
+classy_input['h'] = classy_input['h'] * 1e-2
+classy_input['f_dmeff'] = 0.1
+classy_input['npow_dmeff'] = 0.0
+classy_input['Vrel_dmeff'] = 0.0
+classy_input['dmeff_target'] = 'baryons'
+classy_input['m_dmeff'] = 1e-3
 
-# classy_CDM = classy_input.drop(columns=['sigma_dmeff', 'npow_dmeff', 'Vrel_dmeff', 'dmeff_target', 'm_dmeff'])
-# # slice for fast computation
-# classy_input_slice = classy_input[::500].reset_index(drop=True)
-# classy_CDM_slice = classy_CDM[::500].reset_index(drop=True)
-# df_slice = df[::500].reset_index(drop=True)
+classy_CDM = classy_input.drop(columns=['sigma_dmeff', 'npow_dmeff', 'Vrel_dmeff', 'dmeff_target', 'm_dmeff'])
+# slice for fast computation
+classy_input_slice = classy_input[::500].reset_index(drop=True)
+classy_CDM_slice = classy_CDM[::500].reset_index(drop=True)
+df_slice = df[::500].reset_index(drop=True)
 
-# copts = opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('GnBu'), bgcolor='#22262F', framewise=True)
-# viz(data=df_slice, myfunction=compute_residuals, myfunction_args=(classy_input_slice, classy_CDM_slice), show_observables=True, latex_dict=params_latex_form, curve_opts=copts).servable('Fractional IDM')
+copts = opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('YlOrRd'), bgcolor='#151515', framewise=True)
+viz(data=df_slice, myfunction=compute_residuals, myfunction_args=(classy_input_slice, classy_CDM_slice), show_observables=True, latex_dict=params_latex_form, curve_opts=copts).servable('Fractional IDM')
 
 # this data is a simple collection of points that will be plotted as observables
-interp_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data.pkl')
-binned_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data_binned.pkl')
-params_df = interp_df[['alphaOutflow', 'alphaStar', 'like', 'timescale', 'velocityOutflow']]
-lumfunc_df = interp_df[['uvlf_Muv', 'uvlf_z10.5', 'uvlf_z12.6', 'uvlf_z8.7']]
-uvlf = {}
-for row in lumfunc_df.index:
-    uvlf[row] = {
-        'z = 10.5': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z10.5': lumfunc_df['uvlf_z10.5'][row]}, 
-        'z = 12.6': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z12.6': lumfunc_df['uvlf_z12.6'][row]}, 
-        'z = 8.7': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z8.7': lumfunc_df['uvlf_z8.7'][row]}, 
-    }
-reshaped_uvlf = pd.DataFrame.from_dict(uvlf, orient='index')
+# interp_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data.pkl')
+# binned_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data_binned.pkl')
+# params_df = interp_df[['alphaOutflow', 'alphaStar', 'like', 'timescale', 'velocityOutflow']]
+# lumfunc_df = interp_df[['uvlf_Muv', 'uvlf_z10.5', 'uvlf_z12.6', 'uvlf_z8.7']]
+# uvlf = {}
+# for row in lumfunc_df.index:
+#     uvlf[row] = {
+#         'z = 10.5': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z10.5': lumfunc_df['uvlf_z10.5'][row]}, 
+#         'z = 12.6': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z12.6': lumfunc_df['uvlf_z12.6'][row]}, 
+#         'z = 8.7': {'uvlf_Muv': lumfunc_df['uvlf_Muv'][row], 'uvlf_z8.7': lumfunc_df['uvlf_z8.7'][row]}, 
+#     }
+# reshaped_uvlf = pd.DataFrame.from_dict(uvlf, orient='index')
 
-uvlf_opts = opts.Curve(ylim=(1e-11, None), logy=True, invert_xaxis=True, color=hv.Cycle('GnBu'), bgcolor='#22262F', height=400, width=500)
-viz(data=params_df, data_observable=reshaped_uvlf, curve_opts=uvlf_opts).servable('JWST UV LumFunc')
+# uvlf_opts = opts.Curve(ylim=(1e-11, None), logy=True, invert_xaxis=True, color=hv.Cycle('GnBu'), bgcolor='#22262F', height=400, width=500)
+# viz(data=params_df, data_observable=reshaped_uvlf, curve_opts=uvlf_opts).servable('JWST UV LumFunc')
