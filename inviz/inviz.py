@@ -5,14 +5,130 @@ import numpy as np
 import panel as pn
 import spatialpandas
 from bokeh.models import HoverTool
-import matplotlib.pyplot as plt
+from typing import Callable
 
 hv.extension('bokeh')
 pn.extension()
 
 
-# generate a scatter plot using the key dimensions from a holoviews.Dataset object, with the CLASS output displayed alongside it
-def viz(data, data_observable=None, myfunction=None, myfunction_args=None, show_observables=True, latex_dict=None, curve_opts=None):
+class Observable:
+    """
+    Observable class for InViz.
+    
+    Parameters
+    ----------
+    name: string or list of strings
+        specifies the display name of the observable for things like plot titles
+
+    parameters: dict-like or list of dict-likes
+        the data to associated with that observable. can be python dict (or DataFrame)
+        whose keys (or column names) will be used for things like plot axis labels.
+
+    myfunc: callable
+        a user-provided function that returns parameters. can return more than one
+        set of parameters if the "grouped" option is True
+
+    myfunc_args: tuple
+        arguments for user-provided function
+
+    grouped: boolean
+        specifies if user-provided function returns more than one set of parameters
+
+    plot_type: string or list of strings
+        specifies how the data should be visualized. currently can pick either 'Curve'
+        or 'Scatter'
+
+    plot_opts: holoviews Options object
+        customization options for the observable plot. see Holoviews documentation
+
+    latex_labels: dict
+        key: value -> parameter label: latex version. parameter label must match the
+        corresponding one in the parameters dict
+    """
+    
+    def __init__(
+        self, 
+        name: str | list[str] = None, 
+        parameters: dict | list[dict] = None, 
+        myfunc: Callable = None,
+        myfunc_args: tuple = None, 
+        grouped: bool = False, 
+        plot_type: str | list[str] = None,
+        plot_opts: type[opts] | list[type[opts]] = None,
+        latex_labels: dict = None
+    ):
+        self.name = [name]
+        self.parameters = [parameters]
+        self.myfunc = myfunc
+        self.myfunc_args = myfunc_args
+        self.latex_labels = [latex_labels]
+        self.plot_type = [plot_type]
+        self.plot_opts = [plot_opts]
+        self.grouped = grouped
+        if self.grouped:
+            self.name = name
+            self.parameters = parameters
+            self.latex_labels = latex_labels
+            self.plot_type = plot_type
+            self.plot_opts = plot_opts
+        self.number = len(self.name)
+    
+    def properties(self):
+        if self.grouped:
+            print("InViz Grouped Observable")
+            for i in range(len(self.name)):
+                print(f"\t- Observable {i+1}: {self.name[i]}")
+        else:
+            print("InViz Observable")
+            print(f"Name: {self.name}")
+        
+    def generate_plot(self, index: int):
+        self.plots_list = []
+        if self.myfunc and self.myfunc_args is not None:
+            computed_data = self.myfunc(index, *self.myfunc_args)
+            self.number = len(computed_data)
+        for i in range(0, self.number):
+            hv_element = getattr(hv, self.plot_type[i])
+            if self.parameters is not None:
+                dataset = self.parameters[i]
+                kdim = list(dataset.keys())[0]
+                vdim = list(dataset.keys())[1]
+                plot = hv_element(dataset[index], kdim, vdim, label=self.name[i])
+            elif computed_data:
+                dataset = computed_data[i]
+                kdim = list(dataset.keys())[0]
+                vdim = list(dataset.keys())[1]
+                plot = hv_element(dataset, kdim, vdim, label=self.name[i])
+            plot.opts(xlabel=lookup_latex_label(kdim, self.latex_labels), ylabel=lookup_latex_label(vdim, self.latex_labels))
+            if self.plot_opts is not None:
+                plot.opts(self.plot_opts[i])
+            self.plots_list.append(plot)
+        return self.plots_list
+        
+    def draw_plot(self, index, observable_name=None):
+        if observable_name is not None:
+            return 
+        layout = hv.Layout(self.generate_plot(index))
+        return layout.opts(shared_axes=False)
+
+
+def lookup_latex_label(param, latex_dict):
+    try:
+        latex_param = latex_dict[param]
+        label = r'$${}$$'.format(latex_param)
+        return label
+    except KeyError:
+        label = param
+        return label
+
+# Viz in its base form generates a scatter plot with a table that updates based on user's selection on the plot
+# takes the Observable class to create the full visualization
+def viz(
+    data: type[pd.DataFrame], 
+    observables: type[Observable]| list[type[Observable]] = None, 
+    show_observables: bool = True, 
+    latex_dict: dict = None
+):
     # handle default case of no latex paramname dictionary
     if latex_dict is None:
         latex_dict = dict()
@@ -22,17 +138,7 @@ def viz(data, data_observable=None, myfunction=None, myfunction_args=None, show_
     var2 = pn.widgets.Select(value=variables[2], name='Vertical Axis', options=variables)
     cmap_var = pn.widgets.Select(value=variables[0], name='Colormapped Parameter', options=variables)
     cmap_option = pn.widgets.Checkbox(value=True, name='Show Colormap', align='end')
-    
-    #  given a param name, find corresponding latex-formatted param name
-    def lookup_latex_label(param):
-        try:
-            latex_param = latex_dict[param]
-            label = r'$${}$$'.format(latex_param)
-            return label
-        except KeyError:
-            label = param
-            return label
-    
+
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
     # to the points on the plot. Also has an option to show or hide the colormap
     def plot_data(kdim1, kdim2, colordim, showcmap):
@@ -43,8 +149,8 @@ def viz(data, data_observable=None, myfunction=None, myfunction_args=None, show_
         else:
             cmapping = opts.Points(color='grey', colorbar=True)
         hover = HoverTool(tooltips=None)
-        xlabel = lookup_latex_label(kdim1)
-        ylabel = lookup_latex_label(kdim2)
+        xlabel = lookup_latex_label(kdim1, latex_dict)
+        ylabel = lookup_latex_label(kdim2, latex_dict)
         popts = opts.Points(
             bgcolor='#E5E9F0',
             fontscale=1.1,
@@ -78,66 +184,58 @@ def viz(data, data_observable=None, myfunction=None, myfunction_args=None, show_
         table = hv.DynamicMap(lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
         return table.opts(table_options).relabel('Selected Points')
     
-    
     # generate the table
     selected_table = pn.bind(make_table, kdim1=var1, kdim2=var2, colordim=cmap_var)
     
     #table_stream = streams.Selection1D(source=selected_table)
     
-    # function to run CLASS on data from the selection. 
-    # handles the null selection case and multiple selections
-    curves = {}
-    empty_plot = hv.Curve(np.random.rand(0, 2)).opts(framewise=True)
-    if data_observable is not None:
-        data_observable = data_observable.to_dict('index')
+    # save plots that have already been generated to save computation time
+    plots = {}
+    # get plotting options from each observable to be used to generate the empty plots
+    plotting_info = {}
+    for each in observables:
+        for i in range(len(each.name)):
+            plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': each.plot_opts[i]}
     def plot_observables(index):
         if not index:
-            curves_list = [[empty_plot.relabel('Plot 1 - No Selection')], 
-                           [empty_plot.relabel('Plot 2 - No Selection')], 
-                           [empty_plot.relabel('Plot 3 - No Selection')]]
+            # handle the null selection case by generating empty plots as placeholders
+            plots_list = []
+            for name in plotting_info:
+                hv_type = getattr(hv, plotting_info[name]['type'])
+                empty_plot = hv_type(np.random.rand(0, 2)).opts(framewise=True)
+                plots_list.append([empty_plot.relabel(f'{name} - No Selection').opts(plotting_info[name]['opts'])])
         else:
-            new_index = [x for x in index if x not in list(curves.keys())]
+            # holoviews selection1D stream returns an 'index' list object. figure out what indices have not already been selected
+            new_index = [x for x in index if x not in list(plots.keys())]
+
+            # generate plots for each index by using the Observable generate_plot method
             for element in new_index:
-                if data_observable is not None:
-                    observables = data_observable[element]
-                elif myfunction is not None:
-                    observables = myfunction(element, *myfunction_args)
-                observables_keys = list(observables.keys())
-
                 new_plots = []
-                for key in observables_keys:
-                    dataset = observables[key]
-                    kdim = list(dataset.keys())[0]
-                    vdim = list(dataset.keys())[1]
-                    plot_observable = hv.Curve(dataset, kdim, vdim, label=key).opts(framewise=True)
-                    new_plots.append(plot_observable)
-                curves[element] = {plot.label: plot for plot in new_plots}
-
-            curves_list = []
+                for each in observables:
+                    new_plots.extend(each.generate_plot(element))
+                plots[element] = {plot.label: plot for plot in new_plots}
+            
+            # create a list containing lists of plots of the same label which will be overlaid
+            plots_list = []
             for index_item in index:
-                curve_types = list(curves[index_item].keys())
+                plot_types = list(plots[index_item].keys())
 
-            for curve_item in curve_types:
-                same_type = [curves[key][curve_item] for key in index]
-                curves_list.append(same_type)
+            for plot_item in plot_types:
+                same_type = [plots[key][plot_item] for key in index]
+                plots_list.append(same_type)
             
         layout = hv.Layout()
-        for list_of_curves in curves_list:
-            overlay = hv.Overlay(list_of_curves)
-            layout = layout + overlay    
+        for list_of_plots in plots_list:
+            overlay = hv.Overlay(list_of_plots).opts(show_legend=False)
+            layout = layout + overlay
+        layout.opts(shared_axes=False).cols(3)
         return layout
-    
     
     # put it all together using Panel
     dashboard = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
     
     if show_observables == True:
-        observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(
-            curve_opts, 
-            opts.Layout(shared_axes=False),
-            opts.Overlay(show_legend=False)
-        )
+        observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(framewise=True)
         observables_pane = pn.panel(observables_dmap)
         dashboard = pn.Column(dashboard, observables_pane)
-    
     return dashboard
