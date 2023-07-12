@@ -21,8 +21,12 @@ class Observable:
         specifies the display name of the observable for things like plot titles
 
     parameters: dict-like or list of dict-likes
-        the data to associated with that observable. can be python dict (or DataFrame)
-        whose keys (or column names) will be used for things like plot axis labels.
+        the data to associated with that observable. can be python dict (or pandas DataFrame)
+        whose keys (or column names) will be used for things like plot axis labels. 
+
+    latex_labels: dict or list of dicts
+        key: value -> parameter label: latex version. parameter label must match the
+        corresponding one in the parameters dict
 
     myfunc: callable
         a user-provided function that returns parameters. can return more than one
@@ -34,16 +38,12 @@ class Observable:
     grouped: boolean
         specifies if user-provided function returns more than one set of parameters
 
-    plot_type: string or list of strings
+    plot_type: string
         specifies how the data should be visualized. currently can pick either 'Curve'
         or 'Scatter'
 
     plot_opts: holoviews Options object
         customization options for the observable plot. see Holoviews documentation
-
-    latex_labels: dict
-        key: value -> parameter label: latex version. parameter label must match the
-        corresponding one in the parameters dict
     """
     
     def __init__(
@@ -58,17 +58,22 @@ class Observable:
         latex_labels: dict = None
     ):
         self.name = [name]
-        self.parameters = [parameters]
+        self.parameters = parameters
+        if parameters is not None:
+            self.parameters = [parameters]
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        self.latex_labels = [latex_labels]
-        self.plot_type = [plot_type]
-        self.plot_opts = [plot_opts]
+        self.plot_type = plot_type
+        if plot_type is not None:
+            self.plot_type = [plot_type]
+        self.plot_opts = plot_opts
+        if plot_opts is not None:
+            self.plot_opts = [plot_opts]
         self.grouped = grouped
+        self.latex_labels = latex_labels
         if self.grouped:
             self.name = name
             self.parameters = parameters
-            self.latex_labels = latex_labels
             self.plot_type = plot_type
             self.plot_opts = plot_opts
         self.number = len(self.name)
@@ -99,19 +104,27 @@ class Observable:
                 kdim = list(dataset.keys())[0]
                 vdim = list(dataset.keys())[1]
                 plot = hv_element(dataset, kdim, vdim, label=self.name[i])
-            plot.opts(xlabel=lookup_latex_label(kdim, self.latex_labels), ylabel=lookup_latex_label(vdim, self.latex_labels))
-            if self.plot_opts is not None:
+            # set defaults
+            plot.opts(
+                height=400,
+                width=500,
+                fontscale=1.1,
+                xlabel=lookup_latex_label(kdim, self.latex_labels), 
+                ylabel=lookup_latex_label(vdim, self.latex_labels),
+                framewise=True
+            )
+            # add user defined customizations
+            if self.plot_opts and self.plot_opts[i] is not None:
                 plot.opts(self.plot_opts[i])
             self.plots_list.append(plot)
         return self.plots_list
         
-    def draw_plot(self, index, observable_name=None):
-        if observable_name is not None:
-            return 
+    def draw_plot(self, index):
         layout = hv.Layout(self.generate_plot(index))
         return layout.opts(shared_axes=False)
+        
 
-
+#  given a param name, find corresponding latex-formatted param name
 def lookup_latex_label(param, latex_dict):
     try:
         latex_param = latex_dict[param]
@@ -121,11 +134,10 @@ def lookup_latex_label(param, latex_dict):
         label = param
         return label
 
-# Viz in its base form generates a scatter plot with a table that updates based on user's selection on the plot
-# takes the Observable class to create the full visualization
+
 def viz(
-    data: type[pd.DataFrame], 
-    observables: type[Observable]| list[type[Observable]] = None, 
+    data, 
+    observables: list = None, 
     show_observables: bool = True, 
     latex_dict: dict = None
 ):
@@ -184,38 +196,44 @@ def viz(
         table = hv.DynamicMap(lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
         return table.opts(table_options).relabel('Selected Points')
     
+    
     # generate the table
     selected_table = pn.bind(make_table, kdim1=var1, kdim2=var2, colordim=cmap_var)
     
     #table_stream = streams.Selection1D(source=selected_table)
     
-    # save plots that have already been generated to save computation time
+    # handles the null selection case and multiple selections
     plots = {}
-    # get plotting options from each observable to be used to generate the empty plots
+    # get total number of plots to draw from list of observables
     plotting_info = {}
     for each in observables:
         for i in range(len(each.name)):
-            plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': each.plot_opts[i]}
+            if each.plot_opts is None:
+                specific_opts = None
+            elif each.plot_opts[i] is not None:
+                specific_opts = each.plot_opts[i]
+            plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': specific_opts}
     def plot_observables(index):
         if not index:
-            # handle the null selection case by generating empty plots as placeholders
             plots_list = []
             for name in plotting_info:
                 hv_type = getattr(hv, plotting_info[name]['type'])
-                empty_plot = hv_type(np.random.rand(0, 2)).opts(framewise=True)
-                plots_list.append([empty_plot.relabel(f'{name} - No Selection').opts(plotting_info[name]['opts'])])
+                empty_plot = hv_type(np.random.rand(0, 2)).relabel(f'{name} - No Selection').opts(
+                    height=400, 
+                    width=500, 
+                    fontscale=1.1, 
+                    framewise=True)
+                if plotting_info[name]['opts'] is not None:
+                    empty_plot.opts(plotting_info[name]['opts'])
+                plots_list.append([empty_plot])
         else:
-            # holoviews selection1D stream returns an 'index' list object. figure out what indices have not already been selected
             new_index = [x for x in index if x not in list(plots.keys())]
-
-            # generate plots for each index by using the Observable generate_plot method
             for element in new_index:
                 new_plots = []
                 for each in observables:
                     new_plots.extend(each.generate_plot(element))
                 plots[element] = {plot.label: plot for plot in new_plots}
             
-            # create a list containing lists of plots of the same label which will be overlaid
             plots_list = []
             for index_item in index:
                 plot_types = list(plots[index_item].keys())
@@ -238,4 +256,5 @@ def viz(
         observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(framewise=True)
         observables_pane = pn.panel(observables_dmap)
         dashboard = pn.Column(dashboard, observables_pane)
+    
     return dashboard
