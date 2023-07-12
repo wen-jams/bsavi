@@ -52,17 +52,22 @@ class Observable:
         latex_labels: dict = None
     ):
         self.name = [name]
-        self.parameters = [parameters]
+        self.parameters = parameters
+        if parameters is not None:
+            self.parameters = [parameters]
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        self.latex_labels = [latex_labels]
-        self.plot_type = [plot_type]
-        self.plot_opts = [plot_opts]
+        self.plot_type = plot_type
+        if plot_type is not None:
+            self.plot_type = [plot_type]
+        self.plot_opts = plot_opts
+        if plot_opts is not None:
+            self.plot_opts = [plot_opts]
         self.grouped = grouped
+        self.latex_labels = latex_labels
         if self.grouped:
             self.name = name
             self.parameters = parameters
-            self.latex_labels = latex_labels
             self.plot_type = plot_type
             self.plot_opts = plot_opts
         self.number = len(self.name)
@@ -93,19 +98,27 @@ class Observable:
                 kdim = list(dataset.keys())[0]
                 vdim = list(dataset.keys())[1]
                 plot = hv_element(dataset, kdim, vdim, label=self.name[i])
-            plot.opts(xlabel=lookup_latex_label(kdim, self.latex_labels), ylabel=lookup_latex_label(vdim, self.latex_labels))
-            if self.plot_opts is not None:
+            # set defaults
+            plot.opts(
+                height=400,
+                width=500,
+                fontscale=1.1,
+                xlabel=lookup_latex_label(kdim, self.latex_labels), 
+                ylabel=lookup_latex_label(vdim, self.latex_labels),
+                framewise=True
+            )
+            # add user defined customizations
+            if self.plot_opts and self.plot_opts[i] is not None:
                 plot.opts(self.plot_opts[i])
             self.plots_list.append(plot)
         return self.plots_list
         
-    def draw_plot(self, index, observable_name=None):
-        if observable_name is not None:
-            return 
+    def draw_plot(self, index):
         layout = hv.Layout(self.generate_plot(index))
         return layout.opts(shared_axes=False)
+        
 
-
+#  given a param name, find corresponding latex-formatted param name
 def lookup_latex_label(param, latex_dict):
     try:
         latex_param = latex_dict[param]
@@ -115,7 +128,7 @@ def lookup_latex_label(param, latex_dict):
         label = param
         return label
 
-# generate a scatter plot using the key dimensions from a holoviews.Dataset object, with the CLASS output displayed alongside it
+
 def viz(
     data, 
     observables: list = None, 
@@ -189,14 +202,24 @@ def viz(
     plotting_info = {}
     for each in observables:
         for i in range(len(each.name)):
-            plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': each.plot_opts[i]}
+            if each.plot_opts is None:
+                specific_opts = None
+            elif each.plot_opts[i] is not None:
+                specific_opts = each.plot_opts[i]
+            plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': specific_opts}
     def plot_observables(index):
         if not index:
             plots_list = []
             for name in plotting_info:
                 hv_type = getattr(hv, plotting_info[name]['type'])
-                empty_plot = hv_type(np.random.rand(0, 2)).opts(framewise=True)
-                plots_list.append([empty_plot.relabel(f'{name} - No Selection').opts(plotting_info[name]['opts'])])
+                empty_plot = hv_type(np.random.rand(0, 2)).relabel(f'{name} - No Selection').opts(
+                    height=400, 
+                    width=500, 
+                    fontscale=1.1, 
+                    framewise=True)
+                if plotting_info[name]['opts'] is not None:
+                    empty_plot.opts(plotting_info[name]['opts'])
+                plots_list.append([empty_plot])
         else:
             new_index = [x for x in index if x not in list(plots.keys())]
             for element in new_index:
@@ -217,7 +240,7 @@ def viz(
         for list_of_plots in plots_list:
             overlay = hv.Overlay(list_of_plots).opts(show_legend=False)
             layout = layout + overlay
-        layout.opts(shared_axes=False)
+        layout.opts(shared_axes=False).cols(3)
         return layout
     
     
@@ -268,9 +291,9 @@ def compute_waveforms(index, input_data):
     return waves
 
 
-opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), height=400, width=500, fontscale=1.1, color=hv.Cycle('YlOrRd'), bgcolor='#151515', framewise=True)
-opts2 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), height=400, width=500, fontscale=1.1, color=hv.Cycle('PuBuGn'), bgcolor='#151515', framewise=True)
-opts3 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), height=400, width=500, fontscale=1.1, color=hv.Cycle('RdPu'), bgcolor='#f5f5f5', framewise=True)
+opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('YlOrRd'), bgcolor='#151515')
+opts2 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('PuBuGn'), bgcolor='#151515')
+opts3 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('RdPu'), bgcolor='#f5f5f5')
 waves_latex = {
     'x': 'x', 
     'sin(x)': '\sin{x}',
@@ -300,4 +323,27 @@ waveforms = Observable(
     latex_labels=waves_latex
 )
 
-viz(df, [waveforms], latex_dict=latex_dict).servable()
+def cosine(index, input_data):
+    selection = input_data.iloc[[index]]
+    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
+    angular_freq = 2*np.pi*selection['frequency'].iloc[0]
+    phase = selection['phase'].iloc[0]
+    amp = selection['amplitude'].iloc[0]
+    cos = amp * np.cos(angular_freq*x + phase)
+    waves = [
+        {'x': x, 'cos(x)': cos}
+    ]
+    return waves
+
+cosine_latex = {'x':'x', 'cos(x)': '\cos{x}'}
+
+coswav = Observable(
+    name='Cosine',
+    myfunc=cosine,
+    myfunc_args=(df,),
+    plot_type='Curve',
+    plot_opts=opts3,
+    latex_labels=cosine_latex
+)
+
+viz(df, [waveforms, coswav], latex_dict=latex_dict).servable()
