@@ -1,8 +1,13 @@
 # InViz
 
-InViz (Interactive Visualizer) is a tool for exploratory analysis of high-dimensional datasets where data points from the parameter space are used to calculate to some set of real-world observables. This enables you to easily see how the derived observables change as you traverse the parameter space. If you have pre-computed observables, simply import them alongside the  dataset containing the parameters to start visualizing. Or, write your own function that takes your parameters as inputs, and give it to InViz to compute on the fly!
+InViz (Interactive Visualizer) is a tool for exploratory analysis of high-dimensional datasets where data points from the parameter space are used to calculate some set of real-world observables. This enables you to easily see how the derived observables change as you traverse the parameter space. If you have pre-computed observables, simply import them alongside the  dataset containing the parameters to start visualizing. Or, write your own function that takes your parameters as inputs, and give it to InViz to compute on the fly!
 
 ## Installation
+
+### Dependencies
+- Python versions $\geq$ 3.8 and $<$ 3.11 are supported.
+- Holoviews $\leq$ 1.15.4 (this package and its dependencies will be installed automatically)
+
 InViz can be installed with pip:
 
     python -m pip install inviz
@@ -12,10 +17,6 @@ Or, if you want to test the latest changes, you can clone the repository with
     git clone https://github.com/wen-jams/inviz
     cd inviz
     python setup.py install
-
-### Dependencies
-- Python versions $\geq$ 3.8 and $<$ 3.11 are supported.
-- Holoviews $\leq$ 1.15.4 (this package and its dependencies will be installed automatically)
 
 ## Getting Started
 
