@@ -35,9 +35,6 @@ class Observable:
     myfunc_args: tuple
         arguments for user-provided function
 
-    grouped: boolean
-        specifies if user-provided function returns more than one set of parameters
-
     plot_type: string
         specifies how the data should be visualized. currently can pick either 'Curve'
         or 'Scatter'
@@ -50,11 +47,10 @@ class Observable:
         self, 
         name: str | list[str] = None, 
         parameters: dict | list[dict] = None, 
-        myfunc: Callable = None, 
+        myfunc: Callable = None,
         myfunc_args: tuple = None, 
-        grouped: bool = False, 
-        plot_type: str | list[str] = None, 
-        plot_opts: type[opts] | list[type[opts]] = None, 
+        plot_type: str | list[str] = None,
+        plot_opts: type[opts] | list[type[opts]] = None,
         latex_labels: dict = None
     ):
         if isinstance(name, str):
@@ -67,7 +63,6 @@ class Observable:
             self.parameters = parameters
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        self.grouped = grouped
         if isinstance(plot_type, str):
             self.plot_type = [plot_type]
         else:
@@ -79,14 +74,14 @@ class Observable:
         self.latex_labels = latex_labels
         self.number = len(self.name)
     
-    def printname(self):
-        if self.grouped:
-            print("InViz Grouped Observable")
+    def properties(self):
+        if len(self.name) > 1:
+            print("InViz Grouped Observables")
             for i in range(len(self.name)):
                 print(f"\t- Observable {i+1}: {self.name[i]}")
         else:
             print("InViz Observable")
-            print(f"Name: {self.name}")
+            print(f"Name: {self.name[0]}")
         
     def generate_plot(self, index: int):
         self.plots_list = []
@@ -99,7 +94,8 @@ class Observable:
                 dataset = self.parameters[i]
                 kdim = list(dataset.keys())[0]
                 vdim = list(dataset.keys())[1]
-                plot = hv_element(dataset[index], kdim, vdim, label=self.name[i])
+                indexed_data = (dataset[kdim][index], dataset[vdim][index])
+                plot = hv_element(indexed_data, kdim, vdim, label=self.name[i])
             elif computed_data:
                 dataset = computed_data[i]
                 kdim = list(dataset.keys())[0]
