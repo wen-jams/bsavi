@@ -47,6 +47,7 @@ def run_class(selection):
         'Cl_tt': factor*lensed_cl['tt'][2:], 
         'Cl_ee': factor*lensed_cl['ee'][2:], 
     }
+    # cleanups reqd for backwards compat w CLASS 2.x
     cosmo.struct_cleanup()
     cosmo.empty()
     return results

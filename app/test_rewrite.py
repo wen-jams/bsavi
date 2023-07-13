@@ -36,9 +36,6 @@ class Observable:
     myfunc_args: tuple
         arguments for user-provided function
 
-    grouped: boolean
-        specifies if user-provided function returns more than one set of parameters
-
     plot_type: string
         specifies how the data should be visualized. currently can pick either 'Curve'
         or 'Scatter'
@@ -51,11 +48,10 @@ class Observable:
         self, 
         name: str | list[str] = None, 
         parameters: dict | list[dict] = None, 
-        myfunc: Callable = None, 
+        myfunc: Callable = None,
         myfunc_args: tuple = None, 
-        grouped: bool = False, 
-        plot_type: str | list[str] = None, 
-        plot_opts: type[opts] | list[type[opts]] = None, 
+        plot_type: str | list[str] = None,
+        plot_opts: type[opts] | list[type[opts]] = None,
         latex_labels: dict = None
     ):
         if isinstance(name, str):
@@ -68,7 +64,6 @@ class Observable:
             self.parameters = parameters
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        self.grouped = grouped
         if isinstance(plot_type, str):
             self.plot_type = [plot_type]
         else:
@@ -80,14 +75,14 @@ class Observable:
         self.latex_labels = latex_labels
         self.number = len(self.name)
     
-    def printname(self):
-        if self.grouped:
-            print("InViz Grouped Observable")
+    def properties(self):
+        if len(self.name) > 1:
+            print("InViz Grouped Observables")
             for i in range(len(self.name)):
                 print(f"\t- Observable {i+1}: {self.name[i]}")
         else:
             print("InViz Observable")
-            print(f"Name: {self.name}")
+            print(f"Name: {self.name[0]}")
         
     def generate_plot(self, index: int):
         self.plots_list = []
@@ -100,7 +95,8 @@ class Observable:
                 dataset = self.parameters[i]
                 kdim = list(dataset.keys())[0]
                 vdim = list(dataset.keys())[1]
-                plot = hv_element(dataset[index], kdim, vdim, label=self.name[i])
+                indexed_data = (dataset[kdim][index], dataset[vdim][index])
+                plot = hv_element(indexed_data, kdim, vdim, label=self.name[i])
             elif computed_data:
                 dataset = computed_data[i]
                 kdim = list(dataset.keys())[0]
@@ -128,6 +124,9 @@ class Observable:
 
 #  given a param name, find corresponding latex-formatted param name
 def lookup_latex_label(param, latex_dict):
+    # handle default case of no latex paramname dictionary
+    if latex_dict is None:
+        latex_dict = dict()
     try:
         latex_param = latex_dict[param]
         label = r'$${}$$'.format(latex_param)
@@ -143,21 +142,35 @@ def viz(
     show_observables: bool = True, 
     latex_dict: dict = None
 ):
-    # handle default case of no latex paramname dictionary
-    if latex_dict is None:
-        latex_dict = dict()
     # setting Panel widgets for user interaction
     variables = data.columns.values.tolist()
-    var1 = pn.widgets.Select(value=variables[1], name='Horizontal Axis', options=variables)
-    var2 = pn.widgets.Select(value=variables[2], name='Vertical Axis', options=variables)
-    cmap_var = pn.widgets.Select(value=variables[0], name='Colormapped Parameter', options=variables)
-    cmap_option = pn.widgets.Checkbox(value=True, name='Show Colormap', align='end')
+    var1 = pn.widgets.Select(
+        value=variables[1], 
+        name='Horizontal Axis', 
+        options=variables
+    )
+    var2 = pn.widgets.Select(
+        value=variables[2], 
+        name='Vertical Axis', 
+        options=variables
+    )
+    cmap_var = pn.widgets.Select(
+        value=variables[0], 
+        name='Colormapped Parameter', 
+        options=variables
+    )
+    cmap_option = pn.widgets.Checkbox(
+        value=True, 
+        name='Show Colormap', 
+        align='end'
+    )
 
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
     # to the points on the plot. Also has an option to show or hide the colormap
     def plot_data(kdim1, kdim2, colordim, showcmap):
         if showcmap == True:
-            cmapping = opts.Points(color=dim(colordim),
+            cmapping = opts.Points(
+                color=dim(colordim),
                 colorbar=True,
                 cmap='GnBu_r')
         else:
@@ -194,13 +207,25 @@ def viz(
     
     # function to generate a table of all the selected points
     def make_table(kdim1, kdim2, colordim):
-        table_options = opts.Table(height=300, width=1000, hooks=[hook], bgcolor='#f5f5f5')
-        table = hv.DynamicMap(lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
+        table_options = opts.Table(
+            height=300, 
+            width=1000, 
+            hooks=[hook], 
+            bgcolor='#f5f5f5'
+        )
+        table = hv.DynamicMap(
+            lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), 
+            streams=[selection]
+        )
         return table.opts(table_options).relabel('Selected Points')
     
     
     # generate the table
-    selected_table = pn.bind(make_table, kdim1=var1, kdim2=var2, colordim=cmap_var)
+    selected_table = pn.bind(
+        make_table, 
+        kdim1=var1, 
+        kdim2=var2, 
+        colordim=cmap_var)
     
     #table_stream = streams.Selection1D(source=selected_table)
     
@@ -251,9 +276,11 @@ def viz(
         layout.opts(shared_axes=False).cols(3)
         return layout
     
-    
     # put it all together using Panel
-    dashboard = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
+    dashboard = pn.Column(
+        pn.Row(var1, var2, cmap_var, cmap_option), 
+        pn.Row(points_dmap, selected_table)
+    )
     
     if show_observables == True:
         observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(framewise=True)
@@ -263,95 +290,139 @@ def viz(
     return dashboard
 
 
-# Set up the parameters of the problem.
-ndim, nsamples = 3, 1000
+# # Set up the parameters of the problem.
+# ndim, nsamples = 3, 1000
 
-# Generate some fake data.
-np.random.seed(42)
-data1 = np.random.randn(ndim * 4 * nsamples // 5).reshape(
-    [4 * nsamples // 5, ndim]
-)
-data2 = 4 * np.random.rand(ndim)[None, :] + np.random.randn(
-    ndim * nsamples // 5
-).reshape([nsamples // 5, ndim])
-data = np.vstack([data1, data2])
+# # Generate some fake data.
+# np.random.seed(42)
+# data1 = np.random.randn(ndim * 4 * nsamples // 5).reshape(
+#     [4 * nsamples // 5, ndim]
+# )
+# data2 = 4 * np.random.rand(ndim)[None, :] + np.random.randn(
+#     ndim * nsamples // 5
+# ).reshape([nsamples // 5, ndim])
+# data = np.vstack([data1, data2])
 
-param_names = ['frequency', 'phase', 'amplitude']
-latex = ['\omega / 2\pi', '\phi', '\mathrm{amplitude}']
-df = pd.DataFrame(data, columns=param_names)
-latex_dict = dict(zip(param_names, latex))
+# param_names = ['frequency', 'phase', 'amplitude']
+# latex = ['\omega / 2\pi', '\phi', '\mathrm{amplitude}']
+# df = pd.DataFrame(data, columns=param_names)
+# latex_dict = dict(zip(param_names, latex))
 
-def compute_waveforms(index, input_data):
-    selection = input_data.iloc[[index]]
-    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
-    angular_freq = 2*np.pi*selection['frequency'].iloc[0]
-    phase = selection['phase'].iloc[0]
-    amp = selection['amplitude'].iloc[0]
-    sin = amp * np.sin(angular_freq*x + phase)
-    cos = amp * np.cos(angular_freq*x + phase)
-    sinc = amp * np.sinc(angular_freq*x/np.pi + phase)
-    sawtooth = amp * signal.sawtooth(angular_freq * x + phase)
-    waves = [
-        {'x': x, 'sin(x)': sin},
-        {'x': x, 'sinc(x)': sinc},
-        {'x': x, 'sawtooth': sawtooth},
-    ]
-    return waves
+# def compute_waveforms(index, input_data):
+#     selection = input_data.iloc[[index]]
+#     x = np.linspace(-4*np.pi, 4*np.pi, 1000)
+#     angular_freq = 2*np.pi*selection['frequency'].iloc[0]
+#     phase = selection['phase'].iloc[0]
+#     amp = selection['amplitude'].iloc[0]
+#     sin = amp * np.sin(angular_freq*x + phase)
+#     cos = amp * np.cos(angular_freq*x + phase)
+#     sinc = amp * np.sinc(angular_freq*x/np.pi + phase)
+#     sawtooth = amp * signal.sawtooth(angular_freq * x + phase)
+#     waves = [
+#         {'x': x, 'sin(x)': sin},
+#         {'x': x, 'sinc(x)': sinc},
+#         {'x': x, 'sawtooth': sawtooth},
+#     ]
+#     return waves
 
 
-opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('YlOrRd'), bgcolor='#151515')
-opts2 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('PuBuGn'), bgcolor='#151515')
-opts3 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('RdPu'), bgcolor='#f5f5f5')
-waves_latex = {
-    'x': 'x', 
-    'sin(x)': '\sin{x}',
-    'sinc(x)': '1/\sin{x}',
-    'sawtooth': '\mathrm{Sawtooth~Wave}',
+# opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('YlOrRd'), bgcolor='#151515')
+# opts2 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('PuBuGn'), bgcolor='#151515')
+# opts3 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('RdPu'), bgcolor='#f5f5f5')
+# waves_latex = {
+#     'x': 'x', 
+#     'sin(x)': '\sin{x}',
+#     'sinc(x)': '1/\sin{x}',
+#     'sawtooth': r'\text{Sawtooth Wave}',
+# }
+
+# waveforms = Observable(
+#     name=[
+#         'Sine',
+#         'Sinc',
+#         'Sawtooth'
+#     ],
+#     myfunc=compute_waveforms,
+#     myfunc_args=(df,),
+#     grouped=True,
+#     plot_type=[
+#         'Curve',
+#         'Curve',
+#         'Curve',
+#     ],
+#     plot_opts=[
+#         opts1,
+#         opts2,
+#         opts3,
+#     ],
+#     latex_labels=waves_latex
+# )
+
+# def cosine(index, input_data):
+#     selection = input_data.iloc[[index]]
+#     x = np.linspace(-4*np.pi, 4*np.pi, 1000)
+#     angular_freq = 2*np.pi*selection['frequency'].iloc[0]
+#     phase = selection['phase'].iloc[0]
+#     amp = selection['amplitude'].iloc[0]
+#     cos = amp * np.cos(angular_freq*x + phase)
+#     waves = [
+#         {'x': x, 'cos(x)': cos}
+#     ]
+#     return waves
+
+# cosine_latex = {'x':'x', 'cos(x)': '\cos{x}'}
+
+# coswav = Observable(
+#     name='Cosine',
+#     myfunc=cosine,
+#     myfunc_args=(df,),
+#     plot_type='Curve',
+#     plot_opts=opts3,
+#     latex_labels=cosine_latex
+# )
+
+# viz(df, [waveforms, coswav], latex_dict=latex_dict).servable()
+
+binned_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data_binned.pkl')
+params_df = binned_df[['alphaOutflow', 'alphaStar', 'like', 'timescale', 'velocityOutflow']]
+lumfunc_df = binned_df[['uvlf_Muv', 'uvlf_z10.5', 'uvlf_z12.6', 'uvlf_z8.7']]
+lumfunc_latex = {
+    'alphaOutflow': r'\alpha_{Outflow}',
+    'alphaStar': r'\alpha_{Star}',
+    'timescale': r'\text{timescale}',
+    'velocityOutflow': r'v_{Outflow}',
+    'like': r'\text{likelihood}'
 }
-
-waveforms = Observable(
+uvlf_scatter_opts = opts.Scatter(ylim=(1e-11, 1e0), logy=True, invert_xaxis=True, size=5, marker='square')
+uvlf_curve_opts = opts.Curve(ylim=(1e-11, None), logy=True, invert_xaxis=True)
+uvlf_latex = {
+    'uvlf_Muv': r'\text{UV Magnitude}',
+    'uvlf_z10.5': r'\text{Luminosity Function}',
+    'uvlf_z12.6': r'\text{Luminosity Function}',
+    'uvlf_z8.7': r'\text{Luminosity Function}',
+}
+uvlf_observables = Observable(
     name=[
-        'Sine',
-        'Sinc',
-        'Sawtooth'
-    ],
-    myfunc=compute_waveforms,
-    myfunc_args=(df,),
-    grouped=True,
+        'UVLF at z = 10.5', 
+        'UVLF at z = 12.6', 
+        'UVLF at z = 8.7'
+    ], 
+    parameters=[
+        {'uvlf_Muv': lumfunc_df['uvlf_Muv'], 'uvlf_z10.5': lumfunc_df['uvlf_z10.5']}, 
+        {'uvlf_Muv': lumfunc_df['uvlf_Muv'], 'uvlf_z12.6': lumfunc_df['uvlf_z12.6']}, 
+        {'uvlf_Muv': lumfunc_df['uvlf_Muv'], 'uvlf_z8.7': lumfunc_df['uvlf_z8.7']}, 
+    ], 
     plot_type=[
-        'Curve',
-        'Curve',
-        'Curve',
+        'Curve', 
+        'Curve', 
+        'Curve', 
     ],
     plot_opts=[
-        opts1,
-        opts2,
-        opts3,
+        uvlf_curve_opts, 
+        uvlf_curve_opts, 
+        uvlf_curve_opts, 
     ],
-    latex_labels=waves_latex
+    latex_labels=uvlf_latex
 )
 
-def cosine(index, input_data):
-    selection = input_data.iloc[[index]]
-    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
-    angular_freq = 2*np.pi*selection['frequency'].iloc[0]
-    phase = selection['phase'].iloc[0]
-    amp = selection['amplitude'].iloc[0]
-    cos = amp * np.cos(angular_freq*x + phase)
-    waves = [
-        {'x': x, 'cos(x)': cos}
-    ]
-    return waves
-
-cosine_latex = {'x':'x', 'cos(x)': '\cos{x}'}
-
-coswav = Observable(
-    name='Cosine',
-    myfunc=cosine,
-    myfunc_args=(df,),
-    plot_type='Curve',
-    plot_opts=opts3,
-    latex_labels=cosine_latex
-)
-
-viz(df, [waveforms, coswav], latex_dict=latex_dict).servable()
+viz(params_df, [uvlf_observables], latex_dict=lumfunc_latex).servable('JWST UVLF')
