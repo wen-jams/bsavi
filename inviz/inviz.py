@@ -50,35 +50,36 @@ class Observable:
         self, 
         name: str | list[str] = None, 
         parameters: dict | list[dict] = None, 
-        myfunc: Callable = None,
+        myfunc: Callable = None, 
         myfunc_args: tuple = None, 
         grouped: bool = False, 
-        plot_type: str | list[str] = None,
-        plot_opts: type[opts] | list[type[opts]] = None,
+        plot_type: str | list[str] = None, 
+        plot_opts: type[opts] | list[type[opts]] = None, 
         latex_labels: dict = None
     ):
-        self.name = [name]
-        self.parameters = parameters
-        if parameters is not None:
+        if isinstance(name, str):
+            self.name = [name]
+        else:
+            self.name = name
+        if isinstance(parameters, dict):
             self.parameters = [parameters]
+        else:
+            self.parameters = parameters
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        self.plot_type = plot_type
-        if plot_type is not None:
-            self.plot_type = [plot_type]
-        self.plot_opts = plot_opts
-        if plot_opts is not None:
-            self.plot_opts = [plot_opts]
         self.grouped = grouped
-        self.latex_labels = latex_labels
-        if self.grouped:
-            self.name = name
-            self.parameters = parameters
+        if isinstance(plot_type, str):
+            self.plot_type = [plot_type]
+        else:
             self.plot_type = plot_type
+        if isinstance(plot_opts, hv.core.options.Options):
+            self.plot_opts = [plot_opts]
+        else:
             self.plot_opts = plot_opts
+        self.latex_labels = latex_labels
         self.number = len(self.name)
     
-    def properties(self):
+    def printname(self):
         if self.grouped:
             print("InViz Grouped Observable")
             for i in range(len(self.name)):
@@ -126,6 +127,9 @@ class Observable:
 
 #  given a param name, find corresponding latex-formatted param name
 def lookup_latex_label(param, latex_dict):
+    # handle default case of no latex paramname dictionary
+    if latex_dict is None:
+        latex_dict = dict()
     try:
         latex_param = latex_dict[param]
         label = r'$${}$$'.format(latex_param)
@@ -141,21 +145,35 @@ def viz(
     show_observables: bool = True, 
     latex_dict: dict = None
 ):
-    # handle default case of no latex paramname dictionary
-    if latex_dict is None:
-        latex_dict = dict()
     # setting Panel widgets for user interaction
     variables = data.columns.values.tolist()
-    var1 = pn.widgets.Select(value=variables[1], name='Horizontal Axis', options=variables)
-    var2 = pn.widgets.Select(value=variables[2], name='Vertical Axis', options=variables)
-    cmap_var = pn.widgets.Select(value=variables[0], name='Colormapped Parameter', options=variables)
-    cmap_option = pn.widgets.Checkbox(value=True, name='Show Colormap', align='end')
+    var1 = pn.widgets.Select(
+        value=variables[1], 
+        name='Horizontal Axis', 
+        options=variables
+    )
+    var2 = pn.widgets.Select(
+        value=variables[2], 
+        name='Vertical Axis', 
+        options=variables
+    )
+    cmap_var = pn.widgets.Select(
+        value=variables[0], 
+        name='Colormapped Parameter', 
+        options=variables
+    )
+    cmap_option = pn.widgets.Checkbox(
+        value=True, 
+        name='Show Colormap', 
+        align='end'
+    )
 
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
     # to the points on the plot. Also has an option to show or hide the colormap
     def plot_data(kdim1, kdim2, colordim, showcmap):
         if showcmap == True:
-            cmapping = opts.Points(color=dim(colordim),
+            cmapping = opts.Points(
+                color=dim(colordim),
                 colorbar=True,
                 cmap='GnBu_r')
         else:
@@ -192,13 +210,25 @@ def viz(
     
     # function to generate a table of all the selected points
     def make_table(kdim1, kdim2, colordim):
-        table_options = opts.Table(height=300, width=1000, hooks=[hook], bgcolor='#f5f5f5')
-        table = hv.DynamicMap(lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), streams=[selection])
+        table_options = opts.Table(
+            height=300, 
+            width=1000, 
+            hooks=[hook], 
+            bgcolor='#f5f5f5'
+        )
+        table = hv.DynamicMap(
+            lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), 
+            streams=[selection]
+        )
         return table.opts(table_options).relabel('Selected Points')
     
     
     # generate the table
-    selected_table = pn.bind(make_table, kdim1=var1, kdim2=var2, colordim=cmap_var)
+    selected_table = pn.bind(
+        make_table, 
+        kdim1=var1, 
+        kdim2=var2, 
+        colordim=cmap_var)
     
     #table_stream = streams.Selection1D(source=selected_table)
     
@@ -250,7 +280,10 @@ def viz(
         return layout
     
     # put it all together using Panel
-    dashboard = pn.Column(pn.Row(var1, var2, cmap_var, cmap_option), pn.Row(points_dmap, selected_table))
+    dashboard = pn.Column(
+        pn.Row(var1, var2, cmap_var, cmap_option), 
+        pn.Row(points_dmap, selected_table)
+    )
     
     if show_observables == True:
         observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(framewise=True)

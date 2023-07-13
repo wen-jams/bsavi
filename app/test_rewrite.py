@@ -20,22 +20,29 @@ class Observable:
     ----------
     name: string or list of strings
         specifies the display name of the observable for things like plot titles
+
     parameters: dict-like or list of dict-likes
         the data to associated with that observable. can be python dict (or pandas DataFrame)
         whose keys (or column names) will be used for things like plot axis labels. 
+
     latex_labels: dict or list of dicts
         key: value -> parameter label: latex version. parameter label must match the
         corresponding one in the parameters dict
+
     myfunc: callable
         a user-provided function that returns parameters. can return more than one
         set of parameters if the "grouped" option is True
+
     myfunc_args: tuple
         arguments for user-provided function
+
     grouped: boolean
         specifies if user-provided function returns more than one set of parameters
+
     plot_type: string
         specifies how the data should be visualized. currently can pick either 'Curve'
         or 'Scatter'
+
     plot_opts: holoviews Options object
         customization options for the observable plot. see Holoviews documentation
     """
@@ -44,35 +51,36 @@ class Observable:
         self, 
         name: str | list[str] = None, 
         parameters: dict | list[dict] = None, 
-        myfunc: Callable = None,
+        myfunc: Callable = None, 
         myfunc_args: tuple = None, 
         grouped: bool = False, 
-        plot_type: str | list[str] = None,
-        plot_opts: type[opts] | list[type[opts]] = None,
+        plot_type: str | list[str] = None, 
+        plot_opts: type[opts] | list[type[opts]] = None, 
         latex_labels: dict = None
     ):
-        self.name = [name]
-        self.parameters = parameters
-        if parameters is not None:
+        if isinstance(name, str):
+            self.name = [name]
+        else:
+            self.name = name
+        if isinstance(parameters, dict):
             self.parameters = [parameters]
+        else:
+            self.parameters = parameters
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        self.plot_type = plot_type
-        if plot_type is not None:
-            self.plot_type = [plot_type]
-        self.plot_opts = plot_opts
-        if plot_opts is not None:
-            self.plot_opts = [plot_opts]
         self.grouped = grouped
-        self.latex_labels = latex_labels
-        if self.grouped:
-            self.name = name
-            self.parameters = parameters
+        if isinstance(plot_type, str):
+            self.plot_type = [plot_type]
+        else:
             self.plot_type = plot_type
+        if isinstance(plot_opts, hv.core.options.Options):
+            self.plot_opts = [plot_opts]
+        else:
             self.plot_opts = plot_opts
+        self.latex_labels = latex_labels
         self.number = len(self.name)
     
-    def properties(self):
+    def printname(self):
         if self.grouped:
             print("InViz Grouped Observable")
             for i in range(len(self.name)):
