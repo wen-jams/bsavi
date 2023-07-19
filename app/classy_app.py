@@ -19,16 +19,14 @@ def load_params(filename):
             params_list.append(params)
     return [item[0] for item in params_list], [item[1] for item in params_list]
 
-
 # create a DataFrame with the chain files as rows and use a list of parameters as the column names
 def load_data(filename, column_names):
     data = np.loadtxt(filename)
     df = pd.DataFrame(data[:,1:], columns=column_names)
     return df
 
-
+# run class on the user's selection
 def run_class(selection):
-    # run class on the user's selection
     cosmo = Class()
     cosmo.set(selection)
     cosmo.set({'output':'mPk, tCl, pCl, lCl','P_k_max_1/Mpc':3.0, 'lensing':'yes'})
@@ -45,13 +43,19 @@ def run_class(selection):
     factor = l*(l+1)/(2*np.pi)
     lensed_cl = cosmo.lensed_cl(2500)
     
-    results = {'k': kk, 'Pk': Pk, 'l': l, 'Cl_tt': factor*lensed_cl['tt'][2:], 'Cl_ee': factor*lensed_cl['ee'][2:]}
-    
+    results = {
+        'k': kk, 
+        'Pk': Pk, 
+        'l': l, 
+        'Cl_tt': factor*lensed_cl['tt'][2:], 
+        'Cl_ee': factor*lensed_cl['ee'][2:], 
+    }
+    # cleanups reqd for backwards compat w CLASS 2.x
     cosmo.struct_cleanup()
     cosmo.empty()
     return results
 
-
+# calculate percentage difference between model of interest and LambdaCDM model
 def compute_residuals(index, sample, sample_CDM):
     selection = sample.iloc[[index]].to_dict('index')
     selection_CDM = sample_CDM.iloc[[index]].to_dict('index')
@@ -66,9 +70,11 @@ def compute_residuals(index, sample, sample_CDM):
     cl_tt_residuals = (mycosmo['Cl_tt'] - LambdaCDM['Cl_tt'])/LambdaCDM['Cl_tt']*100
     cl_ee_residuals = (mycosmo['Cl_ee'] - LambdaCDM['Cl_ee'])/LambdaCDM['Cl_ee']*100
     
-    residuals = {'pk_residuals': {'k': mycosmo['k'], 'Pk': pk_residuals}, 
-                 'cl_tt_residuals': {'l': mycosmo['l'], 'Cl_TT': cl_tt_residuals}, 
-                 'cl_ee_residuals': {'l': mycosmo['l'], 'Cl_EE': cl_ee_residuals}}
+    residuals = [
+        {'k': mycosmo['k'], 'pk_residuals': pk_residuals}, 
+        {'l': mycosmo['l'], 'cl_tt_residuals': cl_tt_residuals}, 
+        {'l': mycosmo['l'], 'cl_ee_residuals': cl_ee_residuals},
+    ]
     return residuals
 
 
@@ -84,7 +90,48 @@ for i in trange(1,5):
 
 # prepare data for CLASS computation
 # remove nuisance parameters
-classy_input = df.drop(columns=['loglkl', 'z_reio', 'A_s', 'sigma8', '100theta_s', 'A_cib_217', 'xi_sz_cib', 'A_sz', 'ps_A_100_100', 'ps_A_143_143', 'ps_A_143_217', 'ps_A_217_217', 'ksz_norm', 'gal545_A_100', 'gal545_A_143', 'gal545_A_143_217', 'gal545_A_217', 'galf_TE_A_100', 'galf_TE_A_100_143', 'galf_TE_A_100_217', 'galf_TE_A_143', 'galf_TE_A_143_217', 'galf_TE_A_217', 'calib_100T', 'calib_217T', 'A_planck', 'b^{(1)}_1', 'b^{(1)}_2', 'b^{(1)}_{G_2}', 'b^{(2)}_1', 'b^{(2)}_2', 'b^{(2)}_{G_2}', 'b^{(3)}_1', 'b^{(3)}_2', 'b^{(3)}_{G_2}', 'b^{(4)}_1', 'b^{(4)}_2', 'b^{(4)}_{G_2}'])
+classy_input = df.drop(
+    columns=[
+        'loglkl', 
+        'z_reio', 
+        'A_s', 
+        'sigma8', 
+        '100theta_s', 
+        'A_cib_217', 
+        'xi_sz_cib', 
+        'A_sz', 
+        'ps_A_100_100', 
+        'ps_A_143_143', 
+        'ps_A_143_217', 
+        'ps_A_217_217', 
+        'ksz_norm', 
+        'gal545_A_100', 
+        'gal545_A_143', 
+        'gal545_A_143_217', 
+        'gal545_A_217', 
+        'galf_TE_A_100', 
+        'galf_TE_A_100_143', 
+        'galf_TE_A_100_217', 
+        'galf_TE_A_143', 
+        'galf_TE_A_143_217', 
+        'galf_TE_A_217', 
+        'calib_100T', 
+        'calib_217T', 
+        'A_planck', 
+        'b^{(1)}_1', 
+        'b^{(1)}_2', 
+        'b^{(1)}_{G_2}', 
+        'b^{(2)}_1', 
+        'b^{(2)}_2', 
+        'b^{(2)}_{G_2}', 
+        'b^{(3)}_1', 
+        'b^{(3)}_2', 
+        'b^{(3)}_{G_2}', 
+        'b^{(4)}_1', 
+        'b^{(4)}_2', 
+        'b^{(4)}_{G_2}'
+    ]
+)
 classy_input['omega_b'] = df['omega_b'] * 1e-2
 classy_input['sigma_dmeff'] = df['sigma_dmeff'] * 1e-25
 classy_input = classy_input.rename(columns={'H0':'h'})
@@ -106,10 +153,33 @@ classy_input_slice = classy_input[::500].reset_index(drop=True)
 classy_CDM_slice = classy_CDM[::500].reset_index(drop=True)
 df_slice = df[::500].reset_index(drop=True)
 
-copts = opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('GnBu'), bgcolor='#22262F', framewise=True)
-nv.viz(data=df_slice, 
-       myfunction=compute_residuals, 
-       myfunction_args=(classy_input_slice, classy_CDM_slice), 
-       show_observables=True, 
-       latex_dict=params_latex_form, 
-       curve_opts=copts).servable('Fractional IDM')
+cosmo_copts = opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('GnBu'), bgcolor='#22262F', framewise=True)
+cosmo_latex = {
+    'k': 'k~[h/\mathrm{Mpc}]',
+    'pk_residuals': '(P(k)-P_{CDM}(k))/P_{CDM}(k)*100~[\%]',
+    'l': '\ell',
+    'cl_tt_residuals': '(C_{\ell}^{TT}-C_{\ell, CDM}^{TT})/C_{\ell, CDM}^{TT}*100~[\%]',
+    'cl_ee_residuals': '(C_{\ell}^{EE}-C_{\ell, CDM}^{EE})/C_{\ell, CDM}^{EE}*100~[\%]',
+}
+cosmo_observables = nv.Observable(
+    name=[
+        'P(k) Residuals', 
+        'Cl_TT Residuals', 
+        'Cl_EE Residuals', 
+    ], 
+    myfunc=compute_residuals,
+    myfunc_args=(classy_input_slice, classy_CDM_slice), 
+    plot_type=[
+        'Curve', 
+        'Curve', 
+        'Curve', 
+    ],
+    plot_opts=[
+        cosmo_copts, 
+        cosmo_copts, 
+        cosmo_copts, 
+    ],
+    latex_labels=cosmo_latex
+)
+
+nv.viz(data=df_slice, observables=[cosmo_observables], latex_dict=params_latex_form).servable()
