@@ -6,7 +6,7 @@ import panel as pn
 import spatialpandas
 from bokeh.models import HoverTool
 from scipy import signal
-from typing import Callable
+from typing import List, Callable, Union
 
 hv.extension('bokeh')
 pn.extension()
@@ -46,12 +46,12 @@ class Observable:
     
     def __init__(
         self, 
-        name: str | list[str] = None, 
-        parameters: dict | list[dict] = None, 
+        name: Union[str, List[str]] = None, 
+        parameters: Union[dict, List[dict]] = None, 
         myfunc: Callable = None,
         myfunc_args: tuple = None, 
-        plot_type: str | list[str] = None,
-        plot_opts: type[opts] | list[type[opts]] = None,
+        plot_type: Union[str, List[str]] = None,
+        plot_opts: Union[opts, List[opts]] = None,
         latex_labels: dict = None
     ):
         if isinstance(name, str):
