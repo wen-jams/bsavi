@@ -11,6 +11,31 @@ hv.extension('bokeh')
 pn.extension()
 
 
+# unpacks the nested data. handles the two supported datatypes
+def unpacker(dataset, index):
+    if isinstance(dataset, dict):
+        unpacked_data = {key: dataset[key][index] for key in dataset.keys()}
+    if isinstance(dataset, pd.core.frame.DataFrame):
+        columns = dataset.columns
+        dataseries = dataset.iloc[index]
+        unpacked_data = pd.DataFrame({columns[item]: dataseries[columns[item]] for item in range(len(columns))})
+    return unpacked_data
+
+
+#  given a param name, find corresponding latex-formatted param name
+def lookup_latex_label(param, latex_dict):
+    # handle default case of no latex paramname dictionary
+    if latex_dict is None:
+        latex_dict = dict()
+    try:
+        latex_param = latex_dict[param]
+        label = r'$${}$$'.format(latex_param)
+        return label
+    except KeyError:
+        label = param
+        return label
+    
+
 class Observable:
     """
     Observable class for InViz.
@@ -30,7 +55,7 @@ class Observable:
 
     myfunc: callable
         a user-provided function that returns parameters. can return more than one
-        set of parameters if the "grouped" option is True
+        set of parameters.
 
     myfunc_args: tuple
         arguments for user-provided function
@@ -45,7 +70,7 @@ class Observable:
     
     def __init__(
         self, 
-        name: Union[str, List[str]] = None, 
+        name: Union[str, List[str]], 
         parameters: Union[dict, List[dict]] = None, 
         myfunc: Callable = None,
         myfunc_args: tuple = None, 
@@ -92,19 +117,18 @@ class Observable:
             hv_element = getattr(hv, self.plot_type[i])
             if self.parameters is not None:
                 dataset = self.parameters[i]
-                kdim = list(dataset.keys())[0]
-                vdim = list(dataset.keys())[1]
-                indexed_data = (dataset[kdim][index], dataset[vdim][index])
-                plot = hv_element(indexed_data, kdim, vdim, label=self.name[i])
+                unpacked_data = unpacker(dataset, index)
+                kdim, vdim = unpacked_data.keys()
+                plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
             elif computed_data:
                 dataset = computed_data[i]
-                kdim = list(dataset.keys())[0]
-                vdim = list(dataset.keys())[1]
+                kdim, vdim = dataset.keys()
                 plot = hv_element(dataset, kdim, vdim, label=self.name[i])
             # set defaults
             plot.opts(
                 height=400,
                 width=500,
+                padding=0.1,
                 fontscale=1.1,
                 xlabel=lookup_latex_label(kdim, self.latex_labels), 
                 ylabel=lookup_latex_label(vdim, self.latex_labels),
@@ -121,20 +145,7 @@ class Observable:
         return layout.opts(shared_axes=False)
         
 
-#  given a param name, find corresponding latex-formatted param name
-def lookup_latex_label(param, latex_dict):
-    # handle default case of no latex paramname dictionary
-    if latex_dict is None:
-        latex_dict = dict()
-    try:
-        latex_param = latex_dict[param]
-        label = r'$${}$$'.format(latex_param)
-        return label
-    except KeyError:
-        label = param
-        return label
-
-
+# generate the visualization
 def viz(
     data, 
     observables: list = None, 
@@ -144,17 +155,17 @@ def viz(
     # setting Panel widgets for user interaction
     variables = data.columns.values.tolist()
     var1 = pn.widgets.Select(
-        value=variables[1], 
+        value=variables[0], 
         name='Horizontal Axis', 
         options=variables
     )
     var2 = pn.widgets.Select(
-        value=variables[2], 
+        value=variables[1], 
         name='Vertical Axis', 
         options=variables
     )
     cmap_var = pn.widgets.Select(
-        value=variables[0], 
+        value=variables[2], 
         name='Colormapped Parameter', 
         options=variables
     )
@@ -232,6 +243,8 @@ def viz(
     plots = {}
     # get total number of plots to draw from list of observables
     plotting_info = {}
+    if observables is None:
+        observables = []
     for each in observables:
         for i in range(len(each.name)):
             if each.plot_opts is None:
