@@ -5,18 +5,16 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "inviz",
-    version = "0.2.5",
+    version = "0.2.8a1",
     author = "James Wen",
     author_email = "jswen@usc.edu",
     description = ("An interactive visualizer to help explore high-dimensional data and its observables."),
     license = "MIT",
     keywords = "interactive visualizer cosmology",
     url = "http://packages.python.org/inviz",
-    py_modules=["inviz"],
-    package_dir={'': 'inviz'},
-#    packages=['inviz'],
-    #package_dir={'': 'inviz'},
-    #long_description=long_description,
+    packages=setuptools.find_packages(where='src'),
+    # packages=['inviz', 'inviz.cosmo'],
+    package_dir={'': 'src'},
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[

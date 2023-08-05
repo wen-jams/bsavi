@@ -1,0 +1,11 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+src/cosmo/__init__.py
+src/cosmo/cosmo.py
+src/inviz.egg-info/PKG-INFO
+src/inviz.egg-info/SOURCES.txt
+src/inviz.egg-info/dependency_links.txt
+src/inviz.egg-info/requires.txt
+src/inviz.egg-info/top_level.txt
