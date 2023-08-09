@@ -7,12 +7,12 @@ import spatialpandas
 from bokeh.models import HoverTool
 from typing import List, Callable, Union
 
-hv.extension('bokeh')
+hv.extension('bokeh', enable_mathjax=True)
 pn.extension()
 
 
 # unpacks the nested data. handles the two supported datatypes
-def unpacker(dataset, index):
+def _unpacker(dataset, index):
     if isinstance(dataset, dict):
         unpacked_data = {key: dataset[key][index] for key in dataset.keys()}
     if isinstance(dataset, pd.core.frame.DataFrame):
@@ -23,7 +23,7 @@ def unpacker(dataset, index):
 
 
 #  given a param name, find corresponding latex-formatted param name
-def lookup_latex_label(param, latex_dict):
+def _lookup_latex_label(param, latex_dict):
     # handle default case of no latex paramname dictionary
     if latex_dict is None:
         latex_dict = dict()
@@ -117,21 +117,24 @@ class Observable:
             hv_element = getattr(hv, self.plot_type[i])
             if self.parameters is not None:
                 dataset = self.parameters[i]
-                unpacked_data = unpacker(dataset, index)
+                unpacked_data = _unpacker(dataset, index)
                 kdim, vdim = unpacked_data.keys()
+                # plot = hv_element(unpacked_data, kdim, vdim, group=self.name[i], label=str(index)) FIXME
                 plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
             elif computed_data:
                 dataset = computed_data[i]
                 kdim, vdim = dataset.keys()
+                # plot = hv_element(dataset, kdim, vdim, group=self.name[i], label=str(index)) FIXME
                 plot = hv_element(dataset, kdim, vdim, label=self.name[i])
             # set defaults
             plot.opts(
+                title=f'{self.name[i]}',
                 height=400,
                 width=500,
                 padding=0.1,
                 fontscale=1.1,
-                xlabel=lookup_latex_label(kdim, self.latex_labels), 
-                ylabel=lookup_latex_label(vdim, self.latex_labels),
+                xlabel=_lookup_latex_label(kdim, self.latex_labels), 
+                ylabel=_lookup_latex_label(vdim, self.latex_labels),
                 framewise=True
             )
             # add user defined customizations
@@ -149,7 +152,7 @@ class Observable:
 def viz(
     data, 
     observables: list = None, 
-    show_observables: bool = True, 
+    show_observables: bool = False, 
     latex_dict: dict = None
 ):
     # setting Panel widgets for user interaction
@@ -157,22 +160,26 @@ def viz(
     var1 = pn.widgets.Select(
         value=variables[0], 
         name='Horizontal Axis', 
-        options=variables
+        options=variables,
+        width=150
     )
     var2 = pn.widgets.Select(
         value=variables[1], 
         name='Vertical Axis', 
-        options=variables
+        options=variables,
+        width=150
     )
     cmap_var = pn.widgets.Select(
         value=variables[2], 
-        name='Colormapped Parameter', 
-        options=variables
+        name='Colormap', 
+        options=variables,
+        width=150
     )
     cmap_option = pn.widgets.Checkbox(
         value=True, 
         name='Show Colormap', 
-        align='end'
+        align='end',
+        width=150
     )
 
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
@@ -186,9 +193,10 @@ def viz(
         else:
             cmapping = opts.Points(color='grey', colorbar=True)
         hover = HoverTool(tooltips=None)
-        xlabel = lookup_latex_label(kdim1, latex_dict)
-        ylabel = lookup_latex_label(kdim2, latex_dict)
+        xlabel = _lookup_latex_label(kdim1, latex_dict)
+        ylabel = _lookup_latex_label(kdim2, latex_dict)
         popts = opts.Points(
+            title='Input Data',
             bgcolor='#E5E9F0',
             fontscale=1.1,
             xlabel=xlabel,
@@ -219,12 +227,13 @@ def viz(
     def make_table(kdim1, kdim2, colordim):
         table_options = opts.Table(
             height=300, 
-            width=1000, 
+            width=600, 
             hooks=[hook], 
             bgcolor='#f5f5f5'
         )
+        data_with_index = data.reset_index()
         table = hv.DynamicMap(
-            lambda index: hv.Table(data.iloc[index], kdims=[kdim1, kdim2, colordim]), 
+            lambda index: hv.Table(data_with_index.iloc[index], kdims=['index', kdim1, kdim2, colordim]), 
             streams=[selection]
         )
         return table.opts(table_options).relabel('Selected Points')
@@ -245,6 +254,8 @@ def viz(
     plotting_info = {}
     if observables is None:
         observables = []
+    else:
+        show_observables = True
     for each in observables:
         for i in range(len(each.name)):
             if each.plot_opts is None:
@@ -257,7 +268,8 @@ def viz(
             plots_list = []
             for name in plotting_info:
                 hv_type = getattr(hv, plotting_info[name]['type'])
-                empty_plot = hv_type(np.random.rand(0, 2)).relabel(f'{name} - No Selection').opts(
+                empty_plot = hv_type(np.random.rand(0, 2), group=f'{name}', label='None').opts(
+                    title=f'{name} - No Selection', 
                     height=400, 
                     width=500, 
                     fontscale=1.1, 
@@ -271,6 +283,7 @@ def viz(
                 new_plots = []
                 for each in observables:
                     new_plots.extend(each.generate_plot(element))
+                # plots[element] = {plot.group: plot for plot in new_plots} FIXME
                 plots[element] = {plot.label: plot for plot in new_plots}
             
             plots_list = []
@@ -283,20 +296,21 @@ def viz(
             
         layout = hv.Layout()
         for list_of_plots in plots_list:
-            overlay = hv.Overlay(list_of_plots).opts(show_legend=False)
+            overlay = hv.Overlay(list_of_plots).opts(show_legend=True, legend_position='right')
             layout = layout + overlay
-        layout.opts(shared_axes=False).cols(3)
+        layout.opts(shared_axes=False, toolbar='left').cols(2)
         return layout
     
     # put it all together using Panel
-    dashboard = pn.Column(
-        pn.Row(var1, var2, cmap_var, cmap_option), 
-        pn.Row(points_dmap, selected_table)
+    input_panel = pn.Row(
+        pn.Column(var1, var2, cmap_var, cmap_option), 
+        points_dmap
     )
+    dashboard = pn.Column(input_panel, selected_table)
     
     if show_observables == True:
         observables_dmap = hv.DynamicMap(plot_observables, streams=[selection]).opts(framewise=True)
         observables_pane = pn.panel(observables_dmap)
-        dashboard = pn.Column(dashboard, observables_pane)
+        dashboard = pn.Row(dashboard, observables_pane)
     
     return dashboard

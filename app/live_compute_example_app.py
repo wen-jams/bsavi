@@ -66,11 +66,11 @@ waveforms = nv.Observable(
         'Curve',
         'Curve',
     ],
-    # plot_opts=[
-    #     opts1,
-    #     opts2,
-    #     opts3,
-    # ],
+    plot_opts=[
+        opts1,
+        opts2,
+        opts3,
+    ],
     latex_labels=waves_latex
 )
 
@@ -94,7 +94,7 @@ coswav = nv.Observable(
     myfunc=cosine,
     myfunc_args=(df,),
     plot_type='Curve',
-    # plot_opts=opts3,
+    plot_opts=opts3,
     latex_labels=cosine_latex
 )
 

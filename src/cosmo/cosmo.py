@@ -22,10 +22,12 @@ def load_data(filename, column_names):
     df = pd.DataFrame(data[:,1:], columns=column_names)
     return df
 
-# run class on the user's selection
-def run_class(selection):
+# run class on the user's selection with default settings
+def run_class(index, sample):
+    selection = sample.iloc[[index]].to_dict('index')
+
     cosmo = Class()
-    cosmo.set(selection)
+    cosmo.set(selection[index])
     cosmo.set({'output':'mPk, tCl, pCl, lCl','P_k_max_1/Mpc':3.0, 'lensing':'yes'})
     cosmo.compute()
 
@@ -40,36 +42,34 @@ def run_class(selection):
     factor = l*(l+1)/(2*np.pi)
     lensed_cl = cosmo.lensed_cl(2500)
     
-    results = {
-        'k': kk, 
-        'Pk': Pk, 
-        'l': l, 
-        'Cl_tt': factor*lensed_cl['tt'][2:], 
-        'Cl_ee': factor*lensed_cl['ee'][2:], 
-    }
-    # cleanups reqd for backwards compat w CLASS 2.x
+    results = [
+        {'k': kk, 'Pk': Pk},
+        {'l': l, 'Cl_tt': factor*lensed_cl['tt'][2:]},
+        {'l': l, 'Cl_ee': factor*lensed_cl['ee'][2:]}, 
+    ]
+    # cleanups requried for backwards compat w CLASS 2.x
     cosmo.struct_cleanup()
     cosmo.empty()
     return results
 
 # calculate percentage difference between model of interest and LambdaCDM model
 def compute_residuals(index, sample, sample_CDM):
-    selection = sample.iloc[[index]].to_dict('index')
-    selection_CDM = sample_CDM.iloc[[index]].to_dict('index')
     if __name__ == '__main__':
         with Pool() as p:
-            [mycosmo, LambdaCDM] = p.map(run_class, [selection[index], selection_CDM[index]])
+            [mycosmo, LambdaCDM] = p.starmap(run_class, [(index, sample), (index, sample_CDM)])
     else:
-        mycosmo = run_class(selection[index])
-        LambdaCDM = run_class(selection_CDM[index])
+        mycosmo = run_class(index, sample)
+        LambdaCDM = run_class((index, sample_CDM))
 
-    pk_residuals = (mycosmo['Pk'] - LambdaCDM['Pk'])/LambdaCDM['Pk']*100
-    cl_tt_residuals = (mycosmo['Cl_tt'] - LambdaCDM['Cl_tt'])/LambdaCDM['Cl_tt']*100
-    cl_ee_residuals = (mycosmo['Cl_ee'] - LambdaCDM['Cl_ee'])/LambdaCDM['Cl_ee']*100
+    myPk, myCl_tt, myCl_ee = mycosmo
+    LCDM_Pk, LCDM_Cl_tt, LCDM_Cl_ee = LambdaCDM
+    pk_residuals = (myPk['Pk'] - LCDM_Pk['Pk'])/LCDM_Pk['Pk']*100
+    cl_tt_residuals = (myCl_tt['Cl_tt'] - LCDM_Cl_tt['Cl_tt'])/LCDM_Cl_tt['Cl_tt']*100
+    cl_ee_residuals = (myCl_ee['Cl_ee'] - LCDM_Cl_ee['Cl_ee'])/LCDM_Cl_ee['Cl_ee']*100
     
     residuals = [
-        {'k': mycosmo['k'], 'pk_residuals': pk_residuals}, 
-        {'l': mycosmo['l'], 'cl_tt_residuals': cl_tt_residuals}, 
-        {'l': mycosmo['l'], 'cl_ee_residuals': cl_ee_residuals},
+        {'k': myPk['k'], 'pk_residuals': pk_residuals}, 
+        {'l': myCl_tt['l'], 'cl_tt_residuals': cl_tt_residuals}, 
+        {'l': myCl_ee['l'], 'cl_ee_residuals': cl_ee_residuals},
     ]
     return residuals
