@@ -1,7 +1,0 @@
-holoviews==1.15.4
-panel==0.14.4
-spatialpandas==0.4.8
-dask<=2023.5.0
-param==1.13.0
-numpy<=1.24,>=1.21
-matplotlib==3.7.1
