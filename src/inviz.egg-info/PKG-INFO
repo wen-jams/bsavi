@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: inviz
-Version: 0.3.0
+Version: 0.3.2
 Summary: An interactive visualizer to help explore high-dimensional likelihoods and their observables.
 Home-page: http://packages.python.org/inviz
 Author: James Wen
