@@ -82,33 +82,26 @@ classy_input_slice = classy_input[::500].reset_index(drop=True)
 classy_CDM_slice = classy_CDM[::500].reset_index(drop=True)
 df_slice = df[::500].reset_index(drop=True)
 
-cosmo_copts = opts.Curve(width=500, height=400, logx=True, padding=0.1, fontscale=1.1, color=hv.Cycle('GnBu'), bgcolor='#22262F', framewise=True)
-cosmo_latex = {
+cosmo_copts = opts.Curve(
+    logx=True, 
+    color=hv.Cycle('GnBu'), 
+    bgcolor='#22262F', 
+    framewise=True
+)
+resids_latex = {
     'k': 'k~[h/\mathrm{Mpc}]',
     'pk_residuals': '(P(k)-P_{CDM}(k))/P_{CDM}(k)*100~[\%]',
     'l': '\ell',
     'cl_tt_residuals': '(C_{\ell}^{TT}-C_{\ell, CDM}^{TT})/C_{\ell, CDM}^{TT}*100~[\%]',
     'cl_ee_residuals': '(C_{\ell}^{EE}-C_{\ell, CDM}^{EE})/C_{\ell, CDM}^{EE}*100~[\%]',
 }
-cosmo_observables = nv.Observable(
-    name=[
-        'P(k) Residuals', 
-        'Cl_TT Residuals', 
-        'Cl_EE Residuals', 
-    ], 
+residuals = nv.Observable(
+    name=['P(k) Residuals', 'Cl_TT Residuals', 'Cl_EE Residuals'], 
     myfunc=cosmo.compute_residuals,
     myfunc_args=(classy_input_slice, classy_CDM_slice), 
-    plot_type=[
-        'Curve', 
-        'Curve', 
-        'Curve', 
-    ],
-    plot_opts=[
-        cosmo_copts, 
-        cosmo_copts, 
-        cosmo_copts, 
-    ],
-    latex_labels=cosmo_latex
+    plot_type='Curve',
+    plot_opts=cosmo_copts,
+    latex_labels=resids_latex
 )
 
-nv.viz(data=df_slice, observables=[cosmo_observables], latex_dict=params_latex_form).servable('Fractional IDM')
+nv.viz(data=df_slice, observables=[residuals], latex_dict=params_latex_form).servable('Fractional IDM')

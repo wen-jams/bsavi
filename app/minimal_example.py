@@ -32,8 +32,8 @@ poly_latex = {'x': 'x', 'y': r'\alpha x^{\beta} + \gamma x^{\delta}'}
 sin = pd.DataFrame({'x': sin_xs, 'y': sin_ys})
 sin_latex = {'x': 'x', 'y': r'\alpha \sin{\beta x} + \gamma \sin{\delta x}'}
 
-poly_opts = opts.Curve(xlim=(0, 10), ylim=(0, 20))
-sin_opts = opts.Curve(xlim=(-2*np.pi, 2*np.pi))
+poly_opts = opts.Curve(framewise=True)
+sin_opts = opts.Curve(framewise=True)
 
 polynomials = iv.Observable(name='polynomials', parameters=[poly], plot_type=['Curve'], plot_opts=poly_opts, latex_labels=poly_latex)
 sine_wave = iv.Observable(name='Composite Sine Wave', parameters=[sin], plot_type=['Curve'], plot_opts=sin_opts, latex_labels=sin_latex)
