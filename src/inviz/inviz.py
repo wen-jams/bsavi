@@ -114,18 +114,21 @@ class Observable:
             computed_data = self.myfunc(index, *self.myfunc_args)
             self.number = len(computed_data)
         for i in range(0, self.number):
-            hv_element = getattr(hv, self.plot_type[i])
+            if len(self.plot_type) == 1:
+                hv_element = getattr(hv, self.plot_type[0])
+            else:
+                hv_element = getattr(hv, self.plot_type[i])
             if self.parameters is not None:
                 dataset = self.parameters[i]
                 unpacked_data = _unpacker(dataset, index)
                 kdim, vdim = unpacked_data.keys()
-                # plot = hv_element(unpacked_data, kdim, vdim, group=self.name[i], label=str(index)) FIXME
-                plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
+                plot = hv_element(unpacked_data, kdim, vdim, group=self.name[i], label=str(index)) #FIXME
+                # plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
             elif computed_data:
                 dataset = computed_data[i]
                 kdim, vdim = dataset.keys()
-                # plot = hv_element(dataset, kdim, vdim, group=self.name[i], label=str(index)) FIXME
-                plot = hv_element(dataset, kdim, vdim, label=self.name[i])
+                plot = hv_element(dataset, kdim, vdim, group=self.name[i], label=str(index)) #FIXME
+                # plot = hv_element(dataset, kdim, vdim, label=self.name[i])
             # set defaults
             plot.opts(
                 title=f'{self.name[i]}',
@@ -138,8 +141,11 @@ class Observable:
                 framewise=True
             )
             # add user defined customizations
-            if self.plot_opts and self.plot_opts[i] is not None:
+            if len(self.plot_opts) == 1:
+                plot.opts(self.plot_opts)
+            elif self.plot_opts and self.plot_opts[i] is not None:
                 plot.opts(self.plot_opts[i])
+            
             self.plots_list.append(plot)
         return self.plots_list
         
@@ -260,9 +266,16 @@ def viz(
         for i in range(len(each.name)):
             if each.plot_opts is None:
                 specific_opts = None
+            elif len(each.plot_opts) == 1:
+                specific_opts = each.plot_opts[0]
             elif each.plot_opts[i] is not None:
                 specific_opts = each.plot_opts[i]
-            plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': specific_opts}
+            
+            if len(each.plot_type) == 1:
+                plotting_info[each.name[i]] = {'type': each.plot_type[0], 'opts': specific_opts}
+            else:
+                plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': specific_opts}
+
     def plot_observables(index):
         if not index:
             plots_list = []
@@ -283,8 +296,8 @@ def viz(
                 new_plots = []
                 for each in observables:
                     new_plots.extend(each.generate_plot(element))
-                # plots[element] = {plot.group: plot for plot in new_plots} FIXME
-                plots[element] = {plot.label: plot for plot in new_plots}
+                plots[element] = {plot.group: plot for plot in new_plots} #FIXME
+                # plots[element] = {plot.label: plot for plot in new_plots}
             
             plots_list = []
             for index_item in index:

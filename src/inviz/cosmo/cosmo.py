@@ -59,7 +59,7 @@ def compute_residuals(index, sample, sample_CDM):
             [mycosmo, LambdaCDM] = p.starmap(run_class, [(index, sample), (index, sample_CDM)])
     else:
         mycosmo = run_class(index, sample)
-        LambdaCDM = run_class((index, sample_CDM))
+        LambdaCDM = run_class(index, sample_CDM)
 
     myPk, myCl_tt, myCl_ee = mycosmo
     LCDM_Pk, LCDM_Cl_tt, LCDM_Cl_ee = LambdaCDM
