@@ -84,6 +84,12 @@ class Observable:
             self.name = name
         if isinstance(parameters, dict):
             self.parameters = [parameters]
+        elif isinstance(parameters, pd.core.frame.DataFrame):
+            prms = []
+            for column in parameters.columns:
+                dset = pd.DataFrame(list(parameters.loc[:, column]))
+                prms.append(dset)
+            self.parameters = prms
         else:
             self.parameters = parameters
         self.myfunc = myfunc
