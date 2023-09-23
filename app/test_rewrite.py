@@ -84,6 +84,12 @@ class Observable:
             self.name = name
         if isinstance(parameters, dict):
             self.parameters = [parameters]
+        elif isinstance(parameters, pd.core.frame.DataFrame):
+            prms = []
+            for column in parameters.columns:
+                dset = pd.DataFrame(list(parameters.loc[:, column]))
+                prms.append(dset)
+            self.parameters = prms
         else:
             self.parameters = parameters
         self.myfunc = myfunc
@@ -422,38 +428,56 @@ def viz(
 
 # viz(df, [waveforms, coswav], latex_dict=latex_dict).servable()
 
-binned_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data_binned.pkl')[::25].reset_index(drop=True)
-params_df = binned_df[['alphaOutflow', 'alphaStar', 'like', 'timescale', 'velocityOutflow']]
-lumfunc_df = binned_df[['uvlf_Muv', 'uvlf_z10.5', 'uvlf_z12.6', 'uvlf_z8.7']]
-lumfunc_latex = {
-    'alphaOutflow': r'\alpha_{Outflow}',
-    'alphaStar': r'\alpha_{Star}',
-    'timescale': r'\text{timescale}',
-    'velocityOutflow': r'v_{Outflow}',
-    'like': r'\text{likelihood}'
-}
-uvlf_scatter_opts = opts.Scatter(ylim=(1e-11, 1e0), logy=True, invert_xaxis=True, size=5, marker='square')
-uvlf_curve_opts = opts.Curve(ylim=(1e-11, None), logy=True, invert_xaxis=True)
-uvlf_latex = {
-    'uvlf_Muv': r'\text{UV Magnitude}',
-    'uvlf_z10.5': r'\text{Luminosity Function}',
-    'uvlf_z12.6': r'\text{Luminosity Function}',
-    'uvlf_z8.7': r'\text{Luminosity Function}',
-}
-uvlf_observables = Observable(
-    name=[
-        'UVLF at z = 10.5', 
-        'UVLF at z = 12.6', 
-        'UVLF at z = 8.7'
-    ], 
-    parameters=[
-        lumfunc_df[['uvlf_Muv', 'uvlf_z10.5']], 
-        lumfunc_df[['uvlf_Muv', 'uvlf_z12.6']], 
-        lumfunc_df[['uvlf_Muv', 'uvlf_z8.7']], 
-    ], 
+# binned_df = pd.read_pickle('../data/trey_uvlf/bouwens_2023_data_binned.pkl')[::25].reset_index(drop=True)
+# params_df = binned_df[['alphaOutflow', 'alphaStar', 'like', 'timescale', 'velocityOutflow']]
+# lumfunc_df = binned_df[['uvlf_Muv', 'uvlf_z10.5', 'uvlf_z12.6', 'uvlf_z8.7']]
+# lumfunc_latex = {
+#     'alphaOutflow': r'\alpha_{Outflow}',
+#     'alphaStar': r'\alpha_{Star}',
+#     'timescale': r'\text{timescale}',
+#     'velocityOutflow': r'v_{Outflow}',
+#     'like': r'\text{likelihood}'
+# }
+# uvlf_scatter_opts = opts.Scatter(ylim=(1e-11, 1e0), logy=True, invert_xaxis=True, size=5, marker='square')
+# uvlf_curve_opts = opts.Curve(ylim=(1e-11, None), logy=True, invert_xaxis=True)
+# uvlf_latex = {
+#     'uvlf_Muv': r'\text{UV Magnitude}',
+#     'uvlf_z10.5': r'\text{Luminosity Function}',
+#     'uvlf_z12.6': r'\text{Luminosity Function}',
+#     'uvlf_z8.7': r'\text{Luminosity Function}',
+# }
+# uvlf_observables = Observable(
+#     name=[
+#         'UVLF at z = 10.5', 
+#         'UVLF at z = 12.6', 
+#         'UVLF at z = 8.7'
+#     ], 
+#     parameters=[
+#         lumfunc_df[['uvlf_Muv', 'uvlf_z10.5']], 
+#         lumfunc_df[['uvlf_Muv', 'uvlf_z12.6']], 
+#         lumfunc_df[['uvlf_Muv', 'uvlf_z8.7']], 
+#     ], 
+#     plot_type='Curve',
+#     plot_opts=uvlf_curve_opts,
+#     latex_labels=uvlf_latex
+# )
+
+# viz(params_df, [uvlf_observables], latex_dict=lumfunc_latex).servable('JWST UVLF')
+
+mycosmo = pd.read_json('../resids.json')
+chains = mycosmo.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
+resids = mycosmo[['p(k)', 'cl_tt', 'cl_ee']]
+cosmo_copts = opts.Curve(
+    logx=True, 
+    color=hv.Cycle('GnBu'), 
+    bgcolor='#22262F', 
+    framewise=True
+)
+residuals = Observable(
+    name=['P(k) Residuals', 'Cl_TT Residuals', 'Cl_EE Residuals'], 
+    parameters=resids,
     plot_type='Curve',
-    plot_opts=uvlf_curve_opts,
-    latex_labels=uvlf_latex
+    plot_opts=cosmo_copts,
 )
 
-viz(params_df, [uvlf_observables], latex_dict=lumfunc_latex).servable('JWST UVLF')
+viz(chains, [residuals]).servable()
