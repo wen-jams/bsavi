@@ -147,10 +147,11 @@ class Observable:
                 framewise=True
             )
             # add user defined customizations
-            if len(self.plot_opts) == 1:
-                plot.opts(self.plot_opts)
-            elif self.plot_opts and self.plot_opts[i] is not None:
-                plot.opts(self.plot_opts[i])
+            if self.plot_opts is not None:
+                if len(self.plot_opts) == 1:
+                    plot.opts(self.plot_opts)
+                else:
+                    plot.opts(self.plot_opts[i])
             
             self.plots_list.append(plot)
         return self.plots_list
@@ -464,7 +465,7 @@ def viz(
 
 # viz(params_df, [uvlf_observables], latex_dict=lumfunc_latex).servable('JWST UVLF')
 
-mycosmo = pd.read_json('../resids.json')
+mycosmo = pd.read_json('../data/chains_planckbossdes_1MeV/resids.json')
 chains = mycosmo.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
 resids = mycosmo[['p(k)', 'cl_tt', 'cl_ee']]
 cosmo_copts = opts.Curve(
