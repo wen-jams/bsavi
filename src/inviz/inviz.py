@@ -147,10 +147,11 @@ class Observable:
                 framewise=True
             )
             # add user defined customizations
-            if len(self.plot_opts) == 1:
-                plot.opts(self.plot_opts)
-            elif self.plot_opts and self.plot_opts[i] is not None:
-                plot.opts(self.plot_opts[i])
+            if self.plot_opts is not None:
+                if len(self.plot_opts) == 1:
+                    plot.opts(self.plot_opts)
+                else:
+                    plot.opts(self.plot_opts[i])
             
             self.plots_list.append(plot)
         return self.plots_list
