@@ -1,6 +1,6 @@
 # InViz
 
-InViz (Interactive Visualizer) is a tool for exploratory analysis of high-dimensional datasets where data points from the parameter space are used to calculate some set of real-world observables. This enables you to easily see how the derived observables change as you traverse the parameter space. If you have pre-computed observables, simply import them alongside the  dataset containing the parameters to start visualizing. Or, write your own function that takes your parameters as inputs, and give it to InViz to compute on the fly!
+InViz (Interactive Visualizer) is a tool to aid Bayesian analysis of model parameters where samples from a distribution in the parameter space are used as inputs to calculate a given observable. For example, selecting a range of samples will allow you to easily see how the observables change as you traverse the sample distribution. At the core of InViz is the `Observable` object, which contains the data for a given observable and instructions for plotting it. It is modular, so you can write your own function that takes the parameter values as inputs, and InViz will use it to compute observables on the fly. It also accepts tabular data, so if you have pre-computed observables, simply import them alongside the dataset containing the sample distribution to start visualizing!
 
 ## Installation
 
@@ -26,7 +26,7 @@ Or, if you want to test the latest changes, you can clone the repository with
 
 To verify that inviz and all the dependencies have been installed correctly, open a Jupyter Notebook and run:
 
-    import inviz as nv
+    import inviz as iv
 
 If no errors appear, all the dependencies were installed correctly and we're ready to start visualizing!
 
@@ -34,6 +34,18 @@ If no errors appear, all the dependencies were installed correctly and we're rea
 
 Download and run the `live_data_example` notebook in the [tutorials](tutorials) folder to see an example of how inviz can be used.
 
-Here's an example of InViz in an astrophysics context! The parameters come from a specific dark matter model, and the observables are the matter power spectrum and CMB anisotropy power spectra.
+Here's InViz being used in an astrophysics context! The parameters come from a cosmological model of dark matter, and the observables are the matter and CMB power spectra.
 
 ![example output](images/example3.png)
+
+## Contributing
+
+Make feature requests and bug reports using the issue tracker: <https://github.com/wen-jams/inviz/issues>
+
+## License
+
+MIT License
+
+## Contact
+
+<jimmywen74@gmail.com>

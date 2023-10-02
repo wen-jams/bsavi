@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: inviz
-Version: 0.3.5
+Version: 0.3.6
 Summary: An interactive visualizer to help explore high-dimensional likelihoods and their observables.
 Home-page: http://packages.python.org/inviz
 Author: James Wen
@@ -13,6 +13,14 @@ Classifier: Operating System :: POSIX :: Linux
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
+Requires-Dist: holoviews>=1.15.4
+Requires-Dist: bokeh==2.4.3
+Requires-Dist: panel==0.14.4
+Requires-Dist: spatialpandas==0.4.8
+Requires-Dist: dask<=2023.5.0
+Requires-Dist: param==1.13.0
+Requires-Dist: numpy<=1.24,>=1.21
+Requires-Dist: matplotlib==3.7.1
 
 # InViz
 
@@ -23,7 +31,8 @@ InViz (Interactive Visualizer) is a tool for exploratory analysis of high-dimens
 ### Dependencies
 
 - Python versions $\geq$ 3.8 and $<$ 3.11 are supported.
-- Holoviews $\leq$ 1.15.4 (this package and its dependencies will be installed automatically)
+- Holoviews $\geq$ 1.15.4 (this package and its dependencies will be installed automatically)
+- Bokeh 2.4.3
 
 InViz can be installed with pip:
 
@@ -51,4 +60,4 @@ Download and run the `live_data_example` notebook in the [tutorials](tutorials) 
 
 Here's an example of InViz in an astrophysics context! The parameters come from a specific dark matter model, and the observables are the matter power spectrum and CMB anisotropy power spectra.
 
-![example output](images/example2.png)
+![example output](images/example3.png)
