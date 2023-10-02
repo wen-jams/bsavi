@@ -24,7 +24,7 @@ Or, if you want to test the latest changes, you can clone the repository with
 
 ### Test Installation
 
-To verify that inviz and all the dependencies have been installed correctly, open a Jupyter Notebook and run:
+To verify that inviz and all the dependencies have been installed correctly, try running:
 
     import inviz as iv
 
