@@ -1,4 +1,4 @@
-Library Reference
+API Reference
 =================
 
 .. py:class:: inviz.Observable(name, parameters=None, latex_labels=None, myfunc=None, myfunc_args=None, plot_type, plot_opts=None)

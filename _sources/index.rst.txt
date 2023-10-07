@@ -6,7 +6,7 @@
 Welcome to InViz's documentation!
 =================================
 
-InViz (Interactive Visualizer) is a tool to aid Bayesian analysis of model parameters where samples 
+InViz (Interactive Visualizer) is a tool to aid likelihood analysis of model parameters where samples 
 from a distribution in the parameter space are used as inputs to calculate a given observable. 
 For example, selecting a range of samples will allow you to easily see how the observables change 
 as you traverse the sample distribution. At the core of InViz is the `Observable` object, which contains 
@@ -20,9 +20,6 @@ Check out the :doc:`usage` section for further information, including how to :re
 .. note::
 
    This project is under active development.
-
-
-
 
 Contents
 --------

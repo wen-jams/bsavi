@@ -6,7 +6,7 @@ Usage
 Dependencies
 ------------
 
-- Python versions :math:`\geq`\ 3.8 and :math:`<` 3.11 are supported.
+- Python versions :math:`\geq`\ 3.8 and :math:`\leq`\ 3.11 are supported.
 - Holoviews :math:`\geq`\ 1.15.4 (this package and its dependencies will be installed automatically)
 - Bokeh 2.4.3
 
