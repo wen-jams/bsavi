@@ -11,9 +11,9 @@ def load_params(filename):
     params_list = []
     with open(filename, 'r') as f:
         for line in f:
-            line = line.strip()
-            params = re.split(' \t ', line)
-            params_list.append(params)
+            params_and_latex = line.split('\t')
+            params_and_latex = [item.strip() for item in params_and_latex]
+            params_list.append(params_and_latex)
     return [item[0] for item in params_list], [item[1] for item in params_list]
 
 # create a DataFrame with the chain files as rows and use a list of parameters as the column names
