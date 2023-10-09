@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Quickstart" href="quickstart.html" /><link rel="prev" title="Welcome to InViz’s documentation!" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User Guide" href="userguide.html" /><link rel="prev" title="Quickstart" href="quickstart.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>Usage - InViz 0.3.6 documentation</title>
+        <title>Cosmology &amp; CLASS - InViz 0.3.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -155,9 +155,9 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Cosmology &amp; CLASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 </ul>
@@ -194,28 +194,66 @@
           </label>
         </div>
         <article role="main">
-          <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h1>
-<section id="dependencies">
-<span id="id1"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Python versions <span class="math notranslate nohighlight">\(\geq\)</span>3.8 and <span class="math notranslate nohighlight">\(\leq\)</span>3.11 are supported.</p></li>
-<li><p>Holoviews <span class="math notranslate nohighlight">\(\geq\)</span>1.15.4 (this package and its dependencies will be installed automatically)</p></li>
-<li><p>Bokeh 2.4.3</p></li>
-</ul>
+          <section id="cosmology-class">
+<h1>Cosmology &amp; CLASS<a class="headerlink" href="#cosmology-class" title="Permalink to this heading">#</a></h1>
+<p>The <a class="reference external" href="https://lesgourg.github.io/class_public/class.html">CLASS code</a> is widely used
+by cosmologists to simulate the evolution of linear perturbations in the universe and
+to compute CMB and large scale structure observables. CLASS accepts cosmological parameters
+as input, which we will get from the Planck 2018 results. The following code demonstrates
+using InViz to visualize the Planck 2018 results in parameter space and their relationship
+with three observables: the matter power spectrum <span class="math notranslate nohighlight">\(P(k)\)</span>, and the power spectra of
+the CMB temperature <span class="math notranslate nohighlight">\(C_{l}^{TT}\)</span> and polarization <span class="math notranslate nohighlight">\(C_{l}^{EE}\)</span>.</p>
+<p>We will look at Table 6.7 from the
+<a class="reference external" href="https://wiki.cosmos.esa.int/planck-legacy-archive/images/4/43/Baseline_params_table_2018_68pc_v2.pdf">Planck 2018 table of parameters</a>.
+The data required for this tutorial is located
+<a class="reference external" href="https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing">here:</a>.</p>
+<section id="pre-computed-observables">
+<h2>Pre-Computed Observables<a class="headerlink" href="#pre-computed-observables" title="Permalink to this heading">#</a></h2>
+<p>Let’s start with the case of pre-computed observables. A small sample was taken from the chains
+and run through CLASS. The results, along with the samples themselves, are in <code class="docutils literal notranslate"><span class="pre">power_spectra_small.json</span></code>.</p>
+<p>Begin by loading the data file and splitting it into chains and spectra:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">planck</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/power_spectra_small.json&#39;</span><span class="p">)</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">planck</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;p(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_tt&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_ee&#39;</span><span class="p">])</span>
+<span class="n">class_results</span> <span class="o">=</span> <span class="n">planck</span><span class="p">[[</span><span class="s1">&#39;p(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_tt&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_ee&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Read in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file that was included with the data. This is a list of each parameter and the corresponding
+LaTeX code. We will make a dictionary of these labels which will be used later.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inviz.cosmo</span> <span class="kn">import</span> <span class="n">load_params</span>
+
+<span class="n">param_names</span><span class="p">,</span> <span class="n">latex_params</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
+<span class="n">params_latex_form</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="n">latex_params</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now we are ready to construct an Observable which combines the observable data with plotting instructions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviz</span> <span class="k">as</span> <span class="nn">iv</span>
+<span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span>
+
+<span class="n">curve_opts</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">Curve</span><span class="p">(</span><span class="n">logx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ps_latex</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;k~[h/\mathrm</span><span class="si">{Mpc}</span><span class="s1">]&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Pk&#39;</span><span class="p">:</span> <span class="s1">&#39;P(k)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;l&#39;</span><span class="p">:</span> <span class="s1">&#39;\ell&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Cl_tt&#39;</span><span class="p">:</span> <span class="s1">&#39;[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^</span><span class="si">{TT}</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Cl_ee&#39;</span><span class="p">:</span> <span class="s1">&#39;[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^</span><span class="si">{EE}</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">power_spectra</span> <span class="o">=</span> <span class="n">iv</span><span class="o">.</span><span class="n">Observable</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;P(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;Lensed Cl_TT&#39;</span><span class="p">,</span> <span class="s1">&#39;Lensed Cl_EE&#39;</span><span class="p">],</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="n">class_results</span><span class="p">,</span>
+    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;Curve&#39;</span><span class="p">,</span>
+    <span class="n">plot_opts</span><span class="o">=</span><span class="n">curve_opts</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, produce the visualization with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">power_spectra</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">params_latex_form</span><span class="p">)</span><span class="o">.</span><span class="n">servable</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
-<section id="installation">
-<span id="id2"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
-<p>InViz can be installed with pip:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>inviz
-</pre></div>
-</div>
-<p>Or, if you want to test the latest changes, you can clone the repository with</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/wen-jams/inviz
-<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>inviz
-<span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
-</pre></div>
-</div>
+<section id="dynamically-computed-observables">
+<h2>Dynamically Computed Observables<a class="headerlink" href="#dynamically-computed-observables" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -224,23 +262,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="quickstart.html">
+          <a class="next-page" href="userguide.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Quickstart</div>
+                <div class="title">User Guide</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="quickstart.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Quickstart</div>
                 
               </div>
             </a>
@@ -274,9 +312,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Usage</a><ul>
-<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#">Cosmology &amp; CLASS</a><ul>
+<li><a class="reference internal" href="#pre-computed-observables">Pre-Computed Observables</a></li>
+<li><a class="reference internal" href="#dynamically-computed-observables">Dynamically Computed Observables</a></li>
 </ul>
 </li>
 </ul>

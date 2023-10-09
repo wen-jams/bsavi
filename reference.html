@@ -157,6 +157,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
 </ul>
@@ -248,8 +249,8 @@ LaTeX format as values.</p>
 <dt class="sig sig-object py" id="inviz.Observable.myfunc">
 <span class="sig-name descname"><span class="pre">myfunc</span></span><a class="headerlink" href="#inviz.Observable.myfunc" title="Permalink to this definition">#</a></dt>
 <dd><p>A user-provided function that returns parameters in the same data format
-that <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.parameters</span></code> accepts. Can return more than one
-set of parameters. See above note for usage with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.parameters</span></code>.</p>
+that <a class="reference internal" href="#inviz.Observable.parameters" title="inviz.Observable.parameters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.parameters</span></code></a> accepts. Can return more than one
+set of parameters. See above note for usage with <a class="reference internal" href="#inviz.Observable.parameters" title="inviz.Observable.parameters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.parameters</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Callable</p>
@@ -263,7 +264,7 @@ set of parameters. See above note for usage with <code class="xref py py-attr do
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviz.Observable.myfunc_args">
 <span class="sig-name descname"><span class="pre">myfunc_args</span></span><a class="headerlink" href="#inviz.Observable.myfunc_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Arguments for the user-provided function <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code>.</p>
+<dd><p>Arguments for the user-provided function <a class="reference internal" href="#inviz.Observable.myfunc" title="inviz.Observable.myfunc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
@@ -301,6 +302,43 @@ see <a class="reference external" href="https://holoviews.org/user_guide/Applyin
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="inviz.Observable.properties">
+<span class="sig-name descname"><span class="pre">properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviz.Observable.properties" title="Permalink to this definition">#</a></dt>
+<dd><p>Prints information about the Observable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inviz.Observable.generate_plot">
+<span class="sig-name descname"><span class="pre">generate_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.Observable.generate_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates plots of the data at the given index. Will call <a class="reference internal" href="#inviz.Observable.myfunc" title="inviz.Observable.myfunc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code></a> with <a class="reference internal" href="#inviz.Observable.myfunc_args" title="inviz.Observable.myfunc_args"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc_args</span></code></a>
+on the data if given. The plots are returned as a list of objects which can be manipulated as you wish.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index location of the data to plot</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of <a class="reference external" href="https://holoviews.org/reference_manual/holoviews.core.html#holoviews.core.element.Element">Holoviews Elements</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inviz.Observable.draw_plot">
+<span class="sig-name descname"><span class="pre">draw_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.Observable.draw_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Displays an interactive plot of the data at the given index. In comparison with <a class="reference internal" href="#inviz.Observable.generate_plot" title="inviz.Observable.generate_plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Observable.generate_plot()</span></code></a>, this method
+will <em>only</em> display plots when evaluated in a Jupyter Notebook cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index location of the data to plot</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A layout of <a class="reference external" href="https://holoviews.org/reference_manual/holoviews.core.html#holoviews.core.element.Element">Holoviews Elements</a></p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -318,6 +356,75 @@ see <a class="reference external" href="https://holoviews.org/user_guide/Applyin
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A collection of <a class="reference external" href="https://panel.holoviz.org/api/cheatsheet.html">Panel</a> components</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inviz.cosmo.load_params">
+<span class="sig-prename descclassname"><span class="pre">inviz.cosmo.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.cosmo.load_params" title="Permalink to this definition">#</a></dt>
+<dd><p>Reads in a <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file and returns a tuple containing a list of parameter names and a list of the corresponding LaTeX code. Assumes that
+the file is in the proper format: each line should contain one param name and its LaTeX code separated by a <code class="docutils literal notranslate"><span class="pre">tab</span></code> character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>path object</em>) – path to the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a tuple of lists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inviz.cosmo.load_data">
+<span class="sig-prename descclassname"><span class="pre">inviz.cosmo.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.cosmo.load_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Reads in a chain file and converts it to a <a class="reference external" href="https://pandas.pydata.org/docs/reference/frame.html">DataFrame</a>. Assumes that the file
+is in the format described by <a class="reference external" href="https://wiki.cosmos.esa.int/planck-legacy-archive/index.php/Cosmological_Parameters#File_formats">https://wiki.cosmos.esa.int/planck-legacy-archive/index.php/Cosmological_Parameters#File_formats</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>path object</em>) – path to the chain file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pandas DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inviz.cosmo.run_class">
+<span class="sig-prename descclassname"><span class="pre">inviz.cosmo.</span></span><span class="sig-name descname"><span class="pre">run_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.cosmo.run_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Calls the CLASS code on a given index of the sample data to calculate the matter power spectrum <span class="math notranslate nohighlight">\(P(k)\)</span>, the lensed power spectrum of
+the CMB temperature <span class="math notranslate nohighlight">\(C_{l}^{TT}\)</span>, and the lensed power spectrum of the CMB polarization <span class="math notranslate nohighlight">\(C_{l}^{EE}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – index location of the sample to be run through CLASS</p></li>
+<li><p><strong>sample</strong> (<em>Pandas DataFrame</em>) – a DataFrame where each row contains samples of cosmological parameters which CLASS accepts as inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the three power spectra in the form of a dictionary where each key contains an array of wave numbers <span class="math notranslate nohighlight">\(k\)</span> or
+multipole moments <span class="math notranslate nohighlight">\(\ell\)</span> and each value contains an array of the calculated values for each <span class="math notranslate nohighlight">\(k\)</span> or <span class="math notranslate nohighlight">\(\ell\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inviz.cosmo.compute_residuals">
+<span class="sig-prename descclassname"><span class="pre">inviz.cosmo.</span></span><span class="sig-name descname"><span class="pre">compute_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_CDM</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.cosmo.compute_residuals" title="Permalink to this definition">#</a></dt>
+<dd><p>Useful for exploring beyond-CDM cosmologies. Calls the CLASS code on two sets of sample data (one with beyond-CDM parameters, and
+one with CDM parameters), at the specified index. Computes the percent difference in the three observables (<span class="math notranslate nohighlight">\(P(k)\)</span>, <span class="math notranslate nohighlight">\(C_{l}^{TT}\)</span>, <span class="math notranslate nohighlight">\(C_{l}^{EE}\)</span>)
+for each value of <span class="math notranslate nohighlight">\(k\)</span> or <span class="math notranslate nohighlight">\(\ell\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – index location of the sample to be run through CLASS</p></li>
+<li><p><strong>sample</strong> (<em>Pandas DataFrame</em>) – a DataFrame where each row contains samples of beyond-CDM cosmological parameters</p></li>
+<li><p><strong>sample_CDM</strong> (<em>Pandas DataFrame</em>) – a DataFrame where each row contains samples of LCDM cosmological parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the power spectrum residuals in the same format as <a class="reference internal" href="#inviz.cosmo.run_class" title="inviz.cosmo.run_class"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_class()</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -372,17 +479,24 @@ see <a class="reference external" href="https://holoviews.org/user_guide/Applyin
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">API Reference</a><ul>
-<li><a class="reference internal" href="#inviz.Observable"><code class="docutils literal notranslate"><span class="pre">inviz.Observable</span></code></a><ul>
-<li><a class="reference internal" href="#inviz.Observable.name"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.name</span></code></a></li>
-<li><a class="reference internal" href="#inviz.Observable.parameters"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.parameters</span></code></a></li>
-<li><a class="reference internal" href="#inviz.Observable.latex_labels"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.latex_labels</span></code></a></li>
-<li><a class="reference internal" href="#inviz.Observable.myfunc"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.myfunc</span></code></a></li>
-<li><a class="reference internal" href="#inviz.Observable.myfunc_args"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.myfunc_args</span></code></a></li>
-<li><a class="reference internal" href="#inviz.Observable.plot_type"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.plot_type</span></code></a></li>
-<li><a class="reference internal" href="#inviz.Observable.plot_opts"><code class="docutils literal notranslate"><span class="pre">inviz.Observable.plot_opts</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable"><code class="docutils literal notranslate"><span class="pre">Observable</span></code></a><ul>
+<li><a class="reference internal" href="#inviz.Observable.name"><code class="docutils literal notranslate"><span class="pre">Observable.name</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.parameters"><code class="docutils literal notranslate"><span class="pre">Observable.parameters</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.latex_labels"><code class="docutils literal notranslate"><span class="pre">Observable.latex_labels</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.myfunc"><code class="docutils literal notranslate"><span class="pre">Observable.myfunc</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.myfunc_args"><code class="docutils literal notranslate"><span class="pre">Observable.myfunc_args</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.plot_type"><code class="docutils literal notranslate"><span class="pre">Observable.plot_type</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.plot_opts"><code class="docutils literal notranslate"><span class="pre">Observable.plot_opts</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.properties"><code class="docutils literal notranslate"><span class="pre">Observable.properties()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.generate_plot"><code class="docutils literal notranslate"><span class="pre">Observable.generate_plot()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.Observable.draw_plot"><code class="docutils literal notranslate"><span class="pre">Observable.draw_plot()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#inviz.viz"><code class="docutils literal notranslate"><span class="pre">inviz.viz()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.viz"><code class="docutils literal notranslate"><span class="pre">viz()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.cosmo.load_params"><code class="docutils literal notranslate"><span class="pre">load_params()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.cosmo.load_data"><code class="docutils literal notranslate"><span class="pre">load_data()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.cosmo.run_class"><code class="docutils literal notranslate"><span class="pre">run_class()</span></code></a></li>
+<li><a class="reference internal" href="#inviz.cosmo.compute_residuals"><code class="docutils literal notranslate"><span class="pre">compute_residuals()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -398,5 +512,6 @@ see <a class="reference external" href="https://holoviews.org/user_guide/Applyin
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
