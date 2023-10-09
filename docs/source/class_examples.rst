@@ -1,4 +1,4 @@
-Cosmology & ClASS
+Cosmology & CLASS
 ==================
 
 The `CLASS code <https://lesgourg.github.io/class_public/class.html>`_ is widely used
@@ -12,7 +12,7 @@ the CMB temperature :math:`C_{l}^{TT}` and polarization :math:`C_{l}^{EE}`.
 We will look at case 6.7 from the 
 `Planck 2018 parameter table <https://wiki.cosmos.esa.int/planck-legacy-archive/images/4/43/Baseline_params_table_2018_68pc_v2.pdf>`_.
 The data required for this tutorial is located 
-`here: <https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing>`.
+`here: <https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing>`_.
 
 
 Pre-Computed Observables

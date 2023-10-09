@@ -28,5 +28,6 @@ Contents
 
    usage
    quickstart
+   class_examples
    userguide
    reference
