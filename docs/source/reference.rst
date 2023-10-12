@@ -79,16 +79,17 @@ API Reference
 
         :param index: The index location of the data to plot
         :type index: int
-        :returns: A list of `Holoviews Elements <https://holoviews.org/reference_manual/holoviews.core.html#holoviews.core.element.Element>`_
+        :returns: A list of `Holoviews Elements <https://holoviews.org/user_guide/Annotating_Data.html>`_
 
     .. py:method:: draw_plot(index)
 
-        Displays an interactive plot of the data at the given index. In comparison with :py:meth:`Observable.generate_plot`, this method
-        will *only* display plots when evaluated in a Jupyter Notebook cell.
+        Displays an interactive plot of the data at the given index. Whereas :py:meth:`Observable.generate_plot` returns 
+        a list of plot objects but does not display them, this method will display plots arranged in a layout when evaluated 
+        in a Jupyter Notebook cell.
 
         :param index: The index location of the data to plot
         :type index: int
-        :returns: A layout of `Holoviews Elements <https://holoviews.org/reference_manual/holoviews.core.html#holoviews.core.element.Element>`_
+        :returns: A `layout of Holoviews Elements <https://holoviews.org/user_guide/Composing_Elements.html>`_
 
 .. py:function:: viz(data, observables=None, show_observables=False, latex_dict=None)
 
@@ -108,26 +109,37 @@ API Reference
 
 .. py:function:: load_params(filename)
 
-    Reads in a ``.paramnames`` file and returns a tuple containing a list of parameter names and a list of the corresponding LaTeX code. Assumes that 
-    the file is in the proper format: each line should contain one param name and its LaTeX code separated by a ``tab`` character (``\t``).
+    Reads in a ``.paramnames`` file and returns a dict of parameter names as keys and their corresponding LaTeX code as values. 
+    Assumes that the file is in the proper format: each line should contain one param name and its LaTeX code separated by 
+    a ``tab`` character (``\t``).
 
     :param filename: path to the ``.paramnames`` file
-    :type filename: str, path object
-    :returns: a tuple of lists
+    :type filename: str
+    :returns: a dict of parameter names and LaTeX code
 
-.. py:function:: load_data(filename)
+.. py:function:: load_chains(path, params, params_only=True)
 
     Reads in a chain file and converts it to a `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. Assumes that the file 
-    is in the format described by https://wiki.cosmos.esa.int/planck-legacy-archive/index.php/Cosmological_Parameters#File_formats.
+    is a .txt file with the following columns: *weight, -LogLkl, param1, param2, ...*. 
+    
+    *Weight* is the number of iterations the MCMC sampler stayed at that parameter set (the sample weight) and 
+    *-LogLkl* is the negative log of the likelihood. This is the standard format of both `CosmoMC <https://cosmologist.info/cosmomc/readme.html>`_ 
+    and `Monte-Python <https://monte-python.readthedocs.io/en/latest/index.html>`_ chain files.
 
-    :param filename: path to the chain file
-    :type filename: str, path object
+    :param filename: name of the chain file, list of names, or glob pattern
+    :type filename: str, list['str']
     :returns: Pandas DataFrame
 
 .. py:function:: run_class(index, sample)
 
     Calls the CLASS code on a given index of the sample data to calculate the matter power spectrum :math:`P(k)`, the lensed power spectrum of 
     the CMB temperature :math:`C_{l}^{TT}`, and the lensed power spectrum of the CMB polarization :math:`C_{l}^{EE}`.
+
+    Uses the following settings:
+
+    .. code-block:: python
+
+        {'output':'mPk, tCl, pCl, lCl','P_k_max_1/Mpc':3.0, 'lensing':'yes'}
 
     :param index: index location of the sample to be run through CLASS
     :type index: int
@@ -139,8 +151,8 @@ API Reference
 .. py:function:: compute_residuals(index, sample, sample_CDM)
 
     Useful for exploring beyond-CDM cosmologies. Calls the CLASS code on two sets of sample data (one with beyond-CDM parameters, and 
-    one with CDM parameters), at the specified index. Computes the percent difference in the three observables (:math:`P(k)`, :math:`C_{l}^{TT}`, :math:`C_{l}^{EE}`) 
-    for each value of :math:`k` or :math:`\ell`.
+    one with CDM parameters), at the specified index. Computes the percent difference in the three observables (:math:`P(k)`, 
+    :math:`C_{l}^{TT}`, :math:`C_{l}^{EE}`) for each value of :math:`k` or :math:`\ell`.
 
     :param index: index location of the sample to be run through CLASS
     :type index: int
