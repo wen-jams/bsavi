@@ -1,25 +1,35 @@
 import pandas as pd
 import numpy as np
-import re
+from glob import iglob
+from tqdm import tqdm
 from classy import Class
 from multiprocessing import Pool
 
 # methods to process data products from the CLASS cosmology code.
 
-# read in the .paramnames file and put it into list format
+# read in the .paramnames file and return a dict of parameters and their LaTeX formatting
 def load_params(filename):
     params_list = []
     with open(filename, 'r') as f:
         for line in f:
-            params_and_latex = line.split('\t')
-            params_and_latex = [item.strip() for item in params_and_latex]
-            params_list.append(params_and_latex)
-    return [item[0] for item in params_list], [item[1] for item in params_list]
+            param_and_latex = line.split('\t')
+            param_and_latex = [item.strip() for item in param_and_latex]
+            params_list.append(param_and_latex)
+    return dict(params_list)
 
-# create a DataFrame with the chain files as rows and use a list of parameters as the column names
-def load_data(filename, column_names):
-    data = np.loadtxt(filename)
-    df = pd.DataFrame(data[:,1:], columns=column_names)
+# create a DataFrame from the chain files and use a list of parameters as the column names
+def load_chains(path, params, params_only=True):
+    if isinstance(path, list):
+        array_list = [np.loadtxt(filename) for filename in tqdm(path)]
+    else: 
+        file_list = sorted(iglob(path))
+        array_list = [np.loadtxt(filename) for filename in tqdm(file_list)]
+    chains = np.vstack(array_list)
+    columns = ['weight', '-LogLkl'] + params
+    if params_only:
+        df = pd.DataFrame(chains[:, 2:], columns=params)
+    else:
+        df = pd.DataFrame(chains, columns=columns)
     return df
 
 # run class on the user's selection with default settings
