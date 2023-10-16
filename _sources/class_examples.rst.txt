@@ -36,8 +36,7 @@ LaTeX code. We will make a dictionary of these labels which will be used later.
 
     from inviz.cosmo import load_params
 
-    param_names, latex_params = load_params('../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
-    params_latex_form = dict(zip(param_names, latex_params))
+    params_with_latex = load_params('../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
 Now we are ready to construct an Observable which combines the observable data with plotting instructions.
 
@@ -67,9 +66,89 @@ Finally, produce the visualization with:
 
 .. code-block:: python
 
-    iv.viz(data=chains, observables=[power_spectra], latex_dict=params_latex_form).servable()
+    iv.viz(data=chains, observables=[power_spectra], latex_dict=params_with_latex).servable()
 
 
 Dynamically Computed Observables
 --------------------------------
+
+This next example requires that you have `Classy, the Python wrapper for CLASS 
+<https://cobaya.readthedocs.io/en/latest/theory_class.html#installation>`_, installed.
+
+.. code-block:: python
+
+    # imports
+    import inviz as iv
+    from inviz import cosmo
+    import holoviews as hv
+    from holoviews import opts
+
+As before, we load in the ``.paramnames`` file to get a dict with all the parameter names and their LaTeX code.
+
+.. code-block:: python
+
+    params_with_latex = load_params('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+
+Next we will get a list of the paramname-LaTeX dict's keys to pass into the ``load_chains`` function. 
+This function will take a given filename/glob pattern and try to read the files it finds into a DataFrame
+with the ``param_names`` as the columns.
+
+.. code-block:: python
+
+    param_names = list(params_with_latex.keys())
+
+    chains = load_chains('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt', param_names, params_only=True)
+    chains = chains.sample(n=500, random_state=1).reset_index(drop=True)
+
+.. note::
+
+    ``load_chains`` assumes the file is a txt file in the standard format outputted by two common cosmological 
+    MCMC samplers, CosmoMC and Monte-Python. It will automatically skip the first two columns in each file, 
+    which contain information about the sample weight and the negative log likelihood.
+    If you want that info as well, just change ``params_only`` to ``False``.
+
+Then we modify the table of chains into a format that CLASS will accept as input.
+This just involves renaming the columns and changing H0 (Hubble constant) to little h (Hubble parameter). 
+
+.. code-block:: python
+
+    inclass = chains[['omegabh2', 'omegach2', 'logA', 'ns', 'tau', 'omegal*', 'yheused*', 'H0*']]
+    planck_names = list(inclass.keys())
+    class_names = ['omega_b', 'omega_cdm', 'ln10^{10}A_s', 'n_s', 'tau_reio', 'Omega_Lambda', 'YHe', 'h']
+    renaming_scheme = dict(zip(planck_names, class_names))
+    inclass = inclass.rename(columns=renaming_scheme)
+    inclass['h'] = inclass['h'] * 1e-2
+
+Now, we'll go through the same steps as above to set up our Observable.
+
+.. code-block:: python
+
+    curve_opts = opts.Curve(logx=True)
+
+    ps_latex = {
+        'k': 'k~[h/\mathrm{Mpc}]',
+        'Pk': 'P(k)',
+        'l': '\ell',
+        'Cl_tt': '[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^{TT}',
+        'Cl_ee': '[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^{EE}',
+    }
+
+    power_spectra = iv.Observable(
+        name=['P(k)', 'Cl_TT', 'Cl_EE'], 
+        myfunc=cosmo.run_class,
+        myfunc_args=(inclass,),
+        plot_type='Curve',
+        plot_opts=curve_opts,
+        latex_labels=ps_latex
+    )
+
+Notice that in creating the Observable, instead of passing in ``parameters``, we passed a function and 
+a tuple containing its arguments. It is important to remember that values for both of these cannot be 
+passed at the same time.
+
+And finally, we can produce the visualization with 
+
+.. code-block:: python
+
+    iv.viz(data=chains, observables=[power_spectra], latex_dict=params_with_latex).servable()
 

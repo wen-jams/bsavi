@@ -1,7 +1,7 @@
 API Reference
 =================
 
-.. py:currentmodule:: inviz
+.. py:module:: inviz
 
 .. py:class:: Observable(name, parameters=None, latex_labels=None, myfunc=None, myfunc_args=None, plot_type, plot_opts=None)
 
@@ -105,7 +105,7 @@ API Reference
     :type latex_dict: dict
     :returns: A collection of `Panel <https://panel.holoviz.org/api/cheatsheet.html>`_ components 
 
-.. py:currentmodule:: inviz.cosmo
+.. py:module:: inviz.cosmo
 
 .. py:function:: load_params(filename)
 
@@ -126,8 +126,12 @@ API Reference
     *-LogLkl* is the negative log of the likelihood. This is the standard format of both `CosmoMC <https://cosmologist.info/cosmomc/readme.html>`_ 
     and `Monte-Python <https://monte-python.readthedocs.io/en/latest/index.html>`_ chain files.
 
-    :param filename: name of the chain file, list of names, or glob pattern
-    :type filename: str, list['str']
+    :param path: name of the chain file, list of names, or glob pattern
+    :type path: str, list['str']
+    :param params: list of parameter names which will be used as column names for the DataFrame.
+    :type params: list['str']
+    :param params_only: whether to ignore the first two columns of the chain file (weight and -LogLKL).
+        Default is True, which will disregard those columns when reading in the file.
     :returns: Pandas DataFrame
 
 .. py:function:: run_class(index, sample)

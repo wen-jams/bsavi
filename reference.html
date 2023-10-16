@@ -194,8 +194,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="api-reference">
-<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h1>
+          <section id="module-inviz">
+<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-inviz" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="inviz.Observable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviz.</span></span><span class="sig-name descname"><span class="pre">Observable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex_labels=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">myfunc=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">myfunc_args=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.Observable" title="Permalink to this definition">#</a></dt>
@@ -360,7 +360,7 @@ in a Jupyter Notebook cell.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<span class="target" id="module-inviz.cosmo"></span><dl class="py function">
 <dt class="sig sig-object py" id="inviz.cosmo.load_params">
 <span class="sig-prename descclassname"><span class="pre">inviz.cosmo.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.cosmo.load_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Reads in a <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file and returns a dict of parameter names as keys and their corresponding LaTeX code as values.
@@ -386,7 +386,12 @@ is a .txt file with the following columns: <em>weight, -LogLkl, param1, param2, 
 and <a class="reference external" href="https://monte-python.readthedocs.io/en/latest/index.html">Monte-Python</a> chain files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>list</em><em>[</em><em>'str'</em><em>]</em>) – name of the chain file, list of names, or glob pattern</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>list</em><em>[</em><em>'str'</em><em>]</em>) – name of the chain file, list of names, or glob pattern</p></li>
+<li><p><strong>params</strong> (<em>list</em><em>[</em><em>'str'</em><em>]</em>) – list of parameter names which will be used as column names for the DataFrame.</p></li>
+<li><p><strong>params_only</strong> – whether to ignore the first two columns of the chain file (weight and -LogLKL).
+Default is True, which will disregard those columns when reading in the file.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Pandas DataFrame</p>

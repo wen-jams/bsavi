@@ -221,8 +221,7 @@ and run through CLASS. The results, along with the samples themselves, are in <c
 LaTeX code. We will make a dictionary of these labels which will be used later.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inviz.cosmo</span> <span class="kn">import</span> <span class="n">load_params</span>
 
-<span class="n">param_names</span><span class="p">,</span> <span class="n">latex_params</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
-<span class="n">params_latex_form</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="n">latex_params</span><span class="p">))</span>
+<span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we are ready to construct an Observable which combines the observable data with plotting instructions.</p>
@@ -248,12 +247,78 @@ LaTeX code. We will make a dictionary of these labels which will be used later.<
 </pre></div>
 </div>
 <p>Finally, produce the visualization with:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">power_spectra</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">params_latex_form</span><span class="p">)</span><span class="o">.</span><span class="n">servable</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">power_spectra</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">params_with_latex</span><span class="p">)</span><span class="o">.</span><span class="n">servable</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
 <section id="dynamically-computed-observables">
 <h2>Dynamically Computed Observables<a class="headerlink" href="#dynamically-computed-observables" title="Permalink to this heading">#</a></h2>
+<p>This next example requires that you have <a class="reference external" href="https://cobaya.readthedocs.io/en/latest/theory_class.html#installation">Classy, the Python wrapper for CLASS</a>, installed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># imports</span>
+<span class="kn">import</span> <span class="nn">inviz</span> <span class="k">as</span> <span class="nn">iv</span>
+<span class="kn">from</span> <span class="nn">inviz</span> <span class="kn">import</span> <span class="n">cosmo</span>
+<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
+<span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span>
+</pre></div>
+</div>
+<p>As before, we load in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file to get a dict with all the parameter names and their LaTeX code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next we will get a list of the paramname-LaTeX dict’s keys to pass into the <code class="docutils literal notranslate"><span class="pre">load_chains</span></code> function.
+This function will take a given filename/glob pattern and try to read the files it finds into a DataFrame
+with the <code class="docutils literal notranslate"><span class="pre">param_names</span></code> as the columns.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params_with_latex</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="n">chains</span> <span class="o">=</span> <span class="n">load_chains</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt&#39;</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">params_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">load_chains</span></code> assumes the file is a txt file in the standard format outputted by two common cosmological
+MCMC samplers, CosmoMC and Monte-Python. It will automatically skip the first two columns in each file,
+which contain information about the sample weight and the negative log likelihood.
+If you want that info as well, just change <code class="docutils literal notranslate"><span class="pre">params_only</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</div>
+<p>Then we modify the table of chains into a format that CLASS will accept as input.
+This just involves renaming the columns and changing H0 (Hubble constant) to little h (Hubble parameter).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inclass</span> <span class="o">=</span> <span class="n">chains</span><span class="p">[[</span><span class="s1">&#39;omegabh2&#39;</span><span class="p">,</span> <span class="s1">&#39;omegach2&#39;</span><span class="p">,</span> <span class="s1">&#39;logA&#39;</span><span class="p">,</span> <span class="s1">&#39;ns&#39;</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">,</span> <span class="s1">&#39;omegal*&#39;</span><span class="p">,</span> <span class="s1">&#39;yheused*&#39;</span><span class="p">,</span> <span class="s1">&#39;H0*&#39;</span><span class="p">]]</span>
+<span class="n">planck_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inclass</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;omega_b&#39;</span><span class="p">,</span> <span class="s1">&#39;omega_cdm&#39;</span><span class="p">,</span> <span class="s1">&#39;ln10^</span><span class="si">{10}</span><span class="s1">A_s&#39;</span><span class="p">,</span> <span class="s1">&#39;n_s&#39;</span><span class="p">,</span> <span class="s1">&#39;tau_reio&#39;</span><span class="p">,</span> <span class="s1">&#39;Omega_Lambda&#39;</span><span class="p">,</span> <span class="s1">&#39;YHe&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">]</span>
+<span class="n">renaming_scheme</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">planck_names</span><span class="p">,</span> <span class="n">class_names</span><span class="p">))</span>
+<span class="n">inclass</span> <span class="o">=</span> <span class="n">inclass</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">renaming_scheme</span><span class="p">)</span>
+<span class="n">inclass</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inclass</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-2</span>
+</pre></div>
+</div>
+<p>Now, we’ll go through the same steps as above to set up our Observable.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">curve_opts</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">Curve</span><span class="p">(</span><span class="n">logx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ps_latex</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="s1">&#39;k~[h/\mathrm</span><span class="si">{Mpc}</span><span class="s1">]&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Pk&#39;</span><span class="p">:</span> <span class="s1">&#39;P(k)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;l&#39;</span><span class="p">:</span> <span class="s1">&#39;\ell&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Cl_tt&#39;</span><span class="p">:</span> <span class="s1">&#39;[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^</span><span class="si">{TT}</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Cl_ee&#39;</span><span class="p">:</span> <span class="s1">&#39;[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^</span><span class="si">{EE}</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">power_spectra</span> <span class="o">=</span> <span class="n">iv</span><span class="o">.</span><span class="n">Observable</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;P(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;Cl_TT&#39;</span><span class="p">,</span> <span class="s1">&#39;Cl_EE&#39;</span><span class="p">],</span>
+    <span class="n">myfunc</span><span class="o">=</span><span class="n">cosmo</span><span class="o">.</span><span class="n">run_class</span><span class="p">,</span>
+    <span class="n">myfunc_args</span><span class="o">=</span><span class="p">(</span><span class="n">inclass</span><span class="p">,),</span>
+    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;Curve&#39;</span><span class="p">,</span>
+    <span class="n">plot_opts</span><span class="o">=</span><span class="n">curve_opts</span><span class="p">,</span>
+    <span class="n">latex_labels</span><span class="o">=</span><span class="n">ps_latex</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that in creating the Observable, instead of passing in <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, we passed a function and
+a tuple containing its arguments. It is important to remember that values for both of these cannot be
+passed at the same time.</p>
+<p>And finally, we can produce the visualization with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">power_spectra</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">params_with_latex</span><span class="p">)</span><span class="o">.</span><span class="n">servable</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 
