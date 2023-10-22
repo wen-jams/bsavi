@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "inviz",
-    version = "0.3.6",
+    version = "0.3.7",
     author = "James Wen",
     author_email = "jswen@usc.edu",
     description = ("An interactive visualizer to help explore high-dimensional likelihoods and their observables."),
@@ -22,7 +22,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.8, <=3.11',
     install_requires=["holoviews>=1.15.4",
                       "bokeh==2.4.3", # locking bokeh here until v3 works with latex
                       "panel==0.14.4", # same here
