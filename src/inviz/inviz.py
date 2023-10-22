@@ -49,10 +49,6 @@ class Observable:
         the data to associated with that observable. can be python dict (or pandas DataFrame)
         whose keys (or column names) will be used for things like plot axis labels. 
 
-    latex_labels: dict or list of dicts
-        key: value -> parameter label: latex version. parameter label must match the
-        corresponding one in the parameters dict
-
     myfunc: callable
         a user-provided function that returns parameters. can return more than one
         set of parameters.
@@ -66,6 +62,10 @@ class Observable:
 
     plot_opts: holoviews Options object
         customization options for the observable plot. see Holoviews documentation
+
+    latex_labels: dict or list of dicts
+        key: value -> parameter label: latex version. parameter label must match the
+        corresponding one in the parameters dict
     """
     
     def __init__(
@@ -128,12 +128,12 @@ class Observable:
                 dataset = self.parameters[i]
                 unpacked_data = _unpacker(dataset, index)
                 kdim, vdim = unpacked_data.keys()
-                plot = hv_element(unpacked_data, kdim, vdim, group=self.name[i], label=str(index)) #FIXME
+                plot = hv_element(unpacked_data, kdim, vdim, group=self.name[i], label=str(index)) #TODO
                 # plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
             elif computed_data:
                 dataset = computed_data[i]
                 kdim, vdim = dataset.keys()
-                plot = hv_element(dataset, kdim, vdim, group=self.name[i], label=str(index)) #FIXME
+                plot = hv_element(dataset, kdim, vdim, group=self.name[i], label=str(index)) #TODO
                 # plot = hv_element(dataset, kdim, vdim, label=self.name[i])
             # set defaults
             plot.opts(
@@ -202,14 +202,14 @@ def viz(
             cmapping = opts.Points(
                 color=dim(colordim),
                 colorbar=True,
-                cmap='GnBu_r')
+                cmap='Spectral_r')
         else:
             cmapping = opts.Points(color='grey', colorbar=True)
         hover = HoverTool(tooltips=None)
         xlabel = _lookup_latex_label(kdim1, latex_dict)
         ylabel = _lookup_latex_label(kdim2, latex_dict)
         popts = opts.Points(
-            title='Input Data',
+            title='Sample Data',
             bgcolor='#E5E9F0',
             fontscale=1.1,
             xlabel=xlabel,
@@ -303,7 +303,7 @@ def viz(
                 new_plots = []
                 for each in observables:
                     new_plots.extend(each.generate_plot(element))
-                plots[element] = {plot.group: plot for plot in new_plots} #FIXME
+                plots[element] = {plot.group: plot for plot in new_plots} #TODO
                 # plots[element] = {plot.label: plot for plot in new_plots}
             
             plots_list = []
