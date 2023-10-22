@@ -12,7 +12,7 @@ the CMB temperature :math:`C_{l}^{TT}` and polarization :math:`C_{l}^{EE}`.
 We will look at Table 6.7 from the 
 `Planck 2018 table of parameters <https://wiki.cosmos.esa.int/planck-legacy-archive/images/4/43/Baseline_params_table_2018_68pc_v2.pdf>`_.
 The data required for this tutorial is located 
-`here: <https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing>`_.
+`here <https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing>`_.
 
 
 Pre-Computed Observables
@@ -29,8 +29,8 @@ Begin by loading the data file and splitting it into chains and spectra:
     chains = planck.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
     class_results = planck[['p(k)', 'cl_tt', 'cl_ee']]
 
-Read in the ``.paramnames`` file that was included with the data. This is a list of each parameter and the corresponding 
-LaTeX code. We will make a dictionary of these labels which will be used later.
+Read in the ``.paramnames`` file that was included with the data. This is a list of each parameter's name in both 
+plain text and LaTeX. ``load_params`` will return a dictionary of these labels which we will use later.
 
 .. code-block:: python
 
@@ -78,26 +78,26 @@ This next example requires that you have `Classy, the Python wrapper for CLASS
 .. code-block:: python
 
     # imports
+    import pandas as pd
     import inviz as iv
     from inviz import cosmo
-    import holoviews as hv
     from holoviews import opts
 
 As before, we load in the ``.paramnames`` file to get a dict with all the parameter names and their LaTeX code.
 
 .. code-block:: python
 
-    params_with_latex = load_params('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+    params_with_latex = cosmo.load_params('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
 Next we will get a list of the paramname-LaTeX dict's keys to pass into the ``load_chains`` function. 
 This function will take a given filename/glob pattern and try to read the files it finds into a DataFrame
-with the ``param_names`` as the columns.
+with the ``param_names`` as the columns. The resulting DataFrame is 39177 rows long, so we will downsample
+it to 500 to avoid overplotting.
 
 .. code-block:: python
 
     param_names = list(params_with_latex.keys())
-
-    chains = load_chains('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt', param_names, params_only=True)
+    chains = cosmo.load_chains('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt', param_names, params_only=True)
     chains = chains.sample(n=500, random_state=1).reset_index(drop=True)
 
 .. note::
@@ -143,8 +143,8 @@ Now, we'll go through the same steps as above to set up our Observable.
     )
 
 Notice that in creating the Observable, instead of passing in ``parameters``, we passed a function and 
-a tuple containing its arguments. It is important to remember that values for both of these cannot be 
-passed at the same time.
+a tuple containing its arguments. **It is important to remember that values for both of these cannot be 
+passed at the same time.**
 
 And finally, we can produce the visualization with 
 

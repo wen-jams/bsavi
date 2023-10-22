@@ -17,6 +17,9 @@ alongside the dataset containing the sample distribution to start visualizing!
 
 Check out the :doc:`usage` section for further information, including how to :ref:`install <installation>` the project.
 
+See :doc:`quickstart` for a brief introduction to the code. :doc:`class_examples` has examples for how cosmologists 
+might use InViz, and for an in-depth walkthrough of InViz and all of its features, see :doc:`userguide`.
+
 .. note::
 
    This project is under active development.

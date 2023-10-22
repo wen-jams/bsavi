@@ -9,7 +9,7 @@
 project = 'InViz'
 copyright = '2023, James Wen'
 author = 'James Wen'
-release = '0.3.6'
+release = '0.3.7'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
