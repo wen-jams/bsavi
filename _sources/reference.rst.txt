@@ -13,7 +13,7 @@ API Reference
     
     .. py:attribute:: parameters
 
-        The data to associated with that observable. Can be python dict (or pandas DataFrame)
+        The data associated with that observable. Can be python dict (or pandas DataFrame)
         whose keys (or column names) will be used for things like plot axis labels.
 
         :type: dict-like or list[dict-like]
@@ -55,9 +55,14 @@ API Reference
     .. py:attribute:: plot_type
 
         Specifies how the data should be visualized. Currently can pick either 'Curve'
-        that connects data points together or 'Scatter' for a simple scatter plot.
+        that connects data points together, 'Bars' for a series of columns with their 
+        heights determined by the y-axis value at each point, or 'Scatter' for a simple 
+        scatter plot.
 
-        :type: str
+        Pass a single value to set it for all datasets in the Observable, or a list of 
+        values to be set for each dataset.
+
+        :type: str or list[str]
         
     .. py:attribute:: plot_opts
 
@@ -109,9 +114,9 @@ API Reference
 
 .. py:function:: load_params(filename)
 
-    Reads in a ``.paramnames`` file and returns a dict of parameter names as keys and their corresponding LaTeX code as values. 
-    Assumes that the file is in the proper format: each line should contain one param name and its LaTeX code separated by 
-    a ``tab`` character (``\t``).
+    Reads in a ``.paramnames`` file and returns a dict of each parameter's plain text and LaTeX name. 
+    Assumes that the file is in the proper format: each line should contain one plain text param name and its LaTeX counterpart separated by 
+    a ``tab`` character (``\t``). Any amount of whitespace on either side of the tab character is acceptable.
 
     :param filename: path to the ``.paramnames`` file
     :type filename: str
@@ -132,6 +137,7 @@ API Reference
     :type params: list['str']
     :param params_only: whether to ignore the first two columns of the chain file (weight and -LogLKL).
         Default is True, which will disregard those columns when reading in the file.
+    :type params_only: bool
     :returns: Pandas DataFrame
 
 .. py:function:: run_class(index, sample)

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="reference.html" /><link rel="prev" title="Cosmology &amp; CLASS" href="class_examples.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>User Guide - InViz 0.3.6 documentation</title>
+        <title>InViz: User Guide - InViz 0.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">InViz 0.3.6 documentation</div></a>
+      <a href="index.html"><div class="brand">InViz 0.3.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">InViz 0.3.6 documentation</span>
+  <span class="sidebar-brand-text">InViz 0.3.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">User Guide</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">InViz: User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 </ul>
 
@@ -188,14 +188,347 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="user-guide">
-<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this heading">#</a></h1>
+          <section id="inviz-user-guide">
+<h1>InViz: User Guide<a class="headerlink" href="#inviz-user-guide" title="Permalink to this heading">#</a></h1>
+<p>This guide will demonstrate and explain the features and functionality
+of InViz by stepping through the whole process of creating a
+visualization. It will follow structure of the Cosmology &amp; CLASS
+tutorials without requiring install of CLASS or any cosmologist-specific
+packages. A basic knowledge of plotting with
+<a class="reference external" href="https://holoviews.org/index.html">HoloViews</a> is suggested, since it
+is the utility that provides the interactive plots for this package.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># imports
+import inviz as iv
+import numpy as np
+import pandas as pd
+</pre></div>
+</div>
+<p>Suppose we want to visualize how changes in amplitude, frequency, and
+phase affect some wave functions. Let’s choose the sine and sinc
+functions.</p>
+<p>A sine wave can be defined as:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[y(x) = A \sin{(2\pi f x + \phi)} = A \sin{(\omega x + \phi)}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> is the amplitude, <span class="math notranslate nohighlight">\(f\)</span> is the frequency,
+<span class="math notranslate nohighlight">\(\omega\)</span> is the angular frequency, and <span class="math notranslate nohighlight">\(\phi\)</span> is the phase.</p>
+<p>The sinc function is simply:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\mathrm{sinc}~(x) = \frac{\sin{(x)}}{x}\]</div>
+</div>
+<p>First let’s generate some random data in three dimensions. These will be
+samples of our amplitudes, frequencies and phases.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ndim, nsamples = 3, 1000
+
+np.random.seed(42)
+data1 = np.random.randn(ndim * 4 * nsamples // 5).reshape(
+    [4 * nsamples // 5, ndim]
+)
+data2 = 4 * np.random.rand(ndim)[None, :] + np.random.randn(
+    ndim * nsamples // 5
+).reshape([nsamples // 5, ndim])
+data = np.vstack([data1, data2])
+</pre></div>
+</div>
+<p>Then convert it into a pandas DataFrame (InViz only accepts DataFrames,
+for now) and define column labels with some fancy <span class="math notranslate nohighlight">\(\LaTeX\)</span>
+formatting:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>param_names = [&#39;frequency&#39;, &#39;phase&#39;, &#39;amplitude&#39;]
+latex = [&#39;\omega / 2\pi&#39;, &#39;\phi&#39;, &#39;\mathrm{amplitude}&#39;]
+df = pd.DataFrame(data, columns=param_names)
+latex_dict = dict(zip(param_names, latex))
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df.head()
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>frequency</th>
+      <th>phase</th>
+      <th>amplitude</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.496714</td>
+      <td>-0.138264</td>
+      <td>0.647689</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.523030</td>
+      <td>-0.234153</td>
+      <td>-0.234137</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1.579213</td>
+      <td>0.767435</td>
+      <td>-0.469474</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.542560</td>
+      <td>-0.463418</td>
+      <td>-0.465730</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.241962</td>
+      <td>-1.913280</td>
+      <td>-1.724918</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>We now have a table of samples which we can visualize directly with
+<code class="docutils literal notranslate"><span class="pre">iv.viz</span></code>. Bringing along the latex dict we made earlier:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(df, latex_dict=latex_dict)
+</pre></div>
+</div>
+<section id="writing-functions-to-compute-data-for-observables">
+<h2>Writing Functions to Compute Data for Observables<a class="headerlink" href="#writing-functions-to-compute-data-for-observables" title="Permalink to this heading">#</a></h2>
+<p>Next, we will define the function that takes a given row of samples from
+the table above and uses it to compute the two waveforms.</p>
+<section id="data-formats">
+<h3>Data Formats<a class="headerlink" href="#data-formats" title="Permalink to this heading">#</a></h3>
+<p>Any function that computes data for an Observable must return data in
+the following format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="o">...</span><span class="p">])},</span>
+    <span class="p">{</span><span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="o">...</span><span class="p">])},</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Examining this format more closely: we have a list of dictionaries that
+contain two 1-D NumPy arrays, with their parameter names as the keys.
+InViz will interpret each dict as its own observable and attempt to plot
+it with the first array on the x axis and the second array on the y
+axis. The keys will be used to label their respective axes.</p>
+<p>This rather specific format is related to how HoloViews interfaces with
+tabular datasets. <a class="reference external" href="https://holoviews.org/user_guide/Tabular_Datasets.html">Their
+documentation</a>
+gives a full list of accepted data formats. While InViz currently only
+supports the one detailed above, eventually all the pure Python, Numpy,
+and Pandas data storage formats will be supported.</p>
+<p>Another note: Observables and functions are one-to-one, so if you’d
+rather have separate functions that all only return one set of data
+points, but still want to visualize them together, you will have to
+create an Observable for each. You are allowed to pass any amount of
+arguments into each function though.</p>
+<p>Most importantly, the function must have logic to select a sample from
+an input dataset according to its index. This is because InViz will pass
+the index corresponding to a point selected on the plot into your
+function. Therefore, <code class="docutils literal notranslate"><span class="pre">index</span></code> is required as the first argument. Then
+you can have an arbitrary amount of arguments. The example below is how
+it should be done if the input dataset is a DataFrame.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_waveforms(index, input_data):
+    selection = input_data.iloc[[index]]
+    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
+    angular_freq = 2*np.pi*selection[&#39;frequency&#39;].iloc[0]
+    phase = selection[&#39;phase&#39;].iloc[0]
+    amp = selection[&#39;amplitude&#39;].iloc[0]
+    sin = amp * np.sin(angular_freq*x + phase)
+    sinc = amp * np.sinc(angular_freq*x/np.pi + phase)
+    waves = [
+        {&#39;x&#39;: x, &#39;sin(x)&#39;: sin},
+        {&#39;x&#39;: x, &#39;sinc(x)&#39;: sinc},
+    ]
+    return waves
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># example run
+sin, sinc = compute_waveforms(0, df)
+# plot them using holoviews
+import holoviews as hv
+layout = hv.Curve(sin, &#39;x&#39;, &#39;sin(x)&#39;) + hv.Curve(sinc, &#39;x&#39;, &#39;sinc(x)&#39;)
+layout
+</pre></div>
+</div>
+</section>
+</section>
+<section id="creating-an-observable">
+<h2>Creating an Observable<a class="headerlink" href="#creating-an-observable" title="Permalink to this heading">#</a></h2>
+<p>Now we are ready to set up an InViz Observable object. This is a way to
+associate your data with how it should be plotted, including title and
+axis labels, <span class="math notranslate nohighlight">\(\LaTeX\)</span> formatting, and other customizations. InViz
+will use all this information when generating the visualizations. Below
+is the full list of options for an Observable:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span><span class="p">:</span> <span class="n">string</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strings</span>
+    <span class="n">specifies</span> <span class="n">the</span> <span class="n">display</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">observable</span> <span class="k">for</span> <span class="n">things</span> <span class="n">like</span> <span class="n">plot</span> <span class="n">titles</span>
+
+<span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="o">-</span><span class="n">like</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="nb">dict</span><span class="o">-</span><span class="n">likes</span>
+    <span class="n">the</span> <span class="n">data</span> <span class="n">to</span> <span class="n">associated</span> <span class="k">with</span> <span class="n">that</span> <span class="n">observable</span><span class="o">.</span> <span class="n">can</span> <span class="n">be</span> <span class="n">python</span> <span class="nb">dict</span> <span class="p">(</span><span class="ow">or</span> <span class="n">pandas</span> <span class="n">DataFrame</span><span class="p">)</span>
+    <span class="n">whose</span> <span class="n">keys</span> <span class="p">(</span><span class="ow">or</span> <span class="n">column</span> <span class="n">names</span><span class="p">)</span> <span class="n">will</span> <span class="n">be</span> <span class="n">used</span> <span class="k">for</span> <span class="n">things</span> <span class="n">like</span> <span class="n">plot</span> <span class="n">axis</span> <span class="n">labels</span><span class="o">.</span>
+
+<span class="n">myfunc</span><span class="p">:</span> <span class="nb">callable</span>
+    <span class="n">a</span> <span class="n">user</span><span class="o">-</span><span class="n">provided</span> <span class="n">function</span> <span class="n">that</span> <span class="n">returns</span> <span class="n">parameters</span><span class="o">.</span> <span class="n">can</span> <span class="k">return</span> <span class="n">more</span> <span class="n">than</span> <span class="n">one</span>
+    <span class="nb">set</span> <span class="n">of</span> <span class="n">parameters</span><span class="o">.</span>
+
+<span class="n">myfunc_args</span><span class="p">:</span> <span class="nb">tuple</span>
+    <span class="n">arguments</span> <span class="k">for</span> <span class="n">user</span><span class="o">-</span><span class="n">provided</span> <span class="n">function</span>
+
+<span class="n">plot_type</span><span class="p">:</span> <span class="n">string</span>
+    <span class="n">specifies</span> <span class="n">how</span> <span class="n">the</span> <span class="n">data</span> <span class="n">should</span> <span class="n">be</span> <span class="n">visualized</span><span class="o">.</span> <span class="n">currently</span> <span class="n">can</span> <span class="n">pick</span> <span class="s1">&#39;Curve&#39;</span><span class="p">,</span> <span class="s1">&#39;Bars&#39;</span><span class="p">,</span>
+    <span class="ow">or</span> <span class="s1">&#39;Scatter&#39;</span>
+
+<span class="n">plot_opts</span><span class="p">:</span> <span class="n">holoviews</span> <span class="n">Options</span> <span class="nb">object</span>
+    <span class="n">customization</span> <span class="n">options</span> <span class="k">for</span> <span class="n">the</span> <span class="n">observable</span> <span class="n">plot</span><span class="o">.</span> <span class="n">see</span> <span class="n">Holoviews</span> <span class="n">documentation</span>
+
+<span class="n">latex_labels</span><span class="p">:</span> <span class="nb">dict</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">dicts</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="o">-&gt;</span> <span class="n">parameter</span> <span class="n">label</span><span class="p">:</span> <span class="n">latex</span> <span class="n">version</span><span class="o">.</span> <span class="n">parameter</span> <span class="n">label</span> <span class="n">must</span> <span class="n">match</span> <span class="n">the</span>
+    <span class="n">corresponding</span> <span class="n">one</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">parameters</span> <span class="nb">dict</span>
+</pre></div>
+</div>
+<p>Note: InViz is limited to 2-D graphs (two plot axes), so there are three
+<em>plot_types</em> available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'Curve'</span></code>: A continuous line drawn through each point</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'Scatter'</span></code>: A simple scatterplot of each point</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'Bars'</span></code>: A series of bars with their heights determined by the
+y-axis value at each point</p></li>
+</ul>
+<p><strong>IMPORTANT</strong>: only pass arguments into <strong>either</strong> <code class="docutils literal notranslate"><span class="pre">parameters</span></code> <strong>or</strong>
+<code class="docutils literal notranslate"><span class="pre">myfunction</span> <span class="pre">+</span> <span class="pre">myfunction_args</span></code>, depending on if you have a
+precalculated observable dataset, or you want to dynamically calculate
+them with a custom function.</p>
+<section id="customizations">
+<h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this heading">#</a></h3>
+<p>To apply customizations to your plots, use HoloViews Options
+(documentation
+<a class="reference external" href="https://holoviews.org/user_guide/Applying_Customizations.html">here</a>).
+They allow you to set axis limits, add logarithmic scaling to each axis,
+and change the color cycles used for each plot element.</p>
+<p>A brief summary of the most common options you might need:</p>
+<ul class="simple">
+<li><p><em>xlim, ylim</em>: tuple of the lower and upper axis range limits, to be
+used instead of auto axis scaling. Use <code class="docutils literal notranslate"><span class="pre">None</span></code> to denote no explicit
+upper/lower limit.</p>
+<ul>
+<li><p>For example: ylim=(None, 10) would cut the figure off for anything
+above 10, but the lower y value will be adjusted to fit the figure
+into the frame.</p></li>
+</ul>
+</li>
+<li><p><em>logx, logy</em>: boolean values to set logarithmic scaling on either
+axis. Default is False.</p></li>
+<li><p><em>height, width</em>: integer values to set the size of the plot frame.
+InViz sets <code class="docutils literal notranslate"><span class="pre">height=400,</span> <span class="pre">width=500</span></code> by default.</p></li>
+<li><p><em>color</em>: sets the color of the plotted objects. This can be:</p>
+<ul>
+<li><p>a single color, e.g. <code class="docutils literal notranslate"><span class="pre">'red'</span></code> or</p></li>
+<li><p>a
+<a class="reference external" href="https://holoviews.org/user_guide/Style_Mapping.html#cycles-and-palettes">cycle/palette</a>,
+which applies a colormap to an overlay and replaces the default
+colormap.</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># setting up some customizations first
+import holoviews as hv
+from holoviews import opts
+opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle(&#39;YlOrRd&#39;), bgcolor=&#39;#151515&#39;)
+opts2 = opts.Scatter(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle(&#39;PuBuGn&#39;), bgcolor=&#39;#151515&#39;)
+
+waves_latex = {
+    &#39;x&#39;: &#39;x&#39;,
+    &#39;sin(x)&#39;: &#39;\sin{x}&#39;,
+    &#39;sinc(x)&#39;: &#39;1/\sin{x}&#39;,
+}
+</pre></div>
+</div>
+</section>
+<section id="pre-computed-observables">
+<h3>Pre-Computed Observables<a class="headerlink" href="#pre-computed-observables" title="Permalink to this heading">#</a></h3>
+<p>The function we wrote earlier, <code class="docutils literal notranslate"><span class="pre">compute_waveforms</span></code>, is pretty fast.
+But sometimes, we might have calculations that take several minutes or
+longer to complete. Clicking on a point in the sample plot and waiting
+minutes for a graph of your Observable to appear is not very fun. If we
+compute our observable for every sample beforehand, it will make for a
+more seamless interactive experience.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># go through the entire set of samples, computing waveforms for each set:
+waves_list = []
+for idx in range(0, len(df)):
+    wave = compute_waveforms(idx, df)
+    waves_list.append(wave)
+
+waves_df = pd.DataFrame(waves_list, columns=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;])
+</pre></div>
+</div>
+<p>Now we can create an Observable, giving it the wave data and specifying
+plot titles, plot types, customizations, and latex labels.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>waveforms = iv.Observable(
+    name=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;],
+    parameters=computed_df,
+    plot_type=[&#39;Curve&#39;, &#39;Scatter&#39;],
+    plot_opts=[opts1, opts2],
+    latex_labels=waves_latex
+)
+</pre></div>
+</div>
+</section>
+<section id="dynamically-computed-observables">
+<h3>Dynamically Computed Observables<a class="headerlink" href="#dynamically-computed-observables" title="Permalink to this heading">#</a></h3>
+<p>On the other hand, our function is fast enough that we can just have
+InViz call it every time we select a sample. In this case, we will give
+our Observable the function itself, along with a tuple containing its
+arguments. We can skip the first argument, <code class="docutils literal notranslate"><span class="pre">index</span></code>, since it’s
+automatically handled by the visualizer.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dynamic_waveforms = iv.Observable(
+    name=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;],
+    myfunc=compute_waveforms,
+    myfunc_args=(df,),
+    plot_type=&#39;Curve&#39;,
+    plot_opts=[opts1, opts2],
+    latex_labels=waves_latex
+)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="visualizing">
+<h2>Visualizing<a class="headerlink" href="#visualizing" title="Permalink to this heading">#</a></h2>
+<p>Finally, we will use <code class="docutils literal notranslate"><span class="pre">viz</span></code> to interactively visualize the whole thing.
+Here’s an overview of the function arguments: - <strong>data</strong>: (Pandas
+DataFrame) the data you want shown as a scatter plot - <strong>observables</strong>:
+(list) a list of observables you’d like to visualize -
+<strong>show_observables</strong>: (Boolean) whether you want to see the observable
+plots or not (default = False if no observables, True if observables is
+not None). - <strong>latex_dict</strong>: (dict) a dictionary containing the Latex
+formatting for your axis labels (default = None)</p>
+<p>Run the cell below to test out the interactivity by selecting points on
+the scatterplot in the left section, and see what appears on the plots
+in the right section!</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict)
+</pre></div>
+</div>
+</section>
 </section>
 
         </article>
@@ -241,15 +574,45 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">InViz: User Guide</a><ul>
+<li><a class="reference internal" href="#writing-functions-to-compute-data-for-observables">Writing Functions to Compute Data for Observables</a><ul>
+<li><a class="reference internal" href="#data-formats">Data Formats</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-an-observable">Creating an Observable</a><ul>
+<li><a class="reference internal" href="#customizations">Customizations</a></li>
+<li><a class="reference internal" href="#pre-computed-observables">Pre-Computed Observables</a></li>
+<li><a class="reference internal" href="#dynamically-computed-observables">Dynamically Computed Observables</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#visualizing">Visualizing</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=afd21409"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=0baa9010"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

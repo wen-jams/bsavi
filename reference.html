@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="User Guide" href="userguide.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="InViz: User Guide" href="userguide.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>API Reference - InViz 0.3.6 documentation</title>
+        <title>API Reference - InViz 0.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">InViz 0.3.6 documentation</div></a>
+      <a href="index.html"><div class="brand">InViz 0.3.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">InViz 0.3.6 documentation</span>
+  <span class="sidebar-brand-text">InViz 0.3.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">InViz: User Guide</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
 </ul>
 
@@ -213,7 +213,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviz.Observable.parameters">
 <span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#inviz.Observable.parameters" title="Permalink to this definition">#</a></dt>
-<dd><p>The data to associated with that observable. Can be python dict (or pandas DataFrame)
+<dd><p>The data associated with that observable. Can be python dict (or pandas DataFrame)
 whose keys (or column names) will be used for things like plot axis labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -279,10 +279,14 @@ set of parameters. See above note for usage with <a class="reference internal" h
 <dt class="sig sig-object py" id="inviz.Observable.plot_type">
 <span class="sig-name descname"><span class="pre">plot_type</span></span><a class="headerlink" href="#inviz.Observable.plot_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Specifies how the data should be visualized. Currently can pick either ‘Curve’
-that connects data points together or ‘Scatter’ for a simple scatter plot.</p>
+that connects data points together, ‘Bars’ for a series of columns with their
+heights determined by the y-axis value at each point, or ‘Scatter’ for a simple
+scatter plot.</p>
+<p>Pass a single value to set it for all datasets in the Observable, or a list of
+values to be set for each dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str or list[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -363,9 +367,9 @@ in a Jupyter Notebook cell.</p>
 <span class="target" id="module-inviz.cosmo"></span><dl class="py function">
 <dt class="sig sig-object py" id="inviz.cosmo.load_params">
 <span class="sig-prename descclassname"><span class="pre">inviz.cosmo.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviz.cosmo.load_params" title="Permalink to this definition">#</a></dt>
-<dd><p>Reads in a <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file and returns a dict of parameter names as keys and their corresponding LaTeX code as values.
-Assumes that the file is in the proper format: each line should contain one param name and its LaTeX code separated by
-a <code class="docutils literal notranslate"><span class="pre">tab</span></code> character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>).</p>
+<dd><p>Reads in a <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file and returns a dict of each parameter’s plain text and LaTeX name.
+Assumes that the file is in the proper format: each line should contain one plain text param name and its LaTeX counterpart separated by
+a <code class="docutils literal notranslate"><span class="pre">tab</span></code> character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>). Any amount of whitespace on either side of the tab character is acceptable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – path to the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file</p>
@@ -389,7 +393,7 @@ and <a class="reference external" href="https://monte-python.readthedocs.io/en/l
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em><em>, </em><em>list</em><em>[</em><em>'str'</em><em>]</em>) – name of the chain file, list of names, or glob pattern</p></li>
 <li><p><strong>params</strong> (<em>list</em><em>[</em><em>'str'</em><em>]</em>) – list of parameter names which will be used as column names for the DataFrame.</p></li>
-<li><p><strong>params_only</strong> – whether to ignore the first two columns of the chain file (weight and -LogLKL).
+<li><p><strong>params_only</strong> (<em>bool</em>) – whether to ignore the first two columns of the chain file (weight and -LogLKL).
 Default is True, which will disregard those columns when reading in the file.</p></li>
 </ul>
 </dd>
@@ -457,7 +461,7 @@ one with CDM parameters), at the specified index. Computes the percent differenc
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">User Guide</div>
+                <div class="title">InViz: User Guide</div>
                 
               </div>
             </a>
@@ -521,7 +525,7 @@ one with CDM parameters), at the specified index. Computes the percent differenc
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=afd21409"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=0baa9010"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

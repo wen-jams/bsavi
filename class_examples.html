@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User Guide" href="userguide.html" /><link rel="prev" title="Quickstart" href="quickstart.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="InViz: User Guide" href="userguide.html" /><link rel="prev" title="Quickstart" href="quickstart.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>Cosmology &amp; CLASS - InViz 0.3.6 documentation</title>
+        <title>Cosmology &amp; CLASS - InViz 0.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">InViz 0.3.6 documentation</div></a>
+      <a href="index.html"><div class="brand">InViz 0.3.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">InViz 0.3.6 documentation</span>
+  <span class="sidebar-brand-text">InViz 0.3.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Cosmology &amp; CLASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">InViz: User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 </ul>
 
@@ -206,7 +206,7 @@ the CMB temperature <span class="math notranslate nohighlight">\(C_{l}^{TT}\)</s
 <p>We will look at Table 6.7 from the
 <a class="reference external" href="https://wiki.cosmos.esa.int/planck-legacy-archive/images/4/43/Baseline_params_table_2018_68pc_v2.pdf">Planck 2018 table of parameters</a>.
 The data required for this tutorial is located
-<a class="reference external" href="https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing">here:</a>.</p>
+<a class="reference external" href="https://github.com/wen-jams/inviz/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing">here</a>.</p>
 <section id="pre-computed-observables">
 <h2>Pre-Computed Observables<a class="headerlink" href="#pre-computed-observables" title="Permalink to this heading">#</a></h2>
 <p>Let’s start with the case of pre-computed observables. A small sample was taken from the chains
@@ -217,8 +217,8 @@ and run through CLASS. The results, along with the samples themselves, are in <c
 <span class="n">class_results</span> <span class="o">=</span> <span class="n">planck</span><span class="p">[[</span><span class="s1">&#39;p(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_tt&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_ee&#39;</span><span class="p">]]</span>
 </pre></div>
 </div>
-<p>Read in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file that was included with the data. This is a list of each parameter and the corresponding
-LaTeX code. We will make a dictionary of these labels which will be used later.</p>
+<p>Read in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file that was included with the data. This is a list of each parameter’s name in both
+plain text and LaTeX. <code class="docutils literal notranslate"><span class="pre">load_params</span></code> will return a dictionary of these labels which we will use later.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inviz.cosmo</span> <span class="kn">import</span> <span class="n">load_params</span>
 
 <span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
@@ -255,22 +255,22 @@ LaTeX code. We will make a dictionary of these labels which will be used later.<
 <h2>Dynamically Computed Observables<a class="headerlink" href="#dynamically-computed-observables" title="Permalink to this heading">#</a></h2>
 <p>This next example requires that you have <a class="reference external" href="https://cobaya.readthedocs.io/en/latest/theory_class.html#installation">Classy, the Python wrapper for CLASS</a>, installed.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># imports</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">inviz</span> <span class="k">as</span> <span class="nn">iv</span>
 <span class="kn">from</span> <span class="nn">inviz</span> <span class="kn">import</span> <span class="n">cosmo</span>
-<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
 <span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span>
 </pre></div>
 </div>
 <p>As before, we load in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file to get a dict with all the parameter names and their LaTeX code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Next we will get a list of the paramname-LaTeX dict’s keys to pass into the <code class="docutils literal notranslate"><span class="pre">load_chains</span></code> function.
 This function will take a given filename/glob pattern and try to read the files it finds into a DataFrame
-with the <code class="docutils literal notranslate"><span class="pre">param_names</span></code> as the columns.</p>
+with the <code class="docutils literal notranslate"><span class="pre">param_names</span></code> as the columns. The resulting DataFrame is 39177 rows long, so we will downsample
+it to 500 to avoid overplotting.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params_with_latex</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-<span class="n">chains</span> <span class="o">=</span> <span class="n">load_chains</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt&#39;</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">params_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">load_chains</span><span class="p">(</span><span class="s1">&#39;data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt&#39;</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">params_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -313,8 +313,8 @@ This just involves renaming the columns and changing H0 (Hubble constant) to lit
 </pre></div>
 </div>
 <p>Notice that in creating the Observable, instead of passing in <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, we passed a function and
-a tuple containing its arguments. It is important to remember that values for both of these cannot be
-passed at the same time.</p>
+a tuple containing its arguments. <strong>It is important to remember that values for both of these cannot be
+passed at the same time.</strong></p>
 <p>And finally, we can produce the visualization with</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">power_spectra</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">params_with_latex</span><span class="p">)</span><span class="o">.</span><span class="n">servable</span><span class="p">()</span>
 </pre></div>
@@ -332,7 +332,7 @@ passed at the same time.</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">User Guide</div>
+                <div class="title">InViz: User Guide</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -391,7 +391,7 @@ passed at the same time.</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=afd21409"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=0baa9010"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
