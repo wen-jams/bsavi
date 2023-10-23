@@ -17,6 +17,22 @@ alongside the dataset containing the sample distribution to start visualizing!
 
 Check out the :doc:`usage` section for further information, including how to :ref:`install <installation>` the project.
 
+.. figure:: ../../images/planck-fig34.png
+   :scale: 70%
+   :alt: Figure 34 from the Planck 2018 Cosmological Parameters Paper
+
+   Figure 34 from the `Planck 2018 Results <https://arxiv.org/abs/1807.06209>`_, showing the mnu-H0 slice of the parameter space.
+
+.. figure:: ../../images/bsavi-mainpage.gif
+   :scale: 110%
+   :alt: An animation showing three points being selected from a sample distribution and their 
+      corresponding power spectra being shown.
+
+   Exploring this exact parameter space using B-Savi.
+
+.. .. video:: _static/bsavi-mainpage.mp4
+..    :height: 300
+
 See :doc:`quickstart` for a brief introduction to the code. :doc:`class_examples` has examples for how cosmologists 
 might use InViz, and for an in-depth walkthrough of InViz and all of its features, see :doc:`userguide`.
 

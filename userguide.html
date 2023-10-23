@@ -198,11 +198,14 @@
 <h1>InViz: User Guide<a class="headerlink" href="#inviz-user-guide" title="Permalink to this heading">#</a></h1>
 <p>This guide will demonstrate and explain the features and functionality
 of InViz by stepping through the whole process of creating a
-visualization. It will follow structure of the Cosmology &amp; CLASS
+visualization. It will follow structure of the <a class="reference internal" href="class_examples.html"><span class="doc">Cosmology &amp; CLASS</span></a>
 tutorials without requiring install of CLASS or any cosmologist-specific
 packages. A basic knowledge of plotting with
 <a class="reference external" href="https://holoviews.org/index.html">HoloViews</a> is suggested, since it
 is the utility that provides the interactive plots for this package.</p>
+<p>Works in a Jupyter Notebook or as a standalone Python script.
+To see the full interactivity, download the “userguide” notebook
+<a class="reference external" href="https://github.com/wen-jams/inviz/tree/main/tutorials">here</a></p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># imports
 import inviz as iv
 import numpy as np
@@ -311,8 +314,9 @@ latex_dict = dict(zip(param_names, latex))
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(df, latex_dict=latex_dict)
 </pre></div>
 </div>
-<section id="writing-functions-to-compute-data-for-observables">
-<h2>Writing Functions to Compute Data for Observables<a class="headerlink" href="#writing-functions-to-compute-data-for-observables" title="Permalink to this heading">#</a></h2>
+<img alt="../../images/bsavi-userguide1.gif" src="../../images/bsavi-userguide1.gif" />
+<section id="writing-functions-to-compute-observables">
+<h2>Writing Functions to Compute Observables<a class="headerlink" href="#writing-functions-to-compute-observables" title="Permalink to this heading">#</a></h2>
 <p>Next, we will define the function that takes a given row of samples from
 the table above and uses it to compute the two waveforms.</p>
 <section id="data-formats">
@@ -371,6 +375,7 @@ layout = hv.Curve(sin, &#39;x&#39;, &#39;sin(x)&#39;) + hv.Curve(sinc, &#39;x&#3
 layout
 </pre></div>
 </div>
+<img alt="../../images/bsavi-userguide2.png" src="../../images/bsavi-userguide2.png" />
 </section>
 </section>
 <section id="creating-an-observable">
@@ -442,7 +447,7 @@ axis. Default is False.</p></li>
 InViz sets <code class="docutils literal notranslate"><span class="pre">height=400,</span> <span class="pre">width=500</span></code> by default.</p></li>
 <li><p><em>color</em>: sets the color of the plotted objects. This can be:</p>
 <ul>
-<li><p>a single color, e.g. <code class="docutils literal notranslate"><span class="pre">'red'</span></code> or</p></li>
+<li><p>a single color, e.g. <code class="docutils literal notranslate"><span class="pre">'red'</span></code> or</p></li>
 <li><p>a
 <a class="reference external" href="https://holoviews.org/user_guide/Style_Mapping.html#cycles-and-palettes">cycle/palette</a>,
 which applies a colormap to an overlay and replaces the default
@@ -525,9 +530,26 @@ formatting for your axis labels (default = None)</p>
 <p>Run the cell below to test out the interactivity by selecting points on
 the scatterplot in the left section, and see what appears on the plots
 in the right section!</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
 </pre></div>
 </div>
+<img alt="../../images/bsavi-userguide3.gif" src="../../images/bsavi-userguide3.gif" />
+<p>If running in a Jupyter Notebook, you should see a dashboard displayed inline.
+If you’d rather see it in a separate browser window, run the cell below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="o">=</span> <span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">waveforms</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">latex_dict</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Once you are done with it, stop the server with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Another option is to write all your code in a standalone script. Make sure you use
+<code class="docutils literal notranslate"><span class="pre">iv.viz</span></code> with the <code class="docutils literal notranslate"><span class="pre">.servable()</span></code> method, and that it is the last line of code in
+your script. Then serve it with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>panel<span class="w"> </span>serve<span class="w"> </span>path/to/my_app.py
+</pre></div>
+</div>
+<p>Then click on the localhost link to view the dashboard in a separate browser tab.</p>
 </section>
 </section>
 
@@ -587,7 +609,7 @@ in the right section!</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">InViz: User Guide</a><ul>
-<li><a class="reference internal" href="#writing-functions-to-compute-data-for-observables">Writing Functions to Compute Data for Observables</a><ul>
+<li><a class="reference internal" href="#writing-functions-to-compute-observables">Writing Functions to Compute Observables</a><ul>
 <li><a class="reference internal" href="#data-formats">Data Formats</a></li>
 </ul>
 </li>
