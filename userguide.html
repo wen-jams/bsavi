@@ -314,7 +314,7 @@ latex_dict = dict(zip(param_names, latex))
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(df, latex_dict=latex_dict)
 </pre></div>
 </div>
-<img alt="../../images/bsavi-userguide1.gif" src="../../images/bsavi-userguide1.gif" />
+<img alt="_images/bsavi-userguide1.gif" src="_images/bsavi-userguide1.gif" />
 <section id="writing-functions-to-compute-observables">
 <h2>Writing Functions to Compute Observables<a class="headerlink" href="#writing-functions-to-compute-observables" title="Permalink to this heading">#</a></h2>
 <p>Next, we will define the function that takes a given row of samples from
@@ -375,7 +375,7 @@ layout = hv.Curve(sin, &#39;x&#39;, &#39;sin(x)&#39;) + hv.Curve(sinc, &#39;x&#3
 layout
 </pre></div>
 </div>
-<img alt="../../images/bsavi-userguide2.png" src="../../images/bsavi-userguide2.png" />
+<img alt="_images/bsavi-userguide2.png" src="_images/bsavi-userguide2.png" />
 </section>
 </section>
 <section id="creating-an-observable">
@@ -533,7 +533,7 @@ in the right section!</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
 </pre></div>
 </div>
-<img alt="../../images/bsavi-userguide3.gif" src="../../images/bsavi-userguide3.gif" />
+<img alt="_images/bsavi-userguide3.gif" src="_images/bsavi-userguide3.gif" />
 <p>If running in a Jupyter Notebook, you should see a dashboard displayed inline.
 If you’d rather see it in a separate browser window, run the cell below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="o">=</span> <span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">waveforms</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">latex_dict</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
