@@ -56,6 +56,10 @@ Then, call the Viz function:
 
     iv.viz(data, observables=[polynomials]).servable()
 
+
+.. image:: ../../images/bsavi-quickstart.gif
+    
+
 If running in a Jupyter Notebook, you should see a dashboard displayed inline.
 If you'd rather see it in a separate browser window, run the cell below.
 

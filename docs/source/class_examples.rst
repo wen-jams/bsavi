@@ -68,6 +68,8 @@ Finally, produce the visualization with:
 
     iv.viz(data=chains, observables=[power_spectra], latex_dict=params_with_latex).servable()
 
+.. image:: ../../images/bsavi-mainpage.gif
+
 
 Dynamically Computed Observables
 --------------------------------
@@ -152,3 +154,7 @@ And finally, we can produce the visualization with
 
     iv.viz(data=chains, observables=[power_spectra], latex_dict=params_with_latex).servable()
 
+
+.. image:: ../../images/bsavi-mainpage.gif
+
+    
