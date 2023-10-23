@@ -3,11 +3,15 @@ InViz: User Guide
 
 This guide will demonstrate and explain the features and functionality
 of InViz by stepping through the whole process of creating a
-visualization. It will follow structure of the Cosmology & CLASS
+visualization. It will follow structure of the :doc:`class_examples`
 tutorials without requiring install of CLASS or any cosmologist-specific
 packages. A basic knowledge of plotting with
 `HoloViews <https://holoviews.org/index.html>`__ is suggested, since it
 is the utility that provides the interactive plots for this package.
+
+Works in a Jupyter Notebook or as a standalone Python script.
+To see the full interactivity, download the "userguide" notebook 
+`here <https://github.com/wen-jams/inviz/tree/main/tutorials>`_
 
 .. code:: ipython3
 
@@ -140,10 +144,11 @@ We now have a table of samples which we can visualize directly with
 
     iv.viz(df, latex_dict=latex_dict)
 
+.. image:: ../../images/bsavi-userguide1.gif
 
 
-Writing Functions to Compute Data for Observables
--------------------------------------------------
+Writing Functions to Compute Observables
+----------------------------------------
 
 Next, we will define the function that takes a given row of samples from
 the table above and uses it to compute the two waveforms.
@@ -212,6 +217,8 @@ it should be done if the input dataset is a DataFrame.
     import holoviews as hv
     layout = hv.Curve(sin, 'x', 'sin(x)') + hv.Curve(sinc, 'x', 'sinc(x)')
     layout
+
+.. image:: ../../images/bsavi-userguide2.png
 
 
 Creating an Observable
@@ -289,7 +296,7 @@ A brief summary of the most common options you might need:
    InViz sets ``height=400, width=500`` by default.
 -  *color*: sets the color of the plotted objects. This can be:
 
-   -  a single color, e.g. ``'red'`` or
+   -  a single color, e.g. ``'red'`` or
    -  a
       `cycle/palette <https://holoviews.org/user_guide/Style_Mapping.html#cycles-and-palettes>`__,
       which applies a colormap to an overlay and replaces the default
@@ -380,5 +387,29 @@ in the right section!
 
 .. code:: ipython3
 
-    iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict)
+    iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
 
+.. image:: ../../images/bsavi-userguide3.gif
+
+If running in a Jupyter Notebook, you should see a dashboard displayed inline.
+If you'd rather see it in a separate browser window, run the cell below.
+
+.. code-block:: python
+
+    server = iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).show()
+
+Once you are done with it, stop the server with:
+
+.. code-block:: python
+
+    server.stop()
+
+Another option is to write all your code in a standalone script. Make sure you use 
+``iv.viz`` with the ``.servable()`` method, and that it is the last line of code in 
+your script. Then serve it with:
+
+.. code-block:: console
+
+    $ panel serve path/to/my_app.py
+
+Then click on the localhost link to view the dashboard in a separate browser tab.
