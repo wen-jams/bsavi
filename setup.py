@@ -4,16 +4,16 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name = "inviz",
+    name = "bsavi",
     version = "0.3.7",
     author = "James Wen",
     author_email = "jswen@usc.edu",
     description = ("An interactive visualizer to help explore high-dimensional likelihoods and their observables."),
     license = "MIT",
     keywords = "interactive visualizer cosmology",
-    url = "http://packages.python.org/inviz",
+    url = "http://packages.python.org/bsavi",
     packages=setuptools.find_packages(where='src'),
-    # packages=['inviz', 'inviz.cosmo'],
+    # packages=['bsavi', 'bsavi.cosmo'],
     package_dir={'': 'src'},
     long_description=long_description,
     long_description_content_type="text/markdown",

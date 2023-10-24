@@ -1,7 +1,7 @@
 API Reference
 =================
 
-.. py:module:: inviz
+.. py:module:: bsavi
 
 .. py:class:: Observable(name, parameters=None, latex_labels=None, myfunc=None, myfunc_args=None, plot_type, plot_opts=None)
 
@@ -103,14 +103,14 @@ API Reference
     :param data: The data or distribution to be visualized as a scatterplot
     :type data: dict-like
     :param observables: A list of the observables to be visualized
-    :type observables: list[:py:class:`inviz.Observable`]
+    :type observables: list[:py:class:`bsavi.Observable`]
     :param show_observables: Whether to display the observable plots or not. Default behavior is: ``True`` if observables are given, ``False`` if not.
     :type show_observables: bool
     :param latex_dict: A dictionary containing the LaTeX formatting for the scatterplot axis labels
     :type latex_dict: dict
     :returns: A collection of `Panel <https://panel.holoviz.org/api/cheatsheet.html>`_ components 
 
-.. py:module:: inviz.cosmo
+.. py:module:: bsavi.cosmo
 
 .. py:function:: load_params(filename)
 

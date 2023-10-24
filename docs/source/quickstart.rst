@@ -1,8 +1,8 @@
 Quickstart
 ==========
 
-Follow along for a basic example of how to use InViz. Works in a Jupyter Notebook or as a standalone Python script.
-To see the full interactivity, download the "quickstart" notebook `here <https://github.com/wen-jams/inviz/tree/main/tutorials>`_.
+Follow along for a basic example of how to use BSAVI. Works in a Jupyter Notebook or as a standalone Python script.
+To see the full interactivity, download the "quickstart" notebook `here <https://github.com/wen-jams/bsavi/tree/main/tutorials>`_.
 
 Imports:
 
@@ -10,7 +10,7 @@ Imports:
 
     import pandas as pd
     import numpy as np
-    import inviz as iv
+    import bsavi as bsv
 
 Set up some random data:
 
@@ -39,12 +39,12 @@ To visualize this, first construct an Observable object:
 
 .. code-block:: python
 
-    polynomials = iv.Observable(
+    polynomials = bsv.Observable(
         name='polynomials', 
         parameters=[poly_df], 
         plot_type='Curve')
 
-This contains the basic information required by InViz to visualize the function:
+This contains the basic information required by BSAVI to visualize the function:
 
 - Name: what to title the plot
 - Parameters: the dataset containing the function values we just calculated
@@ -54,18 +54,18 @@ Then, call the Viz function:
 
 .. code-block:: python
 
-    iv.viz(data, observables=[polynomials]).servable()
+    bsv.viz(data, observables=[polynomials]).servable()
 
 
 .. image:: ../../images/bsavi-quickstart.gif
-    
+
 
 If running in a Jupyter Notebook, you should see a dashboard displayed inline.
 If you'd rather see it in a separate browser window, run the cell below.
 
 .. code-block:: python
 
-    server = iv.viz(data, observables=[polynomials]).show()
+    server = bsv.viz(data, observables=[polynomials]).show()
 
 Once you are done with it, stop the server with:
 

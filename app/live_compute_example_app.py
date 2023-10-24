@@ -1,4 +1,4 @@
-import inviz as nv
+import bsavi as nv
 import holoviews as hv
 from holoviews import opts
 import numpy as np
