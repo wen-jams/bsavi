@@ -12,7 +12,7 @@ the CMB temperature :math:`C_{l}^{TT}` and polarization :math:`C_{l}^{EE}`.
 We will look at Table 6.7 from the 
 `Planck 2018 table of parameters <https://wiki.cosmos.esa.int/planck-legacy-archive/images/4/43/Baseline_params_table_2018_68pc_v2.pdf>`_.
 The data required for this tutorial is located 
-`here <https://github.com/wen-jams/bsavi/tree/main/data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing>`_.
+`here <https://github.com/wen-jams/bsavi/tree/main/data/planck2018>`_.
 
 
 Pre-Computed Observables
@@ -25,7 +25,7 @@ Begin by loading the data file and splitting it into chains and spectra:
 
 .. code-block:: python
 
-    planck = pd.read_json('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/power_spectra_small.json')
+    planck = pd.read_json('data/planck2018/power_spectra_small.json')
     chains = planck.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
     class_results = planck[['p(k)', 'cl_tt', 'cl_ee']]
 
@@ -34,9 +34,9 @@ plain text and LaTeX. ``load_params`` will return a dictionary of these labels w
 
 .. code-block:: python
 
-    from bsavi.cosmo import load_params
+    from bsavi.chain_io import load_params
 
-    params_with_latex = load_params('../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+    params_with_latex = load_params('../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
 Now we are ready to construct an Observable which combines the observable data with plotting instructions.
 
@@ -82,14 +82,14 @@ This next example requires that you have `Classy, the Python wrapper for CLASS
     # imports
     import pandas as pd
     import bsavi as bsv
-    from bsavi import cosmo
+    from bsavi import cosmo, chain_io
     from holoviews import opts
 
 As before, we load in the ``.paramnames`` file to get a dict with all the parameter names and their LaTeX code.
 
 .. code-block:: python
 
-    params_with_latex = cosmo.load_params('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+    params_with_latex = chain_io.load_params('data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
 Next we will get a list of the paramname-LaTeX dict's keys to pass into the ``load_chains`` function. 
 This function will take a given filename/glob pattern and try to read the files it finds into a DataFrame
@@ -99,7 +99,7 @@ it to 500 to avoid overplotting.
 .. code-block:: python
 
     param_names = list(params_with_latex.keys())
-    chains = cosmo.load_chains('data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/*.txt', param_names, params_only=True)
+    chains = chain_io.load_chains('data/planck2018/*.txt', param_names, params_only=True)
     chains = chains.sample(n=500, random_state=1).reset_index(drop=True)
 
 .. note::

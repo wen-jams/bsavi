@@ -1,11 +1,11 @@
 import pandas as pd
-mycosmo = pd.read_json('../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/power_spectra_small.json')
+mycosmo = pd.read_json('../data/planck2018/power_spectra_small.json')
 chains = mycosmo.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
 class_results = mycosmo[['p(k)', 'cl_tt', 'cl_ee']]
 
-from bsavi.cosmo import load_params
+from bsavi.chain_io import load_params
 
-params_with_latex = load_params('../data/planck2018/plikHM_TTTEEE_lowl_lowE_lensing/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+params_with_latex = load_params('../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
 import bsavi as bsv
 import holoviews as hv

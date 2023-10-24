@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: bsavi
-Version: 0.3.7
+Version: 0.3.8a2
 Summary: An interactive visualizer to help explore high-dimensional likelihoods and their observables.
 Home-page: http://packages.python.org/bsavi
 Author: James Wen
@@ -10,7 +10,7 @@ Keywords: interactive visualizer cosmology
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: POSIX :: Linux
-Requires-Python: >=3.8, <=3.11
+Requires-Python: >=3.8, <3.12
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: holoviews>=1.15.4

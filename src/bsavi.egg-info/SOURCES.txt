@@ -9,5 +9,7 @@ src/bsavi.egg-info/SOURCES.txt
 src/bsavi.egg-info/dependency_links.txt
 src/bsavi.egg-info/requires.txt
 src/bsavi.egg-info/top_level.txt
+src/bsavi/chain_io/__init__.py
+src/bsavi/chain_io/chain_io.py
 src/bsavi/cosmo/__init__.py
 src/bsavi/cosmo/cosmo.py
