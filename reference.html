@@ -364,9 +364,9 @@ in a Jupyter Notebook cell.</p>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-bsavi.cosmo"></span><dl class="py function">
-<dt class="sig sig-object py" id="bsavi.cosmo.load_params">
-<span class="sig-prename descclassname"><span class="pre">bsavi.cosmo.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.cosmo.load_params" title="Permalink to this definition">#</a></dt>
+<span class="target" id="module-bsavi.chain_io"></span><dl class="py function">
+<dt class="sig sig-object py" id="bsavi.chain_io.load_params">
+<span class="sig-prename descclassname"><span class="pre">bsavi.chain_io.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.chain_io.load_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Reads in a <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file and returns a dict of each parameter’s plain text and LaTeX name.
 Assumes that the file is in the proper format: each line should contain one plain text param name and its LaTeX counterpart separated by
 a <code class="docutils literal notranslate"><span class="pre">tab</span></code> character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>). Any amount of whitespace on either side of the tab character is acceptable.</p>
@@ -381,8 +381,8 @@ a <code class="docutils literal notranslate"><span class="pre">tab</span></code>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="bsavi.cosmo.load_chains">
-<span class="sig-prename descclassname"><span class="pre">bsavi.cosmo.</span></span><span class="sig-name descname"><span class="pre">load_chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.cosmo.load_chains" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="bsavi.chain_io.load_chains">
+<span class="sig-prename descclassname"><span class="pre">bsavi.chain_io.</span></span><span class="sig-name descname"><span class="pre">load_chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.chain_io.load_chains" title="Permalink to this definition">#</a></dt>
 <dd><p>Reads in a chain file and converts it to a <a class="reference external" href="https://pandas.pydata.org/docs/reference/frame.html">DataFrame</a>. Assumes that the file
 is a .txt file with the following columns: <em>weight, -LogLkl, param1, param2, …</em>.</p>
 <p><em>Weight</em> is the number of iterations the MCMC sampler stayed at that parameter set (the sample weight) and
@@ -403,7 +403,7 @@ Default is True, which will disregard those columns when reading in the file.</p
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<span class="target" id="module-bsavi.cosmo"></span><dl class="py function">
 <dt class="sig sig-object py" id="bsavi.cosmo.run_class">
 <span class="sig-prename descclassname"><span class="pre">bsavi.cosmo.</span></span><span class="sig-name descname"><span class="pre">run_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.cosmo.run_class" title="Permalink to this definition">#</a></dt>
 <dd><p>Calls the CLASS code on a given index of the sample data to calculate the matter power spectrum <span class="math notranslate nohighlight">\(P(k)\)</span>, the lensed power spectrum of
@@ -510,8 +510,8 @@ one with CDM parameters), at the specified index. Computes the percent differenc
 </ul>
 </li>
 <li><a class="reference internal" href="#bsavi.viz"><code class="docutils literal notranslate"><span class="pre">viz()</span></code></a></li>
-<li><a class="reference internal" href="#bsavi.cosmo.load_params"><code class="docutils literal notranslate"><span class="pre">load_params()</span></code></a></li>
-<li><a class="reference internal" href="#bsavi.cosmo.load_chains"><code class="docutils literal notranslate"><span class="pre">load_chains()</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.chain_io.load_params"><code class="docutils literal notranslate"><span class="pre">load_params()</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.chain_io.load_chains"><code class="docutils literal notranslate"><span class="pre">load_chains()</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.cosmo.run_class"><code class="docutils literal notranslate"><span class="pre">run_class()</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.cosmo.compute_residuals"><code class="docutils literal notranslate"><span class="pre">compute_residuals()</span></code></a></li>
 </ul>

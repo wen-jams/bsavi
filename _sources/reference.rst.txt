@@ -110,7 +110,7 @@ API Reference
     :type latex_dict: dict
     :returns: A collection of `Panel <https://panel.holoviz.org/api/cheatsheet.html>`_ components 
 
-.. py:module:: bsavi.cosmo
+.. py:module:: bsavi.chain_io
 
 .. py:function:: load_params(filename)
 
@@ -139,6 +139,8 @@ API Reference
         Default is True, which will disregard those columns when reading in the file.
     :type params_only: bool
     :returns: Pandas DataFrame
+
+.. py:module:: bsavi.cosmo
 
 .. py:function:: run_class(index, sample)
 
