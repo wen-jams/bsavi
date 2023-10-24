@@ -38,7 +38,7 @@ def _lookup_latex_label(param, latex_dict):
 
 class Observable:
     """
-    Observable class for InViz.
+    Observable class for BSAVI.
     
     Parameters
     ----------
@@ -107,11 +107,11 @@ class Observable:
     
     def properties(self):
         if len(self.name) > 1:
-            print("InViz Grouped Observables")
+            print("BSAVI Grouped Observables")
             for i in range(len(self.name)):
                 print(f"\t- Observable {i+1}: {self.name[i]}")
         else:
-            print("InViz Observable")
+            print("BSAVI Observable")
             print(f"Name: {self.name[0]}")
         
     def generate_plot(self, index: int):

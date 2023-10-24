@@ -1,5 +1,5 @@
-import inviz as nv
-from inviz import cosmo
+import bsavi as nv
+from bsavi import cosmo
 import pandas as pd
 import numpy as np
 from tqdm import trange
@@ -15,7 +15,7 @@ chains = pd.DataFrame(columns=column_names)
 for i in trange(1,5):
     temp = cosmo.load_data('../data/chains_planckbossdes_1MeV/2022-11-16_3200000__{}.txt'.format(i), column_names=column_names)
     chains = pd.concat([chains,temp]).reset_index(drop=True)
-# Move the loglkl column to the third position (inviz colormaps the third column by default)
+# Move the loglkl column to the third position (bsavi colormaps the third column by default)
 column_to_move = chains.pop('loglkl')
 chains.insert(2, 'loglkl', column_to_move)
 # Slice the dataset to avoid overplotting

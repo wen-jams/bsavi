@@ -1,8 +1,8 @@
-InViz: User Guide
+BSAVI: User Guide
 =================
 
 This guide will demonstrate and explain the features and functionality
-of InViz by stepping through the whole process of creating a
+of BSAVI by stepping through the whole process of creating a
 visualization. It will follow structure of the :doc:`class_examples`
 tutorials without requiring install of CLASS or any cosmologist-specific
 packages. A basic knowledge of plotting with
@@ -11,12 +11,12 @@ is the utility that provides the interactive plots for this package.
 
 Works in a Jupyter Notebook or as a standalone Python script.
 To see the full interactivity, download the "userguide" notebook 
-`here <https://github.com/wen-jams/inviz/tree/main/tutorials>`_
+`here <https://github.com/wen-jams/bsavi/tree/main/tutorials>`_
 
 .. code:: ipython3
 
     # imports
-    import inviz as iv
+    import bsavi as bsv
     import numpy as np
     import pandas as pd
 
@@ -57,7 +57,7 @@ samples of our amplitudes, frequencies and phases.
     ).reshape([nsamples // 5, ndim])
     data = np.vstack([data1, data2])
 
-Then convert it into a pandas DataFrame (InViz only accepts DataFrames,
+Then convert it into a pandas DataFrame (BSAVI only accepts DataFrames,
 for now) and define column labels with some fancy :math:`\LaTeX`
 formatting:
 
@@ -138,11 +138,11 @@ formatting:
 
 
 We now have a table of samples which we can visualize directly with
-``iv.viz``. Bringing along the latex dict we made earlier:
+``bsv.viz``. Bringing along the latex dict we made earlier:
 
 .. code:: ipython3
 
-    iv.viz(df, latex_dict=latex_dict)
+    bsv.viz(df, latex_dict=latex_dict)
 
 .. image:: ../../images/bsavi-userguide1.gif
 
@@ -169,14 +169,14 @@ the following format:
 
 Examining this format more closely: we have a list of dictionaries that
 contain two 1-D NumPy arrays, with their parameter names as the keys.
-InViz will interpret each dict as its own observable and attempt to plot
+BSAVI will interpret each dict as its own observable and attempt to plot
 it with the first array on the x axis and the second array on the y
 axis. The keys will be used to label their respective axes.
 
 This rather specific format is related to how HoloViews interfaces with
 tabular datasets. `Their
 documentation <https://holoviews.org/user_guide/Tabular_Datasets.html>`__
-gives a full list of accepted data formats. While InViz currently only
+gives a full list of accepted data formats. While BSAVI currently only
 supports the one detailed above, eventually all the pure Python, Numpy,
 and Pandas data storage formats will be supported.
 
@@ -187,7 +187,7 @@ create an Observable for each. You are allowed to pass any amount of
 arguments into each function though.
 
 Most importantly, the function must have logic to select a sample from
-an input dataset according to its index. This is because InViz will pass
+an input dataset according to its index. This is because BSAVI will pass
 the index corresponding to a point selected on the plot into your
 function. Therefore, ``index`` is required as the first argument. Then
 you can have an arbitrary amount of arguments. The example below is how
@@ -224,9 +224,9 @@ it should be done if the input dataset is a DataFrame.
 Creating an Observable
 ----------------------
 
-Now we are ready to set up an InViz Observable object. This is a way to
+Now we are ready to set up an BSAVI Observable object. This is a way to
 associate your data with how it should be plotted, including title and
-axis labels, :math:`\LaTeX` formatting, and other customizations. InViz
+axis labels, :math:`\LaTeX` formatting, and other customizations. BSAVI
 will use all this information when generating the visualizations. Below
 is the full list of options for an Observable:
 
@@ -258,7 +258,7 @@ is the full list of options for an Observable:
        corresponding one in the parameters dict
        
 
-Note: InViz is limited to 2-D graphs (two plot axes), so there are three
+Note: BSAVI is limited to 2-D graphs (two plot axes), so there are three
 *plot_types* available:
 
 -  ``'Curve'``: A continuous line drawn through each point
@@ -293,7 +293,7 @@ A brief summary of the most common options you might need:
 -  *logx, logy*: boolean values to set logarithmic scaling on either
    axis. Default is False.
 -  *height, width*: integer values to set the size of the plot frame.
-   InViz sets ``height=400, width=500`` by default.
+   BSAVI sets ``height=400, width=500`` by default.
 -  *color*: sets the color of the plotted objects. This can be:
 
    -  a single color, e.g. ``'red'`` or
@@ -341,7 +341,7 @@ plot titles, plot types, customizations, and latex labels.
 
 .. code:: ipython3
 
-    waveforms = iv.Observable(
+    waveforms = bsv.Observable(
         name=['sin(x)', 'sinc(x)'],
         parameters=computed_df,
         plot_type=['Curve', 'Scatter'],
@@ -353,14 +353,14 @@ Dynamically Computed Observables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On the other hand, our function is fast enough that we can just have
-InViz call it every time we select a sample. In this case, we will give
+BSAVI call it every time we select a sample. In this case, we will give
 our Observable the function itself, along with a tuple containing its
 arguments. We can skip the first argument, ``index``, since it's
 automatically handled by the visualizer.
 
 .. code:: ipython3
 
-    dynamic_waveforms = iv.Observable(
+    dynamic_waveforms = bsv.Observable(
         name=['sin(x)', 'sinc(x)'],
         myfunc=compute_waveforms,
         myfunc_args=(df,),
@@ -387,7 +387,7 @@ in the right section!
 
 .. code:: ipython3
 
-    iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
+    bsv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
 
 .. image:: ../../images/bsavi-userguide3.gif
 
@@ -396,7 +396,7 @@ If you'd rather see it in a separate browser window, run the cell below.
 
 .. code-block:: python
 
-    server = iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).show()
+    server = bsv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).show()
 
 Once you are done with it, stop the server with:
 
@@ -405,7 +405,7 @@ Once you are done with it, stop the server with:
     server.stop()
 
 Another option is to write all your code in a standalone script. Make sure you use 
-``iv.viz`` with the ``.servable()`` method, and that it is the last line of code in 
+``bsv.viz`` with the ``.servable()`` method, and that it is the last line of code in 
 your script. Then serve it with:
 
 .. code-block:: console

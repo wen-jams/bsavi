@@ -1,4 +1,4 @@
-import inviz as iv
+import bsavi as bsv
 import pandas as pd
 import holoviews as hv
 from holoviews import opts
@@ -22,7 +22,7 @@ uvlf_latex = {
     'uvlf_z12.6': r'\text{Luminosity Function}',
     'uvlf_z8.7': r'\text{Luminosity Function}',
 }
-uvlf_observables = iv.Observable(
+uvlf_observables = bsv.Observable(
     name=[
         'UVLF at z = 10.5', 
         'UVLF at z = 12.6', 
@@ -38,5 +38,5 @@ uvlf_observables = iv.Observable(
     latex_labels=uvlf_latex
 )
 
-iv.viz(params_df, [uvlf_observables], latex_dict=lumfunc_latex).servable('JWST UVLF')
+bsv.viz(params_df, [uvlf_observables], latex_dict=lumfunc_latex).servable('JWST UVLF')
 
