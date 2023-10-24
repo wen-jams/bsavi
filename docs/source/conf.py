@@ -16,7 +16,6 @@ release = '0.3.7'
 
 extensions = [
     'sphinx.ext.duration',
-    'sphinxcontrib.video', 
 ]
 
 templates_path = ['_templates']

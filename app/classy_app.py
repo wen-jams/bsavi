@@ -1,25 +1,18 @@
-import bsavi as nv
-from bsavi import cosmo
+import bsavi as bsv
+from bsavi import cosmo, chain_io
 import pandas as pd
 import numpy as np
-from tqdm import trange
 import holoviews as hv
 from holoviews import opts
 
 
 # Read in data
-param_names, latex_params = cosmo.load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
-params_latex_form = dict(zip(param_names, latex_params))
-column_names = ['loglkl'] + param_names
-chains = pd.DataFrame(columns=column_names)
-for i in trange(1,5):
-    temp = cosmo.load_data('../data/chains_planckbossdes_1MeV/2022-11-16_3200000__{}.txt'.format(i), column_names=column_names)
-    chains = pd.concat([chains,temp]).reset_index(drop=True)
-# Move the loglkl column to the third position (bsavi colormaps the third column by default)
-column_to_move = chains.pop('loglkl')
-chains.insert(2, 'loglkl', column_to_move)
-# Slice the dataset to avoid overplotting
-chains = chains[::1000].reset_index(drop=True)
+params_with_latex = chain_io.load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
+
+param_names = list(params_with_latex.keys())
+chains = chain_io.load_chains('../data/chains_planckbossdes_1MeV/*.txt', param_names, params_only=True)
+# downsample to avoid overplotting
+chains = chains.sample(n=500, random_state=1).reset_index(drop=True)
 
 # prepare data for CLASS computation
 # remove nuisance parameters
@@ -50,7 +43,7 @@ resids_latex = {
     'cl_tt_residuals': '(C_{\ell}^{TT}-C_{\ell, CDM}^{TT})/C_{\ell, CDM}^{TT}*100~[\%]',
     'cl_ee_residuals': '(C_{\ell}^{EE}-C_{\ell, CDM}^{EE})/C_{\ell, CDM}^{EE}*100~[\%]',
 }
-residuals = nv.Observable(
+residuals = bsv.Observable(
     name=['P(k) Residuals', 'Cl_TT Residuals', 'Cl_EE Residuals'], 
     myfunc=cosmo.compute_residuals,
     myfunc_args=(classy_input, classy_CDM), 
@@ -59,4 +52,4 @@ residuals = nv.Observable(
     latex_labels=resids_latex
 )
 
-nv.viz(data=chains, observables=[residuals], latex_dict=params_latex_form).servable('Fractional IDM')
+bsv.viz(data=chains, observables=[residuals], latex_dict=params_with_latex).servable('Fractional IDM')
