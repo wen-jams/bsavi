@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="reference.html" /><link rel="prev" title="Cosmology &amp; CLASS" href="class_examples.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>InViz: User Guide - InViz 0.3.7 documentation</title>
+        <title>BSAVI: User Guide - BSAVI 0.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">InViz 0.3.7 documentation</div></a>
+      <a href="index.html"><div class="brand">BSAVI 0.3.7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">InViz 0.3.7 documentation</span>
+  <span class="sidebar-brand-text">BSAVI 0.3.7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">InViz: User Guide</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">BSAVI: User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 </ul>
 
@@ -194,10 +194,10 @@
           </label>
         </div>
         <article role="main">
-          <section id="inviz-user-guide">
-<h1>InViz: User Guide<a class="headerlink" href="#inviz-user-guide" title="Permalink to this heading">#</a></h1>
+          <section id="bsavi-user-guide">
+<h1>BSAVI: User Guide<a class="headerlink" href="#bsavi-user-guide" title="Permalink to this heading">#</a></h1>
 <p>This guide will demonstrate and explain the features and functionality
-of InViz by stepping through the whole process of creating a
+of BSAVI by stepping through the whole process of creating a
 visualization. It will follow structure of the <a class="reference internal" href="class_examples.html"><span class="doc">Cosmology &amp; CLASS</span></a>
 tutorials without requiring install of CLASS or any cosmologist-specific
 packages. A basic knowledge of plotting with
@@ -205,9 +205,9 @@ packages. A basic knowledge of plotting with
 is the utility that provides the interactive plots for this package.</p>
 <p>Works in a Jupyter Notebook or as a standalone Python script.
 To see the full interactivity, download the “userguide” notebook
-<a class="reference external" href="https://github.com/wen-jams/inviz/tree/main/tutorials">here</a></p>
+<a class="reference external" href="https://github.com/wen-jams/bsavi/tree/main/tutorials">here</a></p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># imports
-import inviz as iv
+import bsavi as bsv
 import numpy as np
 import pandas as pd
 </pre></div>
@@ -241,7 +241,7 @@ data2 = 4 * np.random.rand(ndim)[None, :] + np.random.randn(
 data = np.vstack([data1, data2])
 </pre></div>
 </div>
-<p>Then convert it into a pandas DataFrame (InViz only accepts DataFrames,
+<p>Then convert it into a pandas DataFrame (BSAVI only accepts DataFrames,
 for now) and define column labels with some fancy <span class="math notranslate nohighlight">\(\LaTeX\)</span>
 formatting:</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>param_names = [&#39;frequency&#39;, &#39;phase&#39;, &#39;amplitude&#39;]
@@ -310,8 +310,8 @@ latex_dict = dict(zip(param_names, latex))
   </tbody>
 </table>
 </div><p>We now have a table of samples which we can visualize directly with
-<code class="docutils literal notranslate"><span class="pre">iv.viz</span></code>. Bringing along the latex dict we made earlier:</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(df, latex_dict=latex_dict)
+<code class="docutils literal notranslate"><span class="pre">bsv.viz</span></code>. Bringing along the latex dict we made earlier:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>bsv.viz(df, latex_dict=latex_dict)
 </pre></div>
 </div>
 <img alt="_images/bsavi-userguide1.gif" src="_images/bsavi-userguide1.gif" />
@@ -332,13 +332,13 @@ the following format:</p>
 </div>
 <p>Examining this format more closely: we have a list of dictionaries that
 contain two 1-D NumPy arrays, with their parameter names as the keys.
-InViz will interpret each dict as its own observable and attempt to plot
+BSAVI will interpret each dict as its own observable and attempt to plot
 it with the first array on the x axis and the second array on the y
 axis. The keys will be used to label their respective axes.</p>
 <p>This rather specific format is related to how HoloViews interfaces with
 tabular datasets. <a class="reference external" href="https://holoviews.org/user_guide/Tabular_Datasets.html">Their
 documentation</a>
-gives a full list of accepted data formats. While InViz currently only
+gives a full list of accepted data formats. While BSAVI currently only
 supports the one detailed above, eventually all the pure Python, Numpy,
 and Pandas data storage formats will be supported.</p>
 <p>Another note: Observables and functions are one-to-one, so if you’d
@@ -347,7 +347,7 @@ points, but still want to visualize them together, you will have to
 create an Observable for each. You are allowed to pass any amount of
 arguments into each function though.</p>
 <p>Most importantly, the function must have logic to select a sample from
-an input dataset according to its index. This is because InViz will pass
+an input dataset according to its index. This is because BSAVI will pass
 the index corresponding to a point selected on the plot into your
 function. Therefore, <code class="docutils literal notranslate"><span class="pre">index</span></code> is required as the first argument. Then
 you can have an arbitrary amount of arguments. The example below is how
@@ -380,9 +380,9 @@ layout
 </section>
 <section id="creating-an-observable">
 <h2>Creating an Observable<a class="headerlink" href="#creating-an-observable" title="Permalink to this heading">#</a></h2>
-<p>Now we are ready to set up an InViz Observable object. This is a way to
+<p>Now we are ready to set up an BSAVI Observable object. This is a way to
 associate your data with how it should be plotted, including title and
-axis labels, <span class="math notranslate nohighlight">\(\LaTeX\)</span> formatting, and other customizations. InViz
+axis labels, <span class="math notranslate nohighlight">\(\LaTeX\)</span> formatting, and other customizations. BSAVI
 will use all this information when generating the visualizations. Below
 is the full list of options for an Observable:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span><span class="p">:</span> <span class="n">string</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strings</span>
@@ -411,7 +411,7 @@ is the full list of options for an Observable:</p>
     <span class="n">corresponding</span> <span class="n">one</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">parameters</span> <span class="nb">dict</span>
 </pre></div>
 </div>
-<p>Note: InViz is limited to 2-D graphs (two plot axes), so there are three
+<p>Note: BSAVI is limited to 2-D graphs (two plot axes), so there are three
 <em>plot_types</em> available:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'Curve'</span></code>: A continuous line drawn through each point</p></li>
@@ -444,7 +444,7 @@ into the frame.</p></li>
 <li><p><em>logx, logy</em>: boolean values to set logarithmic scaling on either
 axis. Default is False.</p></li>
 <li><p><em>height, width</em>: integer values to set the size of the plot frame.
-InViz sets <code class="docutils literal notranslate"><span class="pre">height=400,</span> <span class="pre">width=500</span></code> by default.</p></li>
+BSAVI sets <code class="docutils literal notranslate"><span class="pre">height=400,</span> <span class="pre">width=500</span></code> by default.</p></li>
 <li><p><em>color</em>: sets the color of the plotted objects. This can be:</p>
 <ul>
 <li><p>a single color, e.g. <code class="docutils literal notranslate"><span class="pre">'red'</span></code> or</p></li>
@@ -488,7 +488,7 @@ waves_df = pd.DataFrame(waves_list, columns=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;
 </div>
 <p>Now we can create an Observable, giving it the wave data and specifying
 plot titles, plot types, customizations, and latex labels.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>waveforms = iv.Observable(
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>waveforms = bsv.Observable(
     name=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;],
     parameters=computed_df,
     plot_type=[&#39;Curve&#39;, &#39;Scatter&#39;],
@@ -501,11 +501,11 @@ plot titles, plot types, customizations, and latex labels.</p>
 <section id="dynamically-computed-observables">
 <h3>Dynamically Computed Observables<a class="headerlink" href="#dynamically-computed-observables" title="Permalink to this heading">#</a></h3>
 <p>On the other hand, our function is fast enough that we can just have
-InViz call it every time we select a sample. In this case, we will give
+BSAVI call it every time we select a sample. In this case, we will give
 our Observable the function itself, along with a tuple containing its
 arguments. We can skip the first argument, <code class="docutils literal notranslate"><span class="pre">index</span></code>, since it’s
 automatically handled by the visualizer.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dynamic_waveforms = iv.Observable(
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dynamic_waveforms = bsv.Observable(
     name=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;],
     myfunc=compute_waveforms,
     myfunc_args=(df,),
@@ -530,13 +530,13 @@ formatting for your axis labels (default = None)</p>
 <p>Run the cell below to test out the interactivity by selecting points on
 the scatterplot in the left section, and see what appears on the plots
 in the right section!</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>iv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>bsv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
 </pre></div>
 </div>
 <img alt="_images/bsavi-userguide3.gif" src="_images/bsavi-userguide3.gif" />
 <p>If running in a Jupyter Notebook, you should see a dashboard displayed inline.
 If you’d rather see it in a separate browser window, run the cell below.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="o">=</span> <span class="n">iv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">waveforms</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">latex_dict</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="o">=</span> <span class="n">bsv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">waveforms</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">latex_dict</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Once you are done with it, stop the server with:</p>
@@ -544,7 +544,7 @@ If you’d rather see it in a separate browser window, run the cell below.</p>
 </pre></div>
 </div>
 <p>Another option is to write all your code in a standalone script. Make sure you use
-<code class="docutils literal notranslate"><span class="pre">iv.viz</span></code> with the <code class="docutils literal notranslate"><span class="pre">.servable()</span></code> method, and that it is the last line of code in
+<code class="docutils literal notranslate"><span class="pre">bsv.viz</span></code> with the <code class="docutils literal notranslate"><span class="pre">.servable()</span></code> method, and that it is the last line of code in
 your script. Then serve it with:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>panel<span class="w"> </span>serve<span class="w"> </span>path/to/my_app.py
 </pre></div>
@@ -608,7 +608,7 @@ your script. Then serve it with:</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">InViz: User Guide</a><ul>
+<li><a class="reference internal" href="#">BSAVI: User Guide</a><ul>
 <li><a class="reference internal" href="#writing-functions-to-compute-observables">Writing Functions to Compute Observables</a><ul>
 <li><a class="reference internal" href="#data-formats">Data Formats</a></li>
 </ul>

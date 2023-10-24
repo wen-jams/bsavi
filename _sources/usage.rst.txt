@@ -15,17 +15,17 @@ Dependencies
 Installation
 ------------
 
-InViz can be installed with pip:
+BSAVI can be installed with pip:
 
 .. code-block:: console
 
-    $ python -m pip install inviz
+    $ python -m pip install bsavi
 
 Or, if you want to test the latest changes, you can clone the repository with
 
 .. code-block:: console
 
-    $ git clone https://github.com/wen-jams/inviz
-    $ cd inviz
+    $ git clone https://github.com/wen-jams/bsavi
+    $ cd bsavi
     $ python setup.py install
 
