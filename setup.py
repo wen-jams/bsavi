@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "bsavi",
-    version = "0.3.8a2",
+    version = "0.3.8",
     author = "James Wen",
     author_email = "jswen@usc.edu",
     description = ("An interactive visualizer to help explore high-dimensional likelihoods and their observables."),
@@ -13,7 +13,7 @@ setuptools.setup(
     keywords = "interactive visualizer cosmology",
     url = "http://packages.python.org/bsavi",
     packages=setuptools.find_packages(where='src'),
-    # packages=['bsavi', 'bsavi.cosmo'],
+    # packages=['bsavi', 'bsavi.cosmo', 'bsavi.loaders'],
     package_dir={'': 'src'},
     long_description=long_description,
     long_description_content_type="text/markdown",

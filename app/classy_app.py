@@ -8,7 +8,6 @@ from holoviews import opts
 
 # Read in data
 params_with_latex = loaders.load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
-
 param_names = list(params_with_latex.keys())
 chains = loaders.load_chains('../data/chains_planckbossdes_1MeV/*.txt', param_names, params_only=True)
 # downsample to avoid overplotting
