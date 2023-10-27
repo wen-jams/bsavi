@@ -210,7 +210,7 @@ def viz(
         ylabel = _lookup_latex_label(kdim2, latex_dict)
         popts = opts.Points(
             title='Sample Data',
-            bgcolor='#E5E9F0',
+            bgcolor='#FEFEFE',
             fontscale=1.1,
             xlabel=xlabel,
             ylabel=ylabel,

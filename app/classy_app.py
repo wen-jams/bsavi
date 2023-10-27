@@ -1,5 +1,5 @@
 import bsavi as bsv
-from bsavi import cosmo, chain_io
+from bsavi import cosmo, loaders
 import pandas as pd
 import numpy as np
 import holoviews as hv
@@ -7,10 +7,9 @@ from holoviews import opts
 
 
 # Read in data
-params_with_latex = chain_io.load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
-
+params_with_latex = loaders.load_params('../data/chains_planckbossdes_1MeV/2022-11-16_3200000_.paramnames')
 param_names = list(params_with_latex.keys())
-chains = chain_io.load_chains('../data/chains_planckbossdes_1MeV/*.txt', param_names, params_only=True)
+chains = loaders.load_chains('../data/chains_planckbossdes_1MeV/*.txt', param_names, params_only=True)
 # downsample to avoid overplotting
 chains = chains.sample(n=500, random_state=1).reset_index(drop=True)
 

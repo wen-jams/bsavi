@@ -34,7 +34,7 @@ plain text and LaTeX. ``load_params`` will return a dictionary of these labels w
 
 .. code-block:: python
 
-    from bsavi.chain_io import load_params
+    from bsavi.loaders import load_params
 
     params_with_latex = load_params('../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
@@ -82,14 +82,14 @@ This next example requires that you have `Classy, the Python wrapper for CLASS
     # imports
     import pandas as pd
     import bsavi as bsv
-    from bsavi import cosmo, chain_io
+    from bsavi import cosmo, loaders
     from holoviews import opts
 
 As before, we load in the ``.paramnames`` file to get a dict with all the parameter names and their LaTeX code.
 
 .. code-block:: python
 
-    params_with_latex = chain_io.load_params('data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+    params_with_latex = loaders.load_params('data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
 Next we will get a list of the paramname-LaTeX dict's keys to pass into the ``load_chains`` function. 
 This function will take a given filename/glob pattern and try to read the files it finds into a DataFrame
@@ -99,7 +99,7 @@ it to 500 to avoid overplotting.
 .. code-block:: python
 
     param_names = list(params_with_latex.keys())
-    chains = chain_io.load_chains('data/planck2018/*.txt', param_names, params_only=True)
+    chains = loaders.load_chains('data/planck2018/*.txt', param_names, params_only=True)
     chains = chains.sample(n=500, random_state=1).reset_index(drop=True)
 
 .. note::

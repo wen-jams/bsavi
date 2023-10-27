@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: bsavi
-Version: 0.3.8a2
+Version: 0.3.8
 Summary: An interactive visualizer to help explore high-dimensional likelihoods and their observables.
 Home-page: http://packages.python.org/bsavi
 Author: James Wen
