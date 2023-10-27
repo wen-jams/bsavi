@@ -219,7 +219,7 @@ and run through CLASS. The results, along with the samples themselves, are in <c
 </div>
 <p>Read in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file that was included with the data. This is a list of each parameter’s name in both
 plain text and LaTeX. <code class="docutils literal notranslate"><span class="pre">load_params</span></code> will return a dictionary of these labels which we will use later.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bsavi.chain_io</span> <span class="kn">import</span> <span class="n">load_params</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bsavi.loaders</span> <span class="kn">import</span> <span class="n">load_params</span>
 
 <span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
 </pre></div>
@@ -258,12 +258,12 @@ plain text and LaTeX. <code class="docutils literal notranslate"><span class="pr
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># imports</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">bsavi</span> <span class="k">as</span> <span class="nn">bsv</span>
-<span class="kn">from</span> <span class="nn">bsavi</span> <span class="kn">import</span> <span class="n">cosmo</span><span class="p">,</span> <span class="n">chain_io</span>
+<span class="kn">from</span> <span class="nn">bsavi</span> <span class="kn">import</span> <span class="n">cosmo</span><span class="p">,</span> <span class="n">loaders</span>
 <span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span>
 </pre></div>
 </div>
 <p>As before, we load in the <code class="docutils literal notranslate"><span class="pre">.paramnames</span></code> file to get a dict with all the parameter names and their LaTeX code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">chain_io</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params_with_latex</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="s1">&#39;data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Next we will get a list of the paramname-LaTeX dict’s keys to pass into the <code class="docutils literal notranslate"><span class="pre">load_chains</span></code> function.
@@ -271,7 +271,7 @@ This function will take a given filename/glob pattern and try to read the files 
 with the <code class="docutils literal notranslate"><span class="pre">param_names</span></code> as the columns. The resulting DataFrame is 39177 rows long, so we will downsample
 it to 500 to avoid overplotting.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params_with_latex</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="n">chains</span> <span class="o">=</span> <span class="n">chain_io</span><span class="o">.</span><span class="n">load_chains</span><span class="p">(</span><span class="s1">&#39;data/planck2018/*.txt&#39;</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">params_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">load_chains</span><span class="p">(</span><span class="s1">&#39;data/planck2018/*.txt&#39;</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">params_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -110,7 +110,7 @@ API Reference
     :type latex_dict: dict
     :returns: A collection of `Panel <https://panel.holoviz.org/api/cheatsheet.html>`_ components 
 
-.. py:module:: bsavi.chain_io
+.. py:module:: bsavi.loaders
 
 .. py:function:: load_params(filename)
 
