@@ -118,7 +118,7 @@ API Reference
     Assumes that the file is in the proper format: each line should contain one plain text param name and its LaTeX counterpart separated by 
     a ``tab`` character (``\t``). Any amount of whitespace on either side of the tab character is acceptable.
 
-    :param filename: path to the ``.paramnames`` file
+    :param filename: path to the ``.paramnames`` file or glob pattern. If glob returns multiple paths, ``load_params`` will only used the first one
     :type filename: str
     :returns: a dict of parameter names and LaTeX code
 
