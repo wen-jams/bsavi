@@ -1,3 +1,4 @@
+name: Generate Open Journals PDF 📝
 on: [push]
 
 jobs:
