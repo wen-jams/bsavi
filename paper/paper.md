@@ -7,7 +7,7 @@ tags:
   - Bayesian statistics
   - 
 authors:
-  - name: James S. Wen
+  - name: 'James S. Wen'
       orcid: 0009-0009-3828-0267
       corresponding: True
       affiliation: 1 # (Multiple affiliations must be quoted)
