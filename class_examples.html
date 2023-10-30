@@ -212,7 +212,8 @@ The data required for this tutorial is located
 <p>Let’s start with the case of pre-computed observables. A small sample was taken from the chains
 and run through CLASS. The results, along with the samples themselves, are in <code class="docutils literal notranslate"><span class="pre">power_spectra_small.json</span></code>.</p>
 <p>Begin by loading the data file and splitting it into chains and spectra:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">planck</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;data/planck2018/power_spectra_small.json&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">planck</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;data/planck2018/power_spectra_small.json&#39;</span><span class="p">)</span>
 <span class="n">chains</span> <span class="o">=</span> <span class="n">planck</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;p(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_tt&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_ee&#39;</span><span class="p">])</span>
 <span class="n">class_results</span> <span class="o">=</span> <span class="n">planck</span><span class="p">[[</span><span class="s1">&#39;p(k)&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_tt&#39;</span><span class="p">,</span> <span class="s1">&#39;cl_ee&#39;</span><span class="p">]]</span>
 </pre></div>
