@@ -3,12 +3,12 @@ from holoviews import dim, opts, streams
 import pandas as pd
 import numpy as np
 import panel as pn
-import spatialpandas
+# import spatialpandas
 from bokeh.models import HoverTool
 from typing import List, Callable, Union
 
 hv.extension('bokeh', enable_mathjax=True)
-pn.extension()
+pn.extension('mathjax')
 
 
 # unpacks the nested data. handles the two supported datatypes

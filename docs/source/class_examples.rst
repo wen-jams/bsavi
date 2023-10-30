@@ -25,6 +25,7 @@ Begin by loading the data file and splitting it into chains and spectra:
 
 .. code-block:: python
 
+    import pandas as pd
     planck = pd.read_json('data/planck2018/power_spectra_small.json')
     chains = planck.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
     class_results = planck[['p(k)', 'cl_tt', 'cl_ee']]
