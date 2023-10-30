@@ -1,29 +1,29 @@
 ---
 title: 'BSAVI:Bayesian Sample Visualizer for Cosmological Likelihoods'
 tags:
-  - Python
-  - interactive
-  - visualization
-  - Bayesian statistics
-  - 
+- Python
+- interactive
+- visualization
+- Bayesian statistics
+- 
 authors:
-  - name: 'James S. Wen'
-      orcid: 0009-0009-3828-0267
-      corresponding: True
-      affiliation: 1 # (Multiple affiliations must be quoted)
-  - name: Karime Maamari
-      affiliation: 1
-  - name: Adam He
-      affiliation: 1
-  - name: Trey Driskell
-      affiliation: 1
-  - name: Timothy Morton
-      affiliation: 1
-  - name: Vera Gluscevic
-      affiliation: 1
+- name: James S. Wen
+  orcid: 0009-0009-3828-0267
+  corresponding: True
+  affiliation: 1 # (Multiple affiliations must be quoted)
+- name: Karime Maamari
+  affiliation: 1
+- name: Adam He
+  affiliation: 1
+- name: Trey Driskell
+  affiliation: 1
+- name: Timothy Morton
+  affiliation: 1
+- name: Vera Gluscevic
+  affiliation: 1
 affiliations:
-  - name: University of Southern California, USA
-     index: 1
+- name: University of Southern California, USA
+  index: 1
 date: 30 October 2023
 bibliography: paper.bib
 ---
