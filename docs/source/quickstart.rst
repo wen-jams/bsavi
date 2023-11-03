@@ -41,13 +41,13 @@ To visualize this, first construct an Observable object:
 
     polynomials = bsv.Observable(
         name='polynomials', 
-        parameters=[poly_df], 
+        data=[poly_df], 
         plot_type='Curve')
 
 This contains the basic information required by BSAVI to visualize the function:
 
 - Name: what to title the plot
-- Parameters: the dataset containing the function values we just calculated
+- data: the dataset containing the function values we just calculated
 - Plot Type: what kind of plot to make (i.e. curve, scatter, etc.)
 
 Then, call the Viz function:

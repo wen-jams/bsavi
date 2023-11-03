@@ -23,7 +23,7 @@ ps_latex = {
 
 power_spectra = bsv.Observable(
     name=['P(k)', 'Lensed Cl_TT', 'Lensed Cl_EE'], 
-    parameters=class_results,
+    data=class_results,
     plot_type='Curve',
     plot_opts=curve_opts,
     latex_labels=ps_latex
