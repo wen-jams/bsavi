@@ -1,5 +1,5 @@
-BSAVI: User Guide
-=================
+User Guide
+==========
 
 This guide will demonstrate and explain the features and functionality
 of BSAVI by creating a visualization that will dynamically generate sine 
@@ -13,7 +13,7 @@ Works in a Jupyter Notebook or as a standalone Python script.
 To see the full interactivity, download the "userguide" notebook 
 `here <https://github.com/wen-jams/bsavi/tree/main/tutorials>`_
 
-.. code:: ipython3
+.. code-block:: python
 
     # imports
     import bsavi as bsv
@@ -44,7 +44,7 @@ The sinc function is simply:
 First let's generate some random data in three dimensions. These will be
 samples of our amplitudes, frequencies and phases.
 
-.. code:: ipython3
+.. code-block:: python
 
     ndim, nsamples = 3, 1000
     
@@ -61,14 +61,14 @@ Then convert it into a pandas DataFrame (BSAVI only accepts DataFrames,
 for now) and define column labels with some fancy :math:`\LaTeX`
 formatting:
 
-.. code:: ipython3
+.. code-block:: python
 
     param_names = ['frequency', 'phase', 'amplitude']
     latex = ['\omega / 2\pi', '\phi', '\mathrm{amplitude}']
     df = pd.DataFrame(data, columns=param_names)
     latex_dict = dict(zip(param_names, latex))
 
-.. code:: ipython3
+.. code-block:: python
 
     df.head()
 
@@ -140,7 +140,7 @@ formatting:
 We now have a table of samples which we can visualize directly with
 ``bsv.viz``. Bringing along the latex dict we made earlier:
 
-.. code:: ipython3
+.. code-block:: python
 
     bsv.viz(df, latex_dict=latex_dict)
 
@@ -193,7 +193,7 @@ function. Therefore, ``index`` is required as the first argument. Then
 you can have an arbitrary amount of arguments. The example below is how
 it should be done if the input dataset is a DataFrame.
 
-.. code:: ipython3
+.. code-block:: python
 
     def compute_waveforms(index, input_data):
         selection = input_data.iloc[[index]]
@@ -209,7 +209,7 @@ it should be done if the input dataset is a DataFrame.
         ]
         return waves
 
-.. code:: ipython3
+.. code-block:: python
 
     # example run
     sin, sinc = compute_waveforms(0, df)
@@ -226,10 +226,10 @@ Creating an Observable
 
 Now we are ready to set up the Observable. This is a way to
 associate your data with how it should be plotted, including title and
-axis labels, :math:`\LaTeX` formatting, and other customizations. BSAVI
+axis labels, LaTeX formatting, and other customizations. BSAVI
 will use all this information when generating the visualizations. There 
 are two types, Observable and LiveObservable, which deal with static data
-and dynamic caluclations, respectively. Below is the full list of options 
+and dynamic calculations, respectively. Below is the full list of options 
 for both BSAVI Observable types:
 
 :py:class:`bsavi.Observable`: the standard Observable, which takes tabular data 
@@ -300,7 +300,7 @@ A brief summary of the most common options you might need:
       which applies a colormap to an overlay and replaces the default
       colormap.
 
-.. code:: ipython3
+.. code-block:: python
 
     # setting up some customizations first
     import holoviews as hv
@@ -324,7 +324,7 @@ minutes for a graph of your Observable to appear is not very fun. If we
 compute our observable for every sample beforehand, it will make for a
 more seamless interactive experience.
 
-.. code:: ipython3
+.. code-block:: python
 
     # go through the entire set of samples, computing waveforms for each set:
     waves_list = []
@@ -334,10 +334,10 @@ more seamless interactive experience.
     
     waves_df = pd.DataFrame(waves_list, columns=['sin(x)', 'sinc(x)'])
 
-Now we can create an Observable, giving it the wave data and specifying
+Now we can create an ``Observable``, giving it the wave data and specifying
 plot titles, plot types, customizations, and latex labels.
 
-.. code:: ipython3
+.. code-block:: python
 
     waveforms = bsv.Observable(
         name=['sin(x)', 'sinc(x)'],
@@ -357,12 +357,12 @@ Dynamically Computed Observables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On the other hand, our function is fast enough that we can just have
-BSAVI call it every time we select a sample. In this case, we will give
-our Observable the function itself, along with a tuple containing its
+BSAVI call it every time we select a sample. In this case, we will use 
+``LiveObservable`` and give it our function, along with a tuple containing its
 arguments. We can skip the first argument, ``index``, since it's
 automatically handled by the visualizer.
 
-.. code:: ipython3
+.. code-block:: python
 
     dynamic_waveforms = bsv.LiveObservable(
         name=['sin(x)', 'sinc(x)'],
@@ -395,7 +395,7 @@ Run the cell below to test out the interactivity by selecting points on
 the scatterplot in the left section, and see what appears on the plots
 in the right section!
 
-.. code:: ipython3
+.. code-block:: python
 
     bsv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
 
