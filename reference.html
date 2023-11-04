@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="BSAVI: User Guide" href="userguide.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="User Guide" href="userguide.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>API Reference - BSAVI 0.3.7 documentation</title>
+        <title>API Reference - BSAVI 0.4.0a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">BSAVI 0.3.7 documentation</div></a>
+      <a href="index.html"><div class="brand">BSAVI 0.4.0a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">BSAVI 0.3.7 documentation</span>
+  <span class="sidebar-brand-text">BSAVI 0.4.0a0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">BSAVI: User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
 </ul>
 
@@ -198,8 +198,10 @@
 <span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-bsavi" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="bsavi.Observable">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bsavi.</span></span><span class="sig-name descname"><span class="pre">Observable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex_labels=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">myfunc=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">myfunc_args=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.Observable" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py attribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bsavi.</span></span><span class="sig-name descname"><span class="pre">Observable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.Observable" title="Permalink to this definition">#</a></dt>
+<dd><p>Annotate your data with names and plotting instructions to easily create interactive plots.
+Observable accepts data in the form of tables where each row contains a set of datapoints to plot.</p>
+<dl class="py attribute">
 <dt class="sig sig-object py" id="bsavi.Observable.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bsavi.Observable.name" title="Permalink to this definition">#</a></dt>
 <dd><p>Specifies the display name of the observable for things like plot titles.</p>
@@ -211,8 +213,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="bsavi.Observable.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#bsavi.Observable.parameters" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="bsavi.Observable.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#bsavi.Observable.data" title="Permalink to this definition">#</a></dt>
 <dd><p>The data associated with that observable. Can be python dict (or pandas DataFrame)
 whose keys (or column names) will be used for things like plot axis labels.</p>
 <dl class="field-list simple">
@@ -225,63 +227,13 @@ whose keys (or column names) will be used for things like plot axis labels.</p>
 </dl>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If providing values for <code class="docutils literal notranslate"><span class="pre">Observable.parameters</span></code>, leave <code class="docutils literal notranslate"><span class="pre">myfunc</span></code> and <code class="docutils literal notranslate"><span class="pre">myfunc_args</span></code>
-as None, and vice versa.</p>
-</div>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bsavi.Observable.latex_labels">
-<span class="sig-name descname"><span class="pre">latex_labels</span></span><a class="headerlink" href="#bsavi.Observable.latex_labels" title="Permalink to this definition">#</a></dt>
-<dd><p>A dictionary that has parameter labels as keys and their corresponding
-LaTeX format as values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict or list[dict]</p>
-</dd>
-<dt class="field-even">Value<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bsavi.Observable.myfunc">
-<span class="sig-name descname"><span class="pre">myfunc</span></span><a class="headerlink" href="#bsavi.Observable.myfunc" title="Permalink to this definition">#</a></dt>
-<dd><p>A user-provided function that returns parameters in the same data format
-that <a class="reference internal" href="#bsavi.Observable.parameters" title="bsavi.Observable.parameters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.parameters</span></code></a> accepts. Can return more than one
-set of parameters. See above note for usage with <a class="reference internal" href="#bsavi.Observable.parameters" title="bsavi.Observable.parameters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.parameters</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Callable</p>
-</dd>
-<dt class="field-even">Value<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bsavi.Observable.myfunc_args">
-<span class="sig-name descname"><span class="pre">myfunc_args</span></span><a class="headerlink" href="#bsavi.Observable.myfunc_args" title="Permalink to this definition">#</a></dt>
-<dd><p>Arguments for the user-provided function <a class="reference internal" href="#bsavi.Observable.myfunc" title="bsavi.Observable.myfunc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
-<dt class="field-even">Value<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bsavi.Observable.plot_type">
 <span class="sig-name descname"><span class="pre">plot_type</span></span><a class="headerlink" href="#bsavi.Observable.plot_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Specifies how the data should be visualized. Currently can pick either ‘Curve’
-that connects data points together, ‘Bars’ for a series of columns with their
-heights determined by the y-axis value at each point, or ‘Scatter’ for a simple
-scatter plot.</p>
+<dd><p>Specifies how the data should be visualized. Currently can pick either <code class="docutils literal notranslate"><span class="pre">'Curve'</span></code>
+that connects data points together, <code class="docutils literal notranslate"><span class="pre">'Bars'</span></code> for a series of columns with their
+heights determined by the y-axis value at each point, or <code class="docutils literal notranslate"><span class="pre">'Scatter'</span></code> for a simple
+scatter plot. The default value is <code class="docutils literal notranslate"><span class="pre">'Curve'</span></code></p>
 <p>Pass a single value to set it for all datasets in the Observable, or a list of
 values to be set for each dataset.</p>
 <dl class="field-list simple">
@@ -306,6 +258,21 @@ see <a class="reference external" href="https://holoviews.org/user_guide/Applyin
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.Observable.latex_labels">
+<span class="sig-name descname"><span class="pre">latex_labels</span></span><a class="headerlink" href="#bsavi.Observable.latex_labels" title="Permalink to this definition">#</a></dt>
+<dd><p>A dictionary that has parameter labels as keys and their corresponding
+LaTeX format as values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="bsavi.Observable.properties">
 <span class="sig-name descname"><span class="pre">properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.Observable.properties" title="Permalink to this definition">#</a></dt>
@@ -315,14 +282,14 @@ see <a class="reference external" href="https://holoviews.org/user_guide/Applyin
 <dl class="py method">
 <dt class="sig sig-object py" id="bsavi.Observable.generate_plot">
 <span class="sig-name descname"><span class="pre">generate_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.Observable.generate_plot" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates plots of the data at the given index. Will call <a class="reference internal" href="#bsavi.Observable.myfunc" title="bsavi.Observable.myfunc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code></a> with <a class="reference internal" href="#bsavi.Observable.myfunc_args" title="bsavi.Observable.myfunc_args"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc_args</span></code></a>
-on the data if given. The plots are returned as a list of objects which can be manipulated as you wish.</p>
+<dd><p>Generates plots of the data at the given indexes. Will call <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code> with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc_args</span></code>
+on the data if given. The plots are returned as a dictionary of plot objects which can be manipulated as you wish.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index location of the data to plot</p>
+<dd class="field-odd"><p><strong>index</strong> (<em>list</em>) – A list of indexes</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of <a class="reference external" href="https://holoviews.org/user_guide/Annotating_Data.html">Holoviews Elements</a></p>
+<dd class="field-even"><p>A dictionary of <a class="reference external" href="https://holoviews.org/user_guide/Annotating_Data.html">Holoviews Elements</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -331,14 +298,147 @@ on the data if given. The plots are returned as a list of objects which can be m
 <dt class="sig sig-object py" id="bsavi.Observable.draw_plot">
 <span class="sig-name descname"><span class="pre">draw_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.Observable.draw_plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Displays an interactive plot of the data at the given index. Whereas <a class="reference internal" href="#bsavi.Observable.generate_plot" title="bsavi.Observable.generate_plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Observable.generate_plot()</span></code></a> returns
-a list of plot objects but does not display them, this method will display plots arranged in a layout when evaluated
+a dict of plot objects but does not display them, this method will display plots arranged in a layout when evaluated
 in a Jupyter Notebook cell.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index location of the data to plot</p>
+<dd class="field-odd"><p><strong>index</strong> (<em>list</em>) – A list of indexes</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A <a class="reference external" href="https://holoviews.org/user_guide/Composing_Elements.html">layout of Holoviews Elements</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bsavi.LiveObservable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bsavi.</span></span><span class="sig-name descname"><span class="pre">LiveObservable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">myfunc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">myfunc_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.LiveObservable" title="Permalink to this definition">#</a></dt>
+<dd><p>Annotate a function with names and plotting instructions to easily create interactive plots.
+Live Observable will call the function to get a set of datapoints to plot.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bsavi.LiveObservable.name" title="Permalink to this definition">#</a></dt>
+<dd><p>Specifies the display name of the observable for things like plot titles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.myfunc">
+<span class="sig-name descname"><span class="pre">myfunc</span></span><a class="headerlink" href="#bsavi.LiveObservable.myfunc" title="Permalink to this definition">#</a></dt>
+<dd><p>A user-provided function that returns data in the same data format
+that <a class="reference internal" href="#bsavi.Observable.data" title="bsavi.Observable.data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.data</span></code></a> accepts. Can return more than one
+set of data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.myfunc_args">
+<span class="sig-name descname"><span class="pre">myfunc_args</span></span><a class="headerlink" href="#bsavi.LiveObservable.myfunc_args" title="Permalink to this definition">#</a></dt>
+<dd><p>Arguments for the user-provided function <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.plot_type">
+<span class="sig-name descname"><span class="pre">plot_type</span></span><a class="headerlink" href="#bsavi.LiveObservable.plot_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Specifies how the data should be visualized. Currently can pick either <code class="docutils literal notranslate"><span class="pre">'Curve'</span></code>
+that connects data points together, <code class="docutils literal notranslate"><span class="pre">'Bars'</span></code> for a series of columns with their
+heights determined by the y-axis value at each point, or <code class="docutils literal notranslate"><span class="pre">'Scatter'</span></code> for a simple
+scatter plot. The default value is <code class="docutils literal notranslate"><span class="pre">'Curve'</span></code></p>
+<p>Pass a single value to set it for all datasets in the Observable, or a list of
+values to be set for each dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.plot_opts">
+<span class="sig-name descname"><span class="pre">plot_opts</span></span><a class="headerlink" href="#bsavi.LiveObservable.plot_opts" title="Permalink to this definition">#</a></dt>
+<dd><p>Customization options for the observable plot. For more information
+see <a class="reference external" href="https://holoviews.org/user_guide/Applying_Customizations.html">HoloViews documentation</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HoloViews Options object</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.latex_labels">
+<span class="sig-name descname"><span class="pre">latex_labels</span></span><a class="headerlink" href="#bsavi.LiveObservable.latex_labels" title="Permalink to this definition">#</a></dt>
+<dd><p>A dictionary that has parameter labels as keys and their corresponding
+LaTeX format as values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.properties">
+<span class="sig-name descname"><span class="pre">properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.LiveObservable.properties" title="Permalink to this definition">#</a></dt>
+<dd><p>Prints information about the Observable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.generate_plot">
+<span class="sig-name descname"><span class="pre">generate_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.LiveObservable.generate_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates plots of the data at the given indexes. Will call <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc</span></code> with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Observable.myfunc_args</span></code>
+on the data if given. The plots are returned as a dictionary of plot objects which can be manipulated as you wish.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>list</em>) – A list of indexes</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A dictionary of <a class="reference external" href="https://holoviews.org/user_guide/Annotating_Data.html">Holoviews Elements</a></p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bsavi.LiveObservable.draw_plot">
+<span class="sig-name descname"><span class="pre">draw_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bsavi.LiveObservable.draw_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Displays an interactive plot of the data at the given index. Whereas <a class="reference internal" href="#bsavi.Observable.generate_plot" title="bsavi.Observable.generate_plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Observable.generate_plot()</span></code></a> returns
+a dict of plot objects but does not display them, this method will display plots arranged in a layout when evaluated
+in a Jupyter Notebook cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>list</em>) – A list of indexes</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A <a class="reference external" href="https://holoviews.org/user_guide/Composing_Elements.html">layout of Holoviews Elements</a></p>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -461,7 +561,7 @@ one with CDM parameters), at the specified index. Computes the percent differenc
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">BSAVI: User Guide</div>
+                <div class="title">User Guide</div>
                 
               </div>
             </a>
@@ -498,15 +598,25 @@ one with CDM parameters), at the specified index. Computes the percent differenc
 <li><a class="reference internal" href="#">API Reference</a><ul>
 <li><a class="reference internal" href="#bsavi.Observable"><code class="docutils literal notranslate"><span class="pre">Observable</span></code></a><ul>
 <li><a class="reference internal" href="#bsavi.Observable.name"><code class="docutils literal notranslate"><span class="pre">Observable.name</span></code></a></li>
-<li><a class="reference internal" href="#bsavi.Observable.parameters"><code class="docutils literal notranslate"><span class="pre">Observable.parameters</span></code></a></li>
-<li><a class="reference internal" href="#bsavi.Observable.latex_labels"><code class="docutils literal notranslate"><span class="pre">Observable.latex_labels</span></code></a></li>
-<li><a class="reference internal" href="#bsavi.Observable.myfunc"><code class="docutils literal notranslate"><span class="pre">Observable.myfunc</span></code></a></li>
-<li><a class="reference internal" href="#bsavi.Observable.myfunc_args"><code class="docutils literal notranslate"><span class="pre">Observable.myfunc_args</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.Observable.data"><code class="docutils literal notranslate"><span class="pre">Observable.data</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.Observable.plot_type"><code class="docutils literal notranslate"><span class="pre">Observable.plot_type</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.Observable.plot_opts"><code class="docutils literal notranslate"><span class="pre">Observable.plot_opts</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.Observable.latex_labels"><code class="docutils literal notranslate"><span class="pre">Observable.latex_labels</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.Observable.properties"><code class="docutils literal notranslate"><span class="pre">Observable.properties()</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.Observable.generate_plot"><code class="docutils literal notranslate"><span class="pre">Observable.generate_plot()</span></code></a></li>
 <li><a class="reference internal" href="#bsavi.Observable.draw_plot"><code class="docutils literal notranslate"><span class="pre">Observable.draw_plot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bsavi.LiveObservable"><code class="docutils literal notranslate"><span class="pre">LiveObservable</span></code></a><ul>
+<li><a class="reference internal" href="#bsavi.LiveObservable.name"><code class="docutils literal notranslate"><span class="pre">LiveObservable.name</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.myfunc"><code class="docutils literal notranslate"><span class="pre">LiveObservable.myfunc</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.myfunc_args"><code class="docutils literal notranslate"><span class="pre">LiveObservable.myfunc_args</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.plot_type"><code class="docutils literal notranslate"><span class="pre">LiveObservable.plot_type</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.plot_opts"><code class="docutils literal notranslate"><span class="pre">LiveObservable.plot_opts</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.latex_labels"><code class="docutils literal notranslate"><span class="pre">LiveObservable.latex_labels</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.properties"><code class="docutils literal notranslate"><span class="pre">LiveObservable.properties()</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.generate_plot"><code class="docutils literal notranslate"><span class="pre">LiveObservable.generate_plot()</span></code></a></li>
+<li><a class="reference internal" href="#bsavi.LiveObservable.draw_plot"><code class="docutils literal notranslate"><span class="pre">LiveObservable.draw_plot()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#bsavi.viz"><code class="docutils literal notranslate"><span class="pre">viz()</span></code></a></li>
@@ -525,7 +635,7 @@ one with CDM parameters), at the specified index. Computes the percent differenc
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=0baa9010"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=048f3deb"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="reference.html" /><link rel="prev" title="Cosmology &amp; CLASS" href="class_examples.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>BSAVI: User Guide - BSAVI 0.3.7 documentation</title>
+        <title>User Guide - BSAVI 0.4.0a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">BSAVI 0.3.7 documentation</div></a>
+      <a href="index.html"><div class="brand">BSAVI 0.4.0a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">BSAVI 0.3.7 documentation</span>
+  <span class="sidebar-brand-text">BSAVI 0.4.0a0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="class_examples.html">Cosmology &amp; CLASS</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">BSAVI: User Guide</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 </ul>
 
@@ -194,22 +194,22 @@
           </label>
         </div>
         <article role="main">
-          <section id="bsavi-user-guide">
-<h1>BSAVI: User Guide<a class="headerlink" href="#bsavi-user-guide" title="Permalink to this heading">#</a></h1>
+          <section id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this heading">#</a></h1>
 <p>This guide will demonstrate and explain the features and functionality
-of BSAVI by stepping through the whole process of creating a
-visualization. It will follow structure of the <a class="reference internal" href="class_examples.html"><span class="doc">Cosmology &amp; CLASS</span></a>
-tutorials without requiring install of CLASS or any cosmologist-specific
-packages. A basic knowledge of plotting with
+of BSAVI by creating a visualization that will dynamically generate sine
+waves from frequency, phase, and amplitude data. It will follow the structure
+of the <a class="reference internal" href="class_examples.html"><span class="doc">Cosmology &amp; CLASS</span></a> tutorials without requiring install of CLASS
+or any cosmologist-specific packages. A basic knowledge of plotting with
 <a class="reference external" href="https://holoviews.org/index.html">HoloViews</a> is suggested, since it
 is the utility that provides the interactive plots for this package.</p>
 <p>Works in a Jupyter Notebook or as a standalone Python script.
 To see the full interactivity, download the “userguide” notebook
 <a class="reference external" href="https://github.com/wen-jams/bsavi/tree/main/tutorials">here</a></p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># imports
-import bsavi as bsv
-import numpy as np
-import pandas as pd
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># imports</span>
+<span class="kn">import</span> <span class="nn">bsavi</span> <span class="k">as</span> <span class="nn">bsv</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </pre></div>
 </div>
 <p>Suppose we want to visualize how changes in amplitude, frequency, and
@@ -229,28 +229,28 @@ functions.</p>
 </div>
 <p>First let’s generate some random data in three dimensions. These will be
 samples of our amplitudes, frequencies and phases.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ndim, nsamples = 3, 1000
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ndim</span><span class="p">,</span> <span class="n">nsamples</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1000</span>
 
-np.random.seed(42)
-data1 = np.random.randn(ndim * 4 * nsamples // 5).reshape(
-    [4 * nsamples // 5, ndim]
-)
-data2 = 4 * np.random.rand(ndim)[None, :] + np.random.randn(
-    ndim * nsamples // 5
-).reshape([nsamples // 5, ndim])
-data = np.vstack([data1, data2])
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">data1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">ndim</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nsamples</span> <span class="o">//</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">nsamples</span> <span class="o">//</span> <span class="mi">5</span><span class="p">,</span> <span class="n">ndim</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">data2</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span>
+    <span class="n">ndim</span> <span class="o">*</span> <span class="n">nsamples</span> <span class="o">//</span> <span class="mi">5</span>
+<span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">nsamples</span> <span class="o">//</span> <span class="mi">5</span><span class="p">,</span> <span class="n">ndim</span><span class="p">])</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Then convert it into a pandas DataFrame (BSAVI only accepts DataFrames,
 for now) and define column labels with some fancy <span class="math notranslate nohighlight">\(\LaTeX\)</span>
 formatting:</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>param_names = [&#39;frequency&#39;, &#39;phase&#39;, &#39;amplitude&#39;]
-latex = [&#39;\omega / 2\pi&#39;, &#39;\phi&#39;, &#39;\mathrm{amplitude}&#39;]
-df = pd.DataFrame(data, columns=param_names)
-latex_dict = dict(zip(param_names, latex))
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">]</span>
+<span class="n">latex</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;\omega / 2\pi&#39;</span><span class="p">,</span> <span class="s1">&#39;\phi&#39;</span><span class="p">,</span> <span class="s1">&#39;\mathrm</span><span class="si">{amplitude}</span><span class="s1">&#39;</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">param_names</span><span class="p">)</span>
+<span class="n">latex_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="n">latex</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df.head()
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 <div>
@@ -311,12 +311,12 @@ latex_dict = dict(zip(param_names, latex))
 </table>
 </div><p>We now have a table of samples which we can visualize directly with
 <code class="docutils literal notranslate"><span class="pre">bsv.viz</span></code>. Bringing along the latex dict we made earlier:</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>bsv.viz(df, latex_dict=latex_dict)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bsv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">latex_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="_images/bsavi-userguide1.gif" src="_images/bsavi-userguide1.gif" />
-<section id="writing-functions-to-compute-observables">
-<h2>Writing Functions to Compute Observables<a class="headerlink" href="#writing-functions-to-compute-observables" title="Permalink to this heading">#</a></h2>
+<section id="writing-functions-for-observables">
+<h2>Writing Functions for Observables<a class="headerlink" href="#writing-functions-for-observables" title="Permalink to this heading">#</a></h2>
 <p>Next, we will define the function that takes a given row of samples from
 the table above and uses it to compute the two waveforms.</p>
 <section id="data-formats">
@@ -352,27 +352,27 @@ the index corresponding to a point selected on the plot into your
 function. Therefore, <code class="docutils literal notranslate"><span class="pre">index</span></code> is required as the first argument. Then
 you can have an arbitrary amount of arguments. The example below is how
 it should be done if the input dataset is a DataFrame.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_waveforms(index, input_data):
-    selection = input_data.iloc[[index]]
-    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
-    angular_freq = 2*np.pi*selection[&#39;frequency&#39;].iloc[0]
-    phase = selection[&#39;phase&#39;].iloc[0]
-    amp = selection[&#39;amplitude&#39;].iloc[0]
-    sin = amp * np.sin(angular_freq*x + phase)
-    sinc = amp * np.sinc(angular_freq*x/np.pi + phase)
-    waves = [
-        {&#39;x&#39;: x, &#39;sin(x)&#39;: sin},
-        {&#39;x&#39;: x, &#39;sinc(x)&#39;: sinc},
-    ]
-    return waves
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_waveforms</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="n">index</span><span class="p">]]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">angular_freq</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">selection</span><span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">selection</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">amp</span> <span class="o">=</span> <span class="n">selection</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">sin</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angular_freq</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">phase</span><span class="p">)</span>
+    <span class="n">sinc</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">angular_freq</span><span class="o">*</span><span class="n">x</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="n">phase</span><span class="p">)</span>
+    <span class="n">waves</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;sin(x)&#39;</span><span class="p">:</span> <span class="n">sin</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;sinc(x)&#39;</span><span class="p">:</span> <span class="n">sinc</span><span class="p">},</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">waves</span>
 </pre></div>
 </div>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># example run
-sin, sinc = compute_waveforms(0, df)
-# plot them using holoviews
-import holoviews as hv
-layout = hv.Curve(sin, &#39;x&#39;, &#39;sin(x)&#39;) + hv.Curve(sinc, &#39;x&#39;, &#39;sinc(x)&#39;)
-layout
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example run</span>
+<span class="n">sin</span><span class="p">,</span> <span class="n">sinc</span> <span class="o">=</span> <span class="n">compute_waveforms</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<span class="c1"># plot them using holoviews</span>
+<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="n">hv</span><span class="o">.</span><span class="n">Curve</span><span class="p">(</span><span class="n">sin</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;sin(x)&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">hv</span><span class="o">.</span><span class="n">Curve</span><span class="p">(</span><span class="n">sinc</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;sinc(x)&#39;</span><span class="p">)</span>
+<span class="n">layout</span>
 </pre></div>
 </div>
 <img alt="_images/bsavi-userguide2.png" src="_images/bsavi-userguide2.png" />
@@ -380,37 +380,75 @@ layout
 </section>
 <section id="creating-an-observable">
 <h2>Creating an Observable<a class="headerlink" href="#creating-an-observable" title="Permalink to this heading">#</a></h2>
-<p>Now we are ready to set up an BSAVI Observable object. This is a way to
+<p>Now we are ready to set up the Observable. This is a way to
 associate your data with how it should be plotted, including title and
-axis labels, <span class="math notranslate nohighlight">\(\LaTeX\)</span> formatting, and other customizations. BSAVI
-will use all this information when generating the visualizations. Below
-is the full list of options for an Observable:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span><span class="p">:</span> <span class="n">string</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strings</span>
-    <span class="n">specifies</span> <span class="n">the</span> <span class="n">display</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">observable</span> <span class="k">for</span> <span class="n">things</span> <span class="n">like</span> <span class="n">plot</span> <span class="n">titles</span>
-
-<span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="o">-</span><span class="n">like</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="nb">dict</span><span class="o">-</span><span class="n">likes</span>
-    <span class="n">the</span> <span class="n">data</span> <span class="n">to</span> <span class="n">associated</span> <span class="k">with</span> <span class="n">that</span> <span class="n">observable</span><span class="o">.</span> <span class="n">can</span> <span class="n">be</span> <span class="n">python</span> <span class="nb">dict</span> <span class="p">(</span><span class="ow">or</span> <span class="n">pandas</span> <span class="n">DataFrame</span><span class="p">)</span>
-    <span class="n">whose</span> <span class="n">keys</span> <span class="p">(</span><span class="ow">or</span> <span class="n">column</span> <span class="n">names</span><span class="p">)</span> <span class="n">will</span> <span class="n">be</span> <span class="n">used</span> <span class="k">for</span> <span class="n">things</span> <span class="n">like</span> <span class="n">plot</span> <span class="n">axis</span> <span class="n">labels</span><span class="o">.</span>
-
-<span class="n">myfunc</span><span class="p">:</span> <span class="nb">callable</span>
-    <span class="n">a</span> <span class="n">user</span><span class="o">-</span><span class="n">provided</span> <span class="n">function</span> <span class="n">that</span> <span class="n">returns</span> <span class="n">parameters</span><span class="o">.</span> <span class="n">can</span> <span class="k">return</span> <span class="n">more</span> <span class="n">than</span> <span class="n">one</span>
-    <span class="nb">set</span> <span class="n">of</span> <span class="n">parameters</span><span class="o">.</span>
-
-<span class="n">myfunc_args</span><span class="p">:</span> <span class="nb">tuple</span>
-    <span class="n">arguments</span> <span class="k">for</span> <span class="n">user</span><span class="o">-</span><span class="n">provided</span> <span class="n">function</span>
-
-<span class="n">plot_type</span><span class="p">:</span> <span class="n">string</span>
-    <span class="n">specifies</span> <span class="n">how</span> <span class="n">the</span> <span class="n">data</span> <span class="n">should</span> <span class="n">be</span> <span class="n">visualized</span><span class="o">.</span> <span class="n">currently</span> <span class="n">can</span> <span class="n">pick</span> <span class="s1">&#39;Curve&#39;</span><span class="p">,</span> <span class="s1">&#39;Bars&#39;</span><span class="p">,</span>
-    <span class="ow">or</span> <span class="s1">&#39;Scatter&#39;</span>
-
-<span class="n">plot_opts</span><span class="p">:</span> <span class="n">holoviews</span> <span class="n">Options</span> <span class="nb">object</span>
-    <span class="n">customization</span> <span class="n">options</span> <span class="k">for</span> <span class="n">the</span> <span class="n">observable</span> <span class="n">plot</span><span class="o">.</span> <span class="n">see</span> <span class="n">Holoviews</span> <span class="n">documentation</span>
-
-<span class="n">latex_labels</span><span class="p">:</span> <span class="nb">dict</span> <span class="ow">or</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">dicts</span>
-    <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="o">-&gt;</span> <span class="n">parameter</span> <span class="n">label</span><span class="p">:</span> <span class="n">latex</span> <span class="n">version</span><span class="o">.</span> <span class="n">parameter</span> <span class="n">label</span> <span class="n">must</span> <span class="n">match</span> <span class="n">the</span>
-    <span class="n">corresponding</span> <span class="n">one</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">parameters</span> <span class="nb">dict</span>
-</pre></div>
-</div>
+axis labels, LaTeX formatting, and other customizations. BSAVI
+will use all this information when generating the visualizations. There
+are two types, Observable and LiveObservable, which deal with static data
+and dynamic calculations, respectively. Below is the full list of options
+for both BSAVI Observable types:</p>
+<p><a class="reference internal" href="reference.html#bsavi.Observable" title="bsavi.Observable"><code class="xref py py-class docutils literal notranslate"><span class="pre">bsavi.Observable</span></code></a>: the standard Observable, which takes tabular data
+to make plots.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>name: string or list of strings</dt><dd><ul>
+<li><p>specifies the display name of the observable for things like plot titles</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>data: dict-like or list of dict-likes</dt><dd><ul>
+<li><dl class="simple">
+<dt>the data to associated with that observable. can be python dict (or pandas DataFrame)</dt><dd><p>whose keys (or column names) will be used for things like plot axis labels.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>plot_type: string</dt><dd><ul>
+<li><p>specifies how the data should be visualized. currently can pick ‘Curve’, ‘Bars’, or ‘Scatter’</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>plot_opts: holoviews Options object</dt><dd><ul>
+<li><p>customization options for the observable plot. see Holoviews documentation</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>latex_labels: dict</dt><dd><ul>
+<li><p>dictionary of plain text parameter names as keys and latex versions as values for the data table</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p><a class="reference internal" href="reference.html#bsavi.LiveObservable" title="bsavi.LiveObservable"><code class="xref py py-class docutils literal notranslate"><span class="pre">bsavi.LiveObservable</span></code></a>: an Observable that takes a function and uses it
+to calculate data for making plots. Has the same options as <a class="reference internal" href="reference.html#bsavi.Observable" title="bsavi.Observable"><code class="xref py py-class docutils literal notranslate"><span class="pre">bsavi.Observable</span></code></a>,
+but <code class="docutils literal notranslate"><span class="pre">data</span></code> is replaced with:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>myfunc: callable</dt><dd><ul>
+<li><p>a user-provided function that returns data. can return more than one set of data.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>myfunc_args: tuple</dt><dd><ul>
+<li><p>arguments for user-provided function</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 <p>Note: BSAVI is limited to 2-D graphs (two plot axes), so there are three
 <em>plot_types</em> available:</p>
 <ul class="simple">
@@ -419,10 +457,6 @@ is the full list of options for an Observable:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">'Bars'</span></code>: A series of bars with their heights determined by the
 y-axis value at each point</p></li>
 </ul>
-<p><strong>IMPORTANT</strong>: only pass arguments into <strong>either</strong> <code class="docutils literal notranslate"><span class="pre">parameters</span></code> <strong>or</strong>
-<code class="docutils literal notranslate"><span class="pre">myfunction</span> <span class="pre">+</span> <span class="pre">myfunction_args</span></code>, depending on if you have a
-precalculated observable dataset, or you want to dynamically calculate
-them with a custom function.</p>
 <section id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this heading">#</a></h3>
 <p>To apply customizations to your plots, use HoloViews Options
@@ -455,17 +489,17 @@ colormap.</p></li>
 </ul>
 </li>
 </ul>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># setting up some customizations first
-import holoviews as hv
-from holoviews import opts
-opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle(&#39;YlOrRd&#39;), bgcolor=&#39;#151515&#39;)
-opts2 = opts.Scatter(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle(&#39;PuBuGn&#39;), bgcolor=&#39;#151515&#39;)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting up some customizations first</span>
+<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
+<span class="kn">from</span> <span class="nn">holoviews</span> <span class="kn">import</span> <span class="n">opts</span>
+<span class="n">opts1</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">Curve</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">hv</span><span class="o">.</span><span class="n">Cycle</span><span class="p">(</span><span class="s1">&#39;YlOrRd&#39;</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="s1">&#39;#151515&#39;</span><span class="p">)</span>
+<span class="n">opts2</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">hv</span><span class="o">.</span><span class="n">Cycle</span><span class="p">(</span><span class="s1">&#39;PuBuGn&#39;</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="s1">&#39;#151515&#39;</span><span class="p">)</span>
 
-waves_latex = {
-    &#39;x&#39;: &#39;x&#39;,
-    &#39;sin(x)&#39;: &#39;\sin{x}&#39;,
-    &#39;sinc(x)&#39;: &#39;1/\sin{x}&#39;,
-}
+<span class="n">waves_latex</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sin(x)&#39;</span><span class="p">:</span> <span class="s1">&#39;\sin</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sinc(x)&#39;</span><span class="p">:</span> <span class="s1">&#39;1/\sin</span><span class="si">{x}</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -477,42 +511,50 @@ longer to complete. Clicking on a point in the sample plot and waiting
 minutes for a graph of your Observable to appear is not very fun. If we
 compute our observable for every sample beforehand, it will make for a
 more seamless interactive experience.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># go through the entire set of samples, computing waveforms for each set:
-waves_list = []
-for idx in range(0, len(df)):
-    wave = compute_waveforms(idx, df)
-    waves_list.append(wave)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># go through the entire set of samples, computing waveforms for each set:</span>
+<span class="n">waves_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">compute_waveforms</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">waves_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
 
-waves_df = pd.DataFrame(waves_list, columns=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;])
+<span class="n">waves_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">waves_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sin(x)&#39;</span><span class="p">,</span> <span class="s1">&#39;sinc(x)&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Now we can create an Observable, giving it the wave data and specifying
+<p>Now we can create an <code class="docutils literal notranslate"><span class="pre">Observable</span></code>, giving it the wave data and specifying
 plot titles, plot types, customizations, and latex labels.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>waveforms = bsv.Observable(
-    name=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;],
-    parameters=computed_df,
-    plot_type=[&#39;Curve&#39;, &#39;Scatter&#39;],
-    plot_opts=[opts1, opts2],
-    latex_labels=waves_latex
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">waveforms</span> <span class="o">=</span> <span class="n">bsv</span><span class="o">.</span><span class="n">Observable</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sin(x)&#39;</span><span class="p">,</span> <span class="s1">&#39;sinc(x)&#39;</span><span class="p">],</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">computed_df</span><span class="p">,</span>
+    <span class="n">plot_type</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Curve&#39;</span><span class="p">,</span> <span class="s1">&#39;Scatter&#39;</span><span class="p">],</span>
+    <span class="n">plot_opts</span><span class="o">=</span><span class="p">[</span><span class="n">opts1</span><span class="p">,</span> <span class="n">opts2</span><span class="p">],</span>
+    <span class="n">latex_labels</span><span class="o">=</span><span class="n">waves_latex</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We can check that it works with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">waveforms</span><span class="o">.</span><span class="n">draw_plot</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
 <section id="dynamically-computed-observables">
 <h3>Dynamically Computed Observables<a class="headerlink" href="#dynamically-computed-observables" title="Permalink to this heading">#</a></h3>
 <p>On the other hand, our function is fast enough that we can just have
-BSAVI call it every time we select a sample. In this case, we will give
-our Observable the function itself, along with a tuple containing its
+BSAVI call it every time we select a sample. In this case, we will use
+<code class="docutils literal notranslate"><span class="pre">LiveObservable</span></code> and give it our function, along with a tuple containing its
 arguments. We can skip the first argument, <code class="docutils literal notranslate"><span class="pre">index</span></code>, since it’s
 automatically handled by the visualizer.</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dynamic_waveforms = bsv.Observable(
-    name=[&#39;sin(x)&#39;, &#39;sinc(x)&#39;],
-    myfunc=compute_waveforms,
-    myfunc_args=(df,),
-    plot_type=&#39;Curve&#39;,
-    plot_opts=[opts1, opts2],
-    latex_labels=waves_latex
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dynamic_waveforms</span> <span class="o">=</span> <span class="n">bsv</span><span class="o">.</span><span class="n">LiveObservable</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sin(x)&#39;</span><span class="p">,</span> <span class="s1">&#39;sinc(x)&#39;</span><span class="p">],</span>
+    <span class="n">myfunc</span><span class="o">=</span><span class="n">compute_waveforms</span><span class="p">,</span>
+    <span class="n">myfunc_args</span><span class="o">=</span><span class="p">(</span><span class="n">df</span><span class="p">,),</span>
+    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;Curve&#39;</span><span class="p">,</span>
+    <span class="n">plot_opts</span><span class="o">=</span><span class="p">[</span><span class="n">opts1</span><span class="p">,</span> <span class="n">opts2</span><span class="p">],</span>
+    <span class="n">latex_labels</span><span class="o">=</span><span class="n">waves_latex</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, check that it plots correctly with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dynamic_waveforms</span><span class="o">.</span><span class="n">draw_plot</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -530,7 +572,7 @@ formatting for your axis labels (default = None)</p>
 <p>Run the cell below to test out the interactivity by selecting points on
 the scatterplot in the left section, and see what appears on the plots
 in the right section!</p>
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>bsv.viz(data=df, observables=[waveforms], latex_dict=latex_dict).servable()
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bsv</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="p">[</span><span class="n">waveforms</span><span class="p">],</span> <span class="n">latex_dict</span><span class="o">=</span><span class="n">latex_dict</span><span class="p">)</span><span class="o">.</span><span class="n">servable</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="_images/bsavi-userguide3.gif" src="_images/bsavi-userguide3.gif" />
@@ -608,8 +650,8 @@ your script. Then serve it with:</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">BSAVI: User Guide</a><ul>
-<li><a class="reference internal" href="#writing-functions-to-compute-observables">Writing Functions to Compute Observables</a><ul>
+<li><a class="reference internal" href="#">User Guide</a><ul>
+<li><a class="reference internal" href="#writing-functions-for-observables">Writing Functions for Observables</a><ul>
 <li><a class="reference internal" href="#data-formats">Data Formats</a></li>
 </ul>
 </li>
@@ -631,7 +673,7 @@ your script. Then serve it with:</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=0baa9010"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=048f3deb"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

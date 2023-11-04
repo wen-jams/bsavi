@@ -58,7 +58,7 @@ Now we are ready to construct an Observable which combines the observable data w
 
     power_spectra = bsv.Observable(
         name=['P(k)', 'Lensed Cl_TT', 'Lensed Cl_EE'], 
-        parameters=class_results,
+        data=class_results,
         plot_type='Curve',
         plot_opts=curve_opts,
     )
@@ -122,7 +122,8 @@ This just involves renaming the columns and changing H0 (Hubble constant) to lit
     inclass = inclass.rename(columns=renaming_scheme)
     inclass['h'] = inclass['h'] * 1e-2
 
-Now, we'll go through the same steps as above to set up our Observable.
+Now, we'll go through similar steps as above to set up our Observable, except this time we'll use a 
+``LiveObservable`` which will dynamically call ``cosmo.run_class``.
 
 .. code-block:: python
 
@@ -136,7 +137,7 @@ Now, we'll go through the same steps as above to set up our Observable.
         'Cl_ee': '[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^{EE}',
     }
 
-    power_spectra = bsv.Observable(
+    power_spectra = bsv.LiveObservable(
         name=['P(k)', 'Cl_TT', 'Cl_EE'], 
         myfunc=cosmo.run_class,
         myfunc_args=(inclass,),
@@ -145,9 +146,10 @@ Now, we'll go through the same steps as above to set up our Observable.
         latex_labels=ps_latex
     )
 
-Notice that in creating the Observable, instead of passing in ``parameters``, we passed a function and 
-a tuple containing its arguments. **It is important to remember that values for both of these cannot be 
-passed at the same time.**
+Notice that in creating the LiveObservable, we only passed in a single function and its arguments, but passed 
+multiple names. This is because ``cosmo.run_class`` will return data for all three observables. 
+**When writing your own functions for LiveObservables, make sure it returns all the data you need.**
+See the :doc:`userguide` for more information.
 
 And finally, we can produce the visualization with 
 

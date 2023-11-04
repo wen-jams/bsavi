@@ -3,7 +3,10 @@ API Reference
 
 .. py:module:: bsavi
 
-.. py:class:: Observable(name, parameters=None, latex_labels=None, myfunc=None, myfunc_args=None, plot_type, plot_opts=None)
+.. py:class:: Observable(name, data, plot_type=None, plot_opts=None, latex_labels=None)
+
+    Annotate your data with names and plotting instructions to easily create interactive plots. 
+    Observable accepts data in the form of tables where each row contains a set of datapoints to plot.
 
     .. py:attribute:: name
 
@@ -11,7 +14,7 @@ API Reference
 
         :type: str or list[str]
     
-    .. py:attribute:: parameters
+    .. py:attribute:: data
 
         The data associated with that observable. Can be python dict (or pandas DataFrame)
         whose keys (or column names) will be used for things like plot axis labels.
@@ -20,44 +23,12 @@ API Reference
 
         :value: None
 
-    .. note:: 
-
-        If providing values for ``Observable.parameters``, leave ``myfunc`` and ``myfunc_args``
-        as None, and vice versa.
-
-    .. py:attribute:: latex_labels
-
-        A dictionary that has parameter labels as keys and their corresponding 
-        LaTeX format as values.
-
-        :type: dict or list[dict]
-
-        :value: None
-
-    .. py:attribute:: myfunc
-
-        A user-provided function that returns parameters in the same data format
-        that :py:attr:`Observable.parameters` accepts. Can return more than one
-        set of parameters. See above note for usage with :py:attr:`Observable.parameters`.
-
-        :type: Callable
-        
-        :value: None
-
-    .. py:attribute:: myfunc_args
-
-        Arguments for the user-provided function :py:attr:`Observable.myfunc`.
-
-        :type: tuple
-        
-        :value: None
-
     .. py:attribute:: plot_type
 
-        Specifies how the data should be visualized. Currently can pick either 'Curve'
-        that connects data points together, 'Bars' for a series of columns with their 
-        heights determined by the y-axis value at each point, or 'Scatter' for a simple 
-        scatter plot.
+        Specifies how the data should be visualized. Currently can pick either ``'Curve'``
+        that connects data points together, ``'Bars'`` for a series of columns with their 
+        heights determined by the y-axis value at each point, or ``'Scatter'`` for a simple 
+        scatter plot. The default value is ``'Curve'``
 
         Pass a single value to set it for all datasets in the Observable, or a list of 
         values to be set for each dataset.
@@ -73,27 +44,118 @@ API Reference
         
         :value: None
 
+    .. py:attribute:: latex_labels
+
+        A dictionary that has parameter labels as keys and their corresponding 
+        LaTeX format as values.
+
+        :type: dict
+
+        :value: None
+
     .. py:method:: properties()
 
         Prints information about the Observable.
 
     .. py:method:: generate_plot(index)
 
-        Generates plots of the data at the given index. Will call :py:attr:`Observable.myfunc` with :py:attr:`Observable.myfunc_args`
-        on the data if given. The plots are returned as a list of objects which can be manipulated as you wish.
+        Generates plots of the data at the given indexes. Will call :py:attr:`Observable.myfunc` with :py:attr:`Observable.myfunc_args`
+        on the data if given. The plots are returned as a dictionary of plot objects which can be manipulated as you wish.
 
-        :param index: The index location of the data to plot
-        :type index: int
-        :returns: A list of `Holoviews Elements <https://holoviews.org/user_guide/Annotating_Data.html>`_
+        :param index: A list of indexes
+        :type index: list
+        :returns: A dictionary of `Holoviews Elements <https://holoviews.org/user_guide/Annotating_Data.html>`_
 
     .. py:method:: draw_plot(index)
 
         Displays an interactive plot of the data at the given index. Whereas :py:meth:`Observable.generate_plot` returns 
-        a list of plot objects but does not display them, this method will display plots arranged in a layout when evaluated 
+        a dict of plot objects but does not display them, this method will display plots arranged in a layout when evaluated 
         in a Jupyter Notebook cell.
 
-        :param index: The index location of the data to plot
-        :type index: int
+        :param index: A list of indexes
+        :type index: list
+        :returns: A `layout of Holoviews Elements <https://holoviews.org/user_guide/Composing_Elements.html>`_
+
+.. py:class:: LiveObservable(name, myfunc, myfunc_args, plot_type=None, plot_opts=None, latex_labels=None)
+
+    Annotate a function with names and plotting instructions to easily create interactive plots. 
+    Live Observable will call the function to get a set of datapoints to plot.
+
+    .. py:attribute:: name
+
+        Specifies the display name of the observable for things like plot titles.
+
+        :type: str or list[str]
+    
+    .. py:attribute:: myfunc
+
+        A user-provided function that returns data in the same data format
+        that :py:attr:`Observable.data` accepts. Can return more than one
+        set of data.
+
+        :type: Callable
+        
+        :value: None
+
+    .. py:attribute:: myfunc_args
+
+        Arguments for the user-provided function :py:attr:`Observable.myfunc`.
+
+        :type: tuple
+        
+        :value: None
+
+    .. py:attribute:: plot_type
+
+        Specifies how the data should be visualized. Currently can pick either ``'Curve'``
+        that connects data points together, ``'Bars'`` for a series of columns with their 
+        heights determined by the y-axis value at each point, or ``'Scatter'`` for a simple 
+        scatter plot. The default value is ``'Curve'``
+
+        Pass a single value to set it for all datasets in the Observable, or a list of 
+        values to be set for each dataset.
+
+        :type: str or list[str]
+        
+    .. py:attribute:: plot_opts
+
+        Customization options for the observable plot. For more information
+        see `HoloViews documentation <https://holoviews.org/user_guide/Applying_Customizations.html>`_.
+
+        :type: HoloViews Options object
+        
+        :value: None
+
+    .. py:attribute:: latex_labels
+
+        A dictionary that has parameter labels as keys and their corresponding 
+        LaTeX format as values.
+
+        :type: dict
+
+        :value: None
+
+    .. py:method:: properties()
+
+        Prints information about the Observable.
+
+    .. py:method:: generate_plot(index)
+
+        Generates plots of the data at the given indexes. Will call :py:attr:`Observable.myfunc` with :py:attr:`Observable.myfunc_args`
+        on the data if given. The plots are returned as a dictionary of plot objects which can be manipulated as you wish.
+
+        :param index: A list of indexes
+        :type index: list
+        :returns: A dictionary of `Holoviews Elements <https://holoviews.org/user_guide/Annotating_Data.html>`_
+
+    .. py:method:: draw_plot(index)
+
+        Displays an interactive plot of the data at the given index. Whereas :py:meth:`Observable.generate_plot` returns 
+        a dict of plot objects but does not display them, this method will display plots arranged in a layout when evaluated 
+        in a Jupyter Notebook cell.
+
+        :param index: A list of indexes
+        :type index: list
         :returns: A `layout of Holoviews Elements <https://holoviews.org/user_guide/Composing_Elements.html>`_
 
 .. py:function:: viz(data, observables=None, show_observables=False, latex_dict=None)
