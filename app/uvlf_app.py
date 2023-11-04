@@ -28,7 +28,7 @@ uvlf_observables = bsv.Observable(
         'UVLF at z = 12.6', 
         'UVLF at z = 8.7'
     ], 
-    parameters=[
+    data=[
         lumfunc_df[['uvlf_Muv', 'uvlf_z10.5']], 
         lumfunc_df[['uvlf_Muv', 'uvlf_z12.6']], 
         lumfunc_df[['uvlf_Muv', 'uvlf_z8.7']], 

@@ -35,23 +35,143 @@ def _lookup_latex_label(param, latex_dict):
         label = param
         return label
     
+class _observable_utils:
+    def __init__(
+        self,
+        name: Union[str, List[str]], 
+        plot_type: Union[str, List[str]] = None,
+        plot_opts: Union[opts, List[opts]] = None,
+        latex_labels: dict = None
+    ):
+        if isinstance(name, str):
+            self.name = [name]
+        else:
+            self.name = name
+        if isinstance(plot_type, str):
+            self.plot_type = [plot_type]
+        elif isinstance(plot_type, list):
+            self.plot_type = plot_type
+        else:
+            self.plot_type = ['Curve']
+        if isinstance(plot_opts, hv.core.options.Options):
+            self.plot_opts = [plot_opts]
+        else:
+            self.plot_opts = plot_opts
+        self.latex_labels = latex_labels
+        self.number = len(self.name)
 
-class Observable:
+    def properties(self):
+        if len(self.name) > 1:
+            print("BSAVI Grouped Observables")
+            for i in range(len(self.name)):
+                print(f"\t- Observable {i+1}: {self.name[i]}")
+        else:
+            print("BSAVI Observable")
+            print(f"Name: {self.name[0]}")
+
+
+class Observable(_observable_utils):
     """
-    Observable class for BSAVI.
+    Observable class for tabulated data.
     
     Parameters
     ----------
     name: string or list of strings
         specifies the display name of the observable for things like plot titles
 
-    parameters: dict-like or list of dict-likes
+    data: dict-like or list of dict-likes
         the data to associated with that observable. can be python dict (or pandas DataFrame)
         whose keys (or column names) will be used for things like plot axis labels. 
 
+    plot_type: string
+        specifies how the data should be visualized. currently can pick either 'Curve'
+        or 'Scatter'
+
+    plot_opts: holoviews Options object
+        customization options for the observable plot. see Holoviews documentation
+
+    latex_labels: dict
+        dictionary of plain text parameter names as keys and 
+        latex versions as values for the data table
+    """    
+    def __init__(
+        self, 
+        name: Union[str, List[str]], 
+        data: Union[dict, List[dict]], 
+        plot_type: Union[str, List[str]] = None,
+        plot_opts: Union[opts, List[opts]] = None,
+        latex_labels: dict = None
+    ):
+        super().__init__(name, plot_type, plot_opts, latex_labels)
+        
+        if isinstance(data, dict):
+            self.data = [data]
+        elif isinstance(data, pd.core.frame.DataFrame):
+            prms = []
+            for column in data.columns:
+                dset = pd.DataFrame(list(data.loc[:, column]))
+                prms.append(dset)
+            self.data = prms
+        else:
+            self.data = data
+        
+    def generate_plot(self, index: list):
+        plots_dict = {}
+        
+        for i in range(0, self.number):
+            indexed_plots = []
+            for n in index:
+                if len(self.plot_type) == 1:
+                    hv_element = getattr(hv, self.plot_type[0])
+                else:
+                    hv_element = getattr(hv, self.plot_type[i])
+                dataset = self.data[i]
+                unpacked_data = _unpacker(dataset, n)
+                kdim, vdim = unpacked_data.keys()
+                plot = hv_element(unpacked_data, kdim, vdim) #TODO
+                # plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
+                # set defaults
+                plot.opts(
+                    title=f'{self.name[i]}', 
+                    height=400, 
+                    width=500,
+                    padding=0.1, 
+                    fontscale=1.1,
+                    xlabel=_lookup_latex_label(kdim, self.latex_labels), 
+                    ylabel=_lookup_latex_label(vdim, self.latex_labels),
+                    framewise=True
+                )
+                # add user defined customizations
+                if self.plot_opts is not None:
+                    if len(self.plot_opts) == 1:
+                        plot.opts(self.plot_opts)
+                    else:
+                        plot.opts(self.plot_opts[i])
+                indexed_plots.append(plot)
+                plots_dict[self.name[i]] = dict(zip(index, indexed_plots))
+        return plots_dict
+        
+    def draw_plot(self, index: list):
+        layout = hv.Layout()
+        plots = self.generate_plot(index)
+        for name in plots:
+            overlay = hv.NdOverlay(plots[name], kdims='index').opts(legend_position='right')
+            layout = layout + overlay
+        return layout.opts(shared_axes=False)
+        
+
+class LiveObservable(_observable_utils):
+    """
+    LiveObservable class for dynamically calculated data.
+    
+    Parameters
+    ----------
+    name: string or list of strings
+        specifies the display name of the observable for things like plot titles
+
     myfunc: callable
-        a user-provided function that returns parameters. can return more than one
-        set of parameters.
+        a user-provided function that returns data. can return more than one
+        set of data.
 
     myfunc_args: tuple
         arguments for user-provided function
@@ -63,137 +183,105 @@ class Observable:
     plot_opts: holoviews Options object
         customization options for the observable plot. see Holoviews documentation
 
-    latex_labels: dict or list of dicts
-        key: value -> parameter label: latex version. parameter label must match the
-        corresponding one in the parameters dict
-    """
-    
+    latex_labels: dict
+        dictionary of plain text parameter names as keys and 
+        latex versions as values for the data table
+    """    
     def __init__(
         self, 
         name: Union[str, List[str]], 
-        parameters: Union[dict, List[dict]] = None, 
-        myfunc: Callable = None,
-        myfunc_args: tuple = None, 
+        myfunc: Callable,
+        myfunc_args: tuple,
         plot_type: Union[str, List[str]] = None,
         plot_opts: Union[opts, List[opts]] = None,
         latex_labels: dict = None
     ):
-        if isinstance(name, str):
-            self.name = [name]
-        else:
-            self.name = name
-        if isinstance(parameters, dict):
-            self.parameters = [parameters]
-        elif isinstance(parameters, pd.core.frame.DataFrame):
-            prms = []
-            for column in parameters.columns:
-                dset = pd.DataFrame(list(parameters.loc[:, column]))
-                prms.append(dset)
-            self.parameters = prms
-        else:
-            self.parameters = parameters
+        super().__init__(name, plot_type, plot_opts, latex_labels)
         self.myfunc = myfunc
         self.myfunc_args = myfunc_args
-        if isinstance(plot_type, str):
-            self.plot_type = [plot_type]
-        else:
-            self.plot_type = plot_type
-        if isinstance(plot_opts, hv.core.options.Options):
-            self.plot_opts = [plot_opts]
-        else:
-            self.plot_opts = plot_opts
-        self.latex_labels = latex_labels
-        self.number = len(self.name)
-    
+
     def properties(self):
-        if len(self.name) > 1:
-            print("BSAVI Grouped Observables")
-            for i in range(len(self.name)):
-                print(f"\t- Observable {i+1}: {self.name[i]}")
-        else:
-            print("BSAVI Observable")
-            print(f"Name: {self.name[0]}")
-        
-    def generate_plot(self, index: int):
-        self.plots_list = []
-        if self.myfunc and self.myfunc_args is not None:
-            computed_data = self.myfunc(index, *self.myfunc_args)
-            self.number = len(computed_data)
-        for i in range(0, self.number):
-            if len(self.plot_type) == 1:
-                hv_element = getattr(hv, self.plot_type[0])
-            else:
-                hv_element = getattr(hv, self.plot_type[i])
-            if self.parameters is not None:
-                dataset = self.parameters[i]
-                unpacked_data = _unpacker(dataset, index)
-                kdim, vdim = unpacked_data.keys()
-                plot = hv_element(unpacked_data, kdim, vdim, group=self.name[i], label=str(index)) #TODO
-                # plot = hv_element(unpacked_data, kdim, vdim, label=self.name[i])
-            elif computed_data:
+        super().properties()
+        print(f'Calculated by {self.myfunc.__name__}')
+    def generate_plot(self, index: list):
+        plots_dict = {k: {} for k in self.name}
+
+        for n in index:
+            computed_data = self.myfunc(n, *self.myfunc_args)
+            
+            for i in range(0, self.number):
+                if len(self.plot_type) == 1:
+                    hv_element = getattr(hv, self.plot_type[0])
+                else:
+                    hv_element = getattr(hv, self.plot_type[i])  
                 dataset = computed_data[i]
                 kdim, vdim = dataset.keys()
-                plot = hv_element(dataset, kdim, vdim, group=self.name[i], label=str(index)) #TODO
+                plot = hv_element(dataset, kdim, vdim) #TODO
                 # plot = hv_element(dataset, kdim, vdim, label=self.name[i])
-            # set defaults
-            plot.opts(
-                title=f'{self.name[i]}',
-                height=400,
-                width=500,
-                padding=0.1,
-                fontscale=1.1,
-                xlabel=_lookup_latex_label(kdim, self.latex_labels), 
-                ylabel=_lookup_latex_label(vdim, self.latex_labels),
-                framewise=True
-            )
-            # add user defined customizations
-            if self.plot_opts is not None:
-                if len(self.plot_opts) == 1:
-                    plot.opts(self.plot_opts)
-                else:
-                    plot.opts(self.plot_opts[i])
-            
-            self.plots_list.append(plot)
-        return self.plots_list
-        
-    def draw_plot(self, index):
-        layout = hv.Layout(self.generate_plot(index))
+                # set defaults
+                plot.opts(
+                    title=f'{self.name[i]}',
+                    height=400,
+                    width=500,
+                    padding=0.1,
+                    fontscale=1.1,
+                    xlabel=_lookup_latex_label(kdim, self.latex_labels), 
+                    ylabel=_lookup_latex_label(vdim, self.latex_labels),
+                    framewise=True
+                )
+                # add user defined customizations
+                if self.plot_opts is not None:
+                    if len(self.plot_opts) == 1:
+                        plot.opts(self.plot_opts)
+                    else:
+                        plot.opts(self.plot_opts[i])
+                plots_dict[self.name[i]].update({n: plot})
+        return plots_dict
+
+    def draw_plot(self, index: list):
+        layout = hv.Layout()
+        plots = self.generate_plot(index)
+        for name in plots:
+            overlay = hv.NdOverlay(plots[name], kdims='index').opts(legend_position='right')
+            layout = layout + overlay
         return layout.opts(shared_axes=False)
         
 
 # generate the visualization
 def viz(
     data, 
-    observables: list = None, 
+    observables: list[Union[Observable, LiveObservable]] = None, 
     show_observables: bool = False, 
     latex_dict: dict = None
-):
+    ):
+    """
+    Interactive dashboard linking data and observables
+
+    Parameters
+    ----------
+    data: Pandas DataFrame
+        a table containing samples of parameter values
+    
+    observables: list[Observable | LiveObservable]
+        a list of Observables corresponding to the samples
+    
+    show_observables: bool
+        whether display observables
+
+    latex_labels: dict
+        dictionary of plain text parameter names as keys and 
+        latex versions as values for the data table
+    """
     # setting Panel widgets for user interaction
     variables = data.columns.values.tolist()
-    var1 = pn.widgets.Select(
-        value=variables[0], 
-        name='Horizontal Axis', 
-        options=variables,
-        width=150
-    )
-    var2 = pn.widgets.Select(
-        value=variables[1], 
-        name='Vertical Axis', 
-        options=variables,
-        width=150
-    )
-    cmap_var = pn.widgets.Select(
-        value=variables[2], 
-        name='Colormap', 
-        options=variables,
-        width=150
-    )
-    cmap_option = pn.widgets.Checkbox(
-        value=True, 
-        name='Show Colormap', 
-        align='end',
-        width=150
-    )
+    var1 = pn.widgets.Select(value=variables[0], name='Horizontal Axis', 
+                             options=variables, width=150)
+    var2 = pn.widgets.Select(value=variables[1], name='Vertical Axis', 
+                             options=variables, width=150)
+    cmap_var = pn.widgets.Select(value=variables[2], name='Colormap', 
+                                 options=variables,width=150)
+    cmap_option = pn.widgets.Checkbox(value=True, name='Show Colormap', 
+                                      align='end',width=150)
 
     # function for generating the scatter plot, given 2 dimensions as x and y axes, and an additional dimension to colormap
     # to the points on the plot. Also has an option to show or hide the colormap
@@ -261,8 +349,6 @@ def viz(
     
     #table_stream = streams.Selection1D(source=selected_table)
     
-    # handles the null selection case and multiple selections
-    plots = {}
     # get total number of plots to draw from list of observables
     plotting_info = {}
     if observables is None:
@@ -282,42 +368,43 @@ def viz(
                 plotting_info[each.name[i]] = {'type': each.plot_type[0], 'opts': specific_opts}
             else:
                 plotting_info[each.name[i]] = {'type': each.plot_type[i], 'opts': specific_opts}
-
+    
+    # handles the null selection case and multiple selections
+    plot_dict = {k: {} for k in list(plotting_info.keys())}
+    
     def plot_observables(index):
         if not index:
-            plots_list = []
+            layout = hv.Layout()
             for name in plotting_info:
+                # get name of plot element (type)
                 hv_type = getattr(hv, plotting_info[name]['type'])
+                # generate empty plot with default options
                 empty_plot = hv_type(np.random.rand(0, 2), group=f'{name}', label='None').opts(
-                    title=f'{name} - No Selection', 
-                    height=400, 
-                    width=500, 
-                    fontscale=1.1, 
-                    framewise=True)
+                    title=f'{name} - No Selection', height=400, width=500, fontscale=1.1, framewise=True)
+                # apply custom options if specified
                 if plotting_info[name]['opts'] is not None:
                     empty_plot.opts(plotting_info[name]['opts'])
-                plots_list.append([empty_plot])
+                # make an empty NdOverlay and append to layout
+                empty_overlay = hv.NdOverlay({'none': empty_plot}, kdims='index').opts(legend_position='right')
+                layout = layout + empty_overlay
         else:
-            new_index = [x for x in index if x not in list(plots.keys())]
-            for element in new_index:
-                new_plots = []
-                for each in observables:
-                    new_plots.extend(each.generate_plot(element))
-                plots[element] = {plot.group: plot for plot in new_plots} #TODO
-                # plots[element] = {plot.label: plot for plot in new_plots}
-            
-            plots_list = []
-            for index_item in index:
-                plot_types = list(plots[index_item].keys())
-
-            for plot_item in plot_types:
-                same_type = [plots[key][plot_item] for key in index]
-                plots_list.append(same_type)
-            
-        layout = hv.Layout()
-        for list_of_plots in plots_list:
-            overlay = hv.Overlay(list_of_plots).opts(show_legend=True, legend_position='right')
-            layout = layout + overlay
+            # get the indices that haven't been seen before
+            new_index = [x for x in index if x not in list(plot_dict[list(plot_dict.keys())[0]].keys())]
+            # go through each observable and generate its plots, adding them
+            # to the shared plot_dict
+            for each in observables:
+                new_plots = each.generate_plot(new_index)
+                # observable names should match plot_dict keys
+                for key in each.name:
+                    if new_index:
+                        plot_dict[key].update(new_plots[key])
+            # recursively build a layout of NdOverlays
+            layout = hv.Layout()
+            for key in plot_dict:
+                filtered_indexed_plots = {idx_num: plot_dict[key][idx_num] for idx_num in index}
+                overlay = hv.NdOverlay(filtered_indexed_plots, kdims='index').opts(legend_position='right')
+                layout = layout + overlay
+    
         layout.opts(shared_axes=False, toolbar='left').cols(2)
         return layout
     

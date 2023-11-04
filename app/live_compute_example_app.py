@@ -3,7 +3,6 @@ import holoviews as hv
 from holoviews import opts
 import numpy as np
 import pandas as pd
-from scipy import signal
 
 # Set up the parameters of the problem.
 ndim, nsamples = 3, 1000
@@ -26,18 +25,15 @@ latex_dict = dict(zip(param_names, latex))
 # write a function that returns multiple waves from the same data
 def compute_waveforms(index, input_data):
     selection = input_data.iloc[[index]]
-    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
+    x = np.linspace(-2*np.pi, 2*np.pi, 250)
     angular_freq = 2*np.pi*selection['frequency'].iloc[0]
     phase = selection['phase'].iloc[0]
     amp = selection['amplitude'].iloc[0]
     sin = amp * np.sin(angular_freq*x + phase)
-    cos = amp * np.cos(angular_freq*x + phase)
     sinc = amp * np.sinc(angular_freq*x/np.pi + phase)
-    sawtooth = amp * signal.sawtooth(angular_freq * x + phase)
     waves = [
         {'x': x, 'sin(x)': sin},
         {'x': x, 'sinc(x)': sinc},
-        {'x': x, 'sawtooth': sawtooth},
     ]
     return waves
 
@@ -53,7 +49,7 @@ waves_latex = {
 }
 
 # construct the Observable object
-waveforms = nv.Observable(
+waveforms = bsv.Observable(
     name=[
         'Sine',
         'Sinc',
@@ -64,12 +60,10 @@ waveforms = nv.Observable(
     plot_type=[
         'Curve',
         'Curve',
-        'Curve',
     ],
     plot_opts=[
         opts1,
         opts2,
-        opts3,
     ],
     latex_labels=waves_latex
 )
@@ -89,7 +83,7 @@ def cosine(index, input_data):
 
 cosine_latex = {'x':'x', 'cos(x)': '\cos{x}'}
 
-coswav = nv.Observable(
+coswav = bsv.Observable(
     name='Cosine',
     myfunc=cosine,
     myfunc_args=(df,),
@@ -99,4 +93,4 @@ coswav = nv.Observable(
 )
 
 # visualize both at once
-nv.viz(df, [waveforms, coswav], latex_dict=latex_dict).servable('Waveforms')
+bsv.viz(df, [waveforms, coswav], latex_dict=latex_dict).servable('Waveforms')
