@@ -42,7 +42,7 @@ resids_latex = {
     'cl_tt_residuals': '(C_{\ell}^{TT}-C_{\ell, CDM}^{TT})/C_{\ell, CDM}^{TT}*100~[\%]',
     'cl_ee_residuals': '(C_{\ell}^{EE}-C_{\ell, CDM}^{EE})/C_{\ell, CDM}^{EE}*100~[\%]',
 }
-residuals = bsv.Observable(
+residuals = bsv.LiveObservable(
     name=['P(k) Residuals', 'Cl_TT Residuals', 'Cl_EE Residuals'], 
     myfunc=cosmo.compute_residuals,
     myfunc_args=(classy_input, classy_CDM), 
