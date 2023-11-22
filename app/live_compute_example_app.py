@@ -38,40 +38,29 @@ def compute_waveforms(index, input_data):
     return waves
 
 # set some customization options with holoviews opts
-opts1 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('YlOrRd'), bgcolor='#151515')
-opts2 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('PuBuGn'), bgcolor='#151515')
-opts3 = opts.Curve(xlim=(-4*np.pi, 4*np.pi), color=hv.Cycle('RdPu'), bgcolor='#f5f5f5')
+opts1 = opts.Curve(xlim=(-2*np.pi, 2*np.pi), color=hv.Cycle('YlOrRd'), bgcolor='#151515')
+opts2 = opts.Curve(xlim=(-2*np.pi, 2*np.pi), color=hv.Cycle('PuBuGn'), bgcolor='#151515')
+opts3 = opts.Curve(xlim=(-2*np.pi, 2*np.pi), color=hv.Cycle('RdPu'), bgcolor='#f5f5f5')
 waves_latex = {
     'x': 'x', 
     'sin(x)': '\sin{x}',
     'sinc(x)': '1/\sin{x}',
-    'sawtooth': r'\text{Sawtooth Wave}',
 }
 
 # construct the Observable object
-waveforms = bsv.Observable(
-    name=[
-        'Sine',
-        'Sinc',
-        'Sawtooth'
-    ],
+waveforms = bsv.LiveObservable(
+    name=['Sine', 'Sinc'],
     myfunc=compute_waveforms,
     myfunc_args=(df,),
-    plot_type=[
-        'Curve',
-        'Curve',
-    ],
-    plot_opts=[
-        opts1,
-        opts2,
-    ],
+    plot_type='Curve',
+    plot_opts=[opts1, opts2],
     latex_labels=waves_latex
 )
 
 # define another function that returns just one observable
 def cosine(index, input_data):
     selection = input_data.iloc[[index]]
-    x = np.linspace(-4*np.pi, 4*np.pi, 1000)
+    x = np.linspace(-2*np.pi, 2*np.pi, 1000)
     angular_freq = 2*np.pi*selection['frequency'].iloc[0]
     phase = selection['phase'].iloc[0]
     amp = selection['amplitude'].iloc[0]
@@ -83,7 +72,7 @@ def cosine(index, input_data):
 
 cosine_latex = {'x':'x', 'cos(x)': '\cos{x}'}
 
-coswav = bsv.Observable(
+coswav = bsv.LiveObservable(
     name='Cosine',
     myfunc=cosine,
     myfunc_args=(df,),
