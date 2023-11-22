@@ -39,7 +39,7 @@ class _observable_utils:
     def __init__(
         self,
         name: Union[str, List[str]], 
-        plot_type: Union[str, List[str]] = None,
+        plot_type: Union[str, List[str]] = 'Curve',
         plot_opts: Union[opts, List[opts]] = None,
         latex_labels: dict = None
     ):
@@ -51,8 +51,6 @@ class _observable_utils:
             self.plot_type = [plot_type]
         elif isinstance(plot_type, list):
             self.plot_type = plot_type
-        else:
-            self.plot_type = ['Curve']
         if isinstance(plot_opts, hv.core.options.Options):
             self.plot_opts = [plot_opts]
         else:
