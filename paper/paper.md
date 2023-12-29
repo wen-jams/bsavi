@@ -21,15 +21,15 @@ authors:
 - name: Vera Gluscevic
   affiliation: 1
 affiliations:
-- name: University of Southern California, USA
+- name: University of Southern California
   index: 1
-date: 30 October 2023
+date: 29 December 2023
 bibliography: paper.bib
 ---
 
 # Summary
 
-Scientists in many fields seek to explain or predict real-world phenomena with a theoretical model. These models typically have input parameters which affect the prediction, such as how the number of days without rain could increase the probability of a wildfire starting. We can refine our model through Bayesian inference: as we see wildfires, we can record how long that region has been in drought. Prior to recording this data, we had a “degree of belief” in our model (this is the Bayesian definition of prior probability). Perhaps drought and wildfire frequency are not as tightly correlated as we thought. We can then update our beliefs with this new set of data using Bayes’ Theorem:
+Scientists in many fields seek to explain or predict real-world phenomena with theoretical models. These models typically have input parameters which affect the prediction, such as how the number of days without rain could increase the probability of a wildfire starting. We can refine our model through Bayesian inference: as we observe wildfires, we can record how long that region has been in drought. Prior to recording this data, we had a “degree of belief” in our model (this is the Bayesian definition of prior probability). Perhaps drought and wildfire frequency are not as tightly correlated as we thought. We can then update our beliefs with this new set of data using Bayes’ Theorem:
 
 $$
 P(H|E) = \frac{P(E|H)P(H)}{P(E)}
@@ -42,13 +42,13 @@ Where:
 - P(H) is the probability that our hypothesis is true prior to observing the evidence; and
 - P(E) is the marginal likelihood, which is constant for all hypotheses being considered.
 
-Bayesian inference is a method for inferring model parameters from observational data, often used in physics and astronomy. It yields a posterior probability density function which can be used to identify what model parameters are consistent with the observational data. The posterior is sampled using the Markov chain Monte Carlo (MCMC) method to give a discrete distribution of parameter values.
+Bayesian inference is a method for inferring model parameters from observational data, often used in physics and astronomy. It yields a posterior probability density function which can be used to identify what model parameters are consistent with the observational data. This posterior can be sampled using Markov chain Monte Carlo (MCMC) methods, resulting in a set of parameter values whose distribution approximates the posterior probability density function.
 
-BSAVI is a tool for exploratory analysis of this sample distribution of the posterior probability. Models with multiple parameters have high-dimensional posteriors, which makes them difficult to visualize. Additionally, it is often useful to see how a sample from the posterior (parameter space) translates into real-world observables (data space). To enable this, BSAVI has a built-in Observable class, which allows for easy annotation and plotting of each observable dataset. It can also take callables, so any preexisting code can be used with slight modifications to compute observables on the fly. BSAVI builds on the “holoviz” libraries, including “holoviews” and “panel”, with “Bokeh” as the interactive plotting backend.
+BSAVI is a tool for exploratory analysis of this sample distribution of the posterior probability, and how it relates to the corresponding data space. Models with multiple parameters have high-dimensional posteriors, which makes them difficult to visualize. Additionally, it is often useful to see how a sample from the posterior (parameter space) translates into real-world observables (data space). To enable this, BSAVI has a built-in Observable class, which allows for easy annotation and plotting of each observable dataset. It can also take callables, so any preexisting code can be used with minimal  modifications to compute observables on the fly. BSAVI builds on the “holoviz” libraries, including “holoviews” and “panel”, with “Bokeh” as the interactive plotting backend.
 
 # Statement of Need
 
-BSAVI was originally developed for application in cosmology. In particular, developing dark matter models beyond cold, collisionless dark matter requires the use of Bayesian techniques in [@he2023selfinteracting] [reference Adam's and Trey's papers]. In this case, the theoretical model is one alternative to LambdaCDM, and the observables are the distribution of matter in the universe (given by the matter power spectrum) and the anisotropies in the cosmic microwave background (the CMB power spectrum). The Cosmic Linear Anisotropy Solving System (CLASS) is a code frequently used to generate these observables from input parameters [@Diego_Blas_2011]. The parameters themselves are generated using Monte Python, a Markov Chain Monte Carlo sampler. The MCMC sampler generates values for each parameter in the model and runs them through CLASS to compare the output against observational data. It then continues to sample the parameter space with the goal of finding the region where the theoretical model best fits the observational evidence.
+BSAVI was originally developed for applications in cosmology. Inference exercises for any cosmological model requires a thorough understanding of its parameter space. For example, a model which allows self-interacting neutrinos [@he2023selfinteracting] would lead to observable changes in the distribution of matter in the universe and the anisotropies of the cosmic microwave background. These observables can be computed from the model parameters using the Cosmic Linear Anisotropy Solving System (CLASS) [@Diego_Blas_2011] and compared to real-world observational data. Finding the parameter values that best fit this data then requires MCMC sampling the Bayesian posterior.
 
  The existing tools for visualizing the relationship between samples returned by MCMC and cosmological observables were separate and static, while a unified and interactive experience was desired. For example, a common method of visualizing the likelihood was to make pair plots of the parameters. A purpose-built package like corner is often used for this function. However, with high-dimensional likelihoods the number of pairs increases, and the resulting figure can become difficult to analyze. Additionally, corner and many other plotting tools use matplotlib as their backend, making it hard to interactively explore the dataset. There is a strong desire to see how a specific subset of the samples are distributed across the parameter space, as well as what their corresponding observables look like.
 
@@ -56,6 +56,63 @@ We solve this by providing researchers with an easy way to declare their observa
 
 # Example
 
-Below is an example of using BSAVI to visualize a likelihood from the Planck 2018 Results:
-[insert planck visualization from bsavi main page]
-The code to generate this can be found on the [documentation page](https://wen-jams.github.io/bsavi/).
+In 2018, the Planck Collaboration published cosmological parameters derived from measurements of CMB anisotropies [@2020]. In \autoref{fig1} we use BSAVI to visualize the effect different parameter values have on the CMB anisotropies represented by $C_{l}^{EE}$ and $C_{l}^{TT}$, and the clustering of matter represented by $P(k)$.
+
+![Three samples from the Planck 2018 results and their corresponding observables. \label{fig1}](fig1.png)
+
+On the top left side, there is a 2D projection of the likelihood function as a point cloud, with dropdown menus to adjust which parameters are plotted on each axis as well as which parameter to use as an optional colormap. The bottom left corner displays a table of all the selected samples, which can be sorted by any parameter, plus their index location in the supplied dataframe. Once a selection has been made, its corresponding Observable data is plotted in the panels on the right.
+
+The code to produce this visualization is as follows:
+
+We load the Planck dataset included in the [BSAVI repository](https://github.com/wen-jams/bsavi):
+
+```python
+import pandas as pd
+import bsavi as bsv
+from bsavi.loaders import load_params
+
+planck = pd.read_json('data/planck2018/power_spectra_small.json')
+chains = planck.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
+class_results = planck[['p(k)', 'cl_tt', 'cl_ee']]
+
+
+params_with_latex = load_params('../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+```
+
+
+Two more attributes, plot_opts and latex_labels, can be used for setting plot style options and LaTeX axis labels. To set them, add the following to your code:
+
+```python
+from holoviews import opts
+
+curve_opts = opts.Curve(logx=True)
+
+ps_latex = {
+    'k': 'k~[h/\mathrm{Mpc}]',
+    'Pk': 'P(k)',
+    'l': '\ell',
+    'Cl_tt': '[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^{TT}',
+    'Cl_ee': '[{\ell(\ell+1)}/{2\pi}]~C_{\ell}^{EE}',
+}
+
+power_spectra = bsv.Observable(
+    name=['P(k)', 'Lensed Cl_TT', 'Lensed Cl_EE'], 
+    data=class_results,
+    plot_type='Curve',
+    plot_opts=curve_opts,
+)
+```
+
+Note that the keys of the LaTeX dict match the column names of the power_spectra dataframe.
+
+Then, we can use the viz function to generate the interactive dashboard:
+
+```python
+bsv.viz(data=chains, observables=[power_spectra], latex_dict=params_with_latex).servable()
+```
+
+The app launches a Panel server, and as such can be viewed inline when running in a Jupyter Notebook or JupyterLab, or as a separate browser window if run as a python script.
+
+More examples, including how to create dynamically computed Observables, can be found on the [documentation page](https://wen-jams.github.io/bsavi/).
+
+# References
