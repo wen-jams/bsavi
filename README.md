@@ -34,9 +34,9 @@ If no errors appear, all the dependencies were installed correctly and we're rea
 
 Download and run the `live_data_example` notebook in the [tutorials](tutorials) folder to see an example of how bsavi can be used.
 
-Here's BSAVI being used in an astrophysics context! The parameters come from a cosmological model of dark matter, and the observables are the matter and CMB power spectra.
+Here's BSAVI being used in an astrophysics context! The parameters comprise the Lambda-CDM model of cosmology, and the observables are the clustering of matter in the universe and the CMB anisotropies represented by power spectra.
 
-![example output](images/example3.png)
+![example output](paper/fig1.png)
 
 ## Contributing
 
