@@ -9,7 +9,7 @@
 project = 'BSAVI'
 copyright = '2023, James Wen'
 author = 'James Wen'
-release = '0.4.0a0'
+release = '0.4.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

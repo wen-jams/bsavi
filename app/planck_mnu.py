@@ -1,17 +1,17 @@
 import pandas as pd
+from holoviews import opts
+import bsavi as bsv
+from bsavi.loaders import load_params
+
 mycosmo = pd.read_json('../data/planck2018/power_spectra_small.json')
 chains = mycosmo.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
 class_results = mycosmo[['p(k)', 'cl_tt', 'cl_ee']]
 
-from bsavi.loaders import load_params
 
 params_with_latex = load_params('../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 
-import bsavi as bsv
-import holoviews as hv
-from holoviews import opts
 
-curve_opts = opts.Curve(logx=True, color=hv.Cycle('Spectral'))
+curve_opts = opts.Curve(logx=True)
 
 ps_latex = {
     'k': 'k~[h/\mathrm{Mpc}]',
