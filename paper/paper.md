@@ -58,9 +58,7 @@ We solve this by providing researchers with an easy way to declare their observa
 
 In 2018, the Planck Collaboration published cosmological parameters derived from measurements of CMB anisotropies [@2020]. In \autoref{fig1} we use BSAVI to visualize the effect different parameter values have on the CMB anisotropies represented by $C_{l}^{EE}$ and $C_{l}^{TT}$, and the clustering of matter represented by $P(k)$.
 
-![Three samples from the Planck 2018 results and their corresponding observables. \label{fig1}](fig1.png)
-
-On the top left side, there is a 2D projection of the likelihood function as a point cloud, with dropdown menus to adjust which parameters are plotted on each axis as well as which parameter to use as an optional colormap. The bottom left corner displays a table of all the selected samples, which can be sorted by any parameter, plus their index location in the supplied dataframe. Once a selection has been made, its corresponding Observable data is plotted in the panels on the right.
+![Three samples from the Planck 2018 results and their corresponding observables. The top left is a 2D projection of the likelihood function as a point cloud, with dropdown menus to change the parameters on each axis as well as an optional colormapped parameter. The bottom left corner displays a table of all the selected samples, which can be sorted by any parameter, plus their index location in the supplied dataframe. Once a selection has been made, its corresponding Observable data is plotted in the panels on the right.\label{fig1}](fig1.png)
 
 The code to produce this visualization is as follows:
 
@@ -76,7 +74,8 @@ chains = planck.drop(columns=['p(k)', 'cl_tt', 'cl_ee'])
 class_results = planck[['p(k)', 'cl_tt', 'cl_ee']]
 
 
-params_with_latex = load_params('../data/planck2018/base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
+params_with_latex = load_params('../data/planck2018/
+  base_mnu_plikHM_TTTEEE_lowl_lowE_lensing.paramnames')
 ```
 
 
@@ -108,7 +107,8 @@ Note that the keys of the LaTeX dict match the column names of the power_spectra
 Then, we can use the viz function to generate the interactive dashboard:
 
 ```python
-bsv.viz(data=chains, observables=[power_spectra], latex_dict=params_with_latex).servable()
+bsv.viz(data=chains, observables=[power_spectra],
+        latex_dict=params_with_latex).servable()
 ```
 
 The app launches a Panel server, and as such can be viewed inline when running in a Jupyter Notebook or JupyterLab, or as a separate browser window if run as a python script.
